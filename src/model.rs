@@ -8,8 +8,8 @@ use std::{
     time::Duration,
 };
 
-pub const SCHEMA_VERSION: &str = "0.9.0";
-pub const POLICY_VERSION: &str = "observations-only-v9";
+pub const SCHEMA_VERSION: &str = "0.10.0";
+pub const POLICY_VERSION: &str = "observations-only-v10";
 
 #[derive(Debug, Clone)]
 pub struct AnalysisOptions {
@@ -447,6 +447,37 @@ pub struct RolloffAnalysis {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BandEnvelope {
+    pub status: DetectorStatus,
+    pub requested_lower_hz: f64,
+    pub requested_upper_hz: f64,
+    pub lower_bin_hz: Option<f64>,
+    pub upper_bin_hz: Option<f64>,
+    pub bin_count: usize,
+    /// Mean Hann-normalized band power across active frames.
+    pub mean_square: Option<f64>,
+    /// Mean and population SD of the per-frame band RMS envelope.
+    pub mean_rms: Option<f64>,
+    pub std_rms: Option<f64>,
+    pub energy_eligible: bool,
+    pub variation_eligible: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct EnvelopeAnalysis {
+    pub channel_index: usize,
+    pub status: DetectorStatus,
+    /// Support envelope of all STFT windows; only active windows contribute.
+    pub interval: Option<AnalysisInterval>,
+    pub stft_frames: u64,
+    pub active_frames: u64,
+    pub mid_band: BandEnvelope,
+    pub high_band: BandEnvelope,
+    /// Signed Pearson correlation of paired RMS envelopes, not source confidence.
+    pub coefficient: Option<f64>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AnalysisReport {
     pub schema_version: String,
     pub engine_version: String,
@@ -466,6 +497,7 @@ pub struct AnalysisReport {
     pub noise: Vec<NoiseAnalysis>,
     pub transients: Vec<TransientAnalysis>,
     pub rolloff: Vec<RolloffAnalysis>,
+    pub envelope: Vec<EnvelopeAnalysis>,
     pub unimplemented_detectors: Vec<String>,
     pub ancestry_verdict: String,
     pub evidence_index: Option<f64>,
@@ -479,7 +511,7 @@ impl AnalysisReport {
             schema_version: SCHEMA_VERSION.into(), engine_version: env!("CARGO_PKG_VERSION").into(),
             policy_version: POLICY_VERSION.into(), source, status: FileStatus::Failed,
             stream: None, coverage: None, channels: vec![], detectors: vec![], segments: vec![], mqa: None,
-            resampling: vec![], vorbis: vec![], aac: vec![], spectral_structure: vec![], noise: vec![], transients: vec![], rolloff: vec![],
+            resampling: vec![], vorbis: vec![], aac: vec![], spectral_structure: vec![], noise: vec![], transients: vec![], rolloff: vec![], envelope: vec![],
             unimplemented_detectors: [
                 "analog_source", "mqa_confirmation",
                 "bit_depth_noise_floor", "loudness", "psychoacoustic_artifacts"]

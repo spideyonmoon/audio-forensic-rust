@@ -1,7 +1,7 @@
 # Audio Forensic Rust
 
-An offline Rust library and CLI for audio forensic analysis. Version 0.9 adds
-**bounded native-channel spectral roll-off measurements**. Every report keeps
+An offline Rust library and CLI for audio forensic analysis. Version 0.10 adds
+**bounded native-channel cross-band envelope correlation**. Every report keeps
 ancestry `INCONCLUSIVE` and the evidence index `null` until the detector suite and
 aggregation policy are implemented and validated.
 
@@ -47,6 +47,8 @@ instructions. These files are maintained alongside the code.
   baseline bounds, threshold, startup exclusion and eligible analysis intervals.
 - Two-band 12–18 kHz spectral roll-off, using actual frequency-bin coverage and
   explicit energy gates; EQ/filter controls demonstrate that this is not a source label.
+- Signed correlation between 1–8 and 16–22 kHz RMS envelopes, with bounded online
+  covariance and explicit energy, temporal-variation and full-band coverage gates.
 - Shared prefix limits for every pass, cooperative cancellation and deadlines.
 - SHA-256 of the decoded interleaved samples, checked across both passes and
   available for comparison with an independent decoder. Integer hashes use
@@ -105,6 +107,13 @@ Both complete bands and every selected bin must pass applicability gates; silenc
 sparse spectra and unavailable bands give null slopes. This is an endpoint
 contrast, not a fitted curve or proof of tape origin. Details and numerical checks
 are in [ROLLOFF_VALIDATION.md](ROLLOFF_VALIDATION.md).
+
+Cross-band envelope correlation measures how two bands' RMS levels vary together
+across active STFT frames. It keeps constant-size running statistics and returns
+null for quiet, constant, unavailable or insufficient envelopes. Every active
+frame contributes; the result does not identify authentic or injected high-frequency
+content. See [ENVELOPE_VALIDATION.md](ENVELOPE_VALIDATION.md) for definitions and
+independent inverse-FFT/time-domain checks.
 
 ## Build and run
 
@@ -348,6 +357,7 @@ The AAC milestone is recorded in [AAC_VALIDATION.md](AAC_VALIDATION.md).
 The spectral-structure milestone is recorded in [STRUCTURE_VALIDATION.md](STRUCTURE_VALIDATION.md).
 The transient milestone is recorded in [TRANSIENT_VALIDATION.md](TRANSIENT_VALIDATION.md).
 The spectral roll-off milestone is recorded in [ROLLOFF_VALIDATION.md](ROLLOFF_VALIDATION.md).
+The cross-band envelope milestone is recorded in [ENVELOPE_VALIDATION.md](ENVELOPE_VALIDATION.md).
 
 ## License and attribution
 

@@ -218,6 +218,13 @@ fn run(args: Args) -> Result<i32, Box<dyn std::error::Error>> {
                         r.channel_index, r.status, r.slope_db_per_khz
                     )?;
                 }
+                for e in &report.envelope {
+                    writeln!(
+                        out,
+                        "  channel {} band-envelope correlation: {:?}, {:?} (measurement only)",
+                        e.channel_index, e.status, e.coefficient
+                    )?;
+                }
                 for s in &report.spectral_structure {
                     writeln!(
                         out,

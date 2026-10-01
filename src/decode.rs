@@ -1,8 +1,8 @@
 use crate::{
     detectors::{
-        self, aac::AacSelector, mqa::MqaScanner, noise::NoiseStats, resampling::ResamplingStats,
-        rolloff::RolloffStats, segments::SegmentCollector, structure::StructureStats,
-        transients::TransientSurvey, vorbis::VorbisCollector,
+        self, aac::AacSelector, envelope::EnvelopeStats, mqa::MqaScanner, noise::NoiseStats,
+        resampling::ResamplingStats, rolloff::RolloffStats, segments::SegmentCollector,
+        structure::StructureStats, transients::TransientSurvey, vorbis::VorbisCollector,
     },
     dsp::{PcmStats, SpectralStats, StreamingStft},
     model::*,
@@ -366,6 +366,7 @@ fn analyze(
     let mut aac = aac_selector.into_collector(first.frames);
     let mut structure: Vec<_> = (0..channels).map(|_| StructureStats::new(rate)).collect();
     let mut rolloff: Vec<_> = (0..channels).map(|_| RolloffStats::new(rate)).collect();
+    let mut envelope: Vec<_> = (0..channels).map(|_| EnvelopeStats::new(rate)).collect();
     let mut noise: Vec<_> = (0..channels).map(|_| NoiseStats::new(rate)).collect();
     let mut transients: Vec<_> = transient_surveys
         .into_iter()
@@ -377,6 +378,7 @@ fn analyze(
             noise[ch].push_spectrum(spectrum);
             let active = spectral[ch].push(mags);
             rolloff[ch].push(mags, active);
+            envelope[ch].push(mags, active);
             structure[ch].push(mags, spectrum, active);
             if active {
                 resampling[ch].push(mags);
@@ -516,6 +518,11 @@ fn analyze(
         .into_iter()
         .enumerate()
         .map(|(ch, r)| r.finish(ch))
+        .collect();
+    report.envelope = envelope
+        .into_iter()
+        .enumerate()
+        .map(|(ch, e)| e.finish(ch))
         .collect();
     detectors::append_observations(report, rate);
     report.stream = Some(info);

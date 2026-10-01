@@ -161,10 +161,16 @@ Version 0.9 adds the cassette profile's useful two-endpoint roll-off measurement
 with actual bin geometry, coherent-amplitude applicability gates and constant
 storage. Generated EQ changes demonstrate that the slope cannot identify a medium.
 Unsupported/quiet endpoint bands abstain instead of receiving fabricated levels.
-See `ROLLOFF_VALIDATION.md`. Next assess bounded spectral sparsity and cross-band
-envelope correlation from the reference, with explicit silence, constant-envelope,
-bandwidth and frame-count gates; do not import source labels or injected-noise
-claims without independent evaluation.
+See `ROLLOFF_VALIDATION.md`.
+
+Version 0.10 implements signed Pearson correlation of two per-frame band RMS
+envelopes with constant-size online covariance. Full-band geometry, mean energy,
+temporal variation and frame-count gates replace the reference's fabricated
+zero/one fallbacks. `ENVELOPE_VALIDATION.md` records independent time-domain band
+power and stored-envelope comparisons. This is not an authenticity or injected-noise
+classifier. Next assess bounded below-cutoff spectral sparsity, explicitly defining
+global versus per-frame cutoff, activity and absolute numerical floors. Avoid a
+full spectrogram buffer and preserve real tone/filter controls without source labels.
 
 Group evidence separately from the numerical port, so a changed score can be
 traced to policy rather than accidentally changed arithmetic. Add remaining

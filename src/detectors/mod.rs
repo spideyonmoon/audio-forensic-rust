@@ -1,4 +1,5 @@
 pub(crate) mod aac;
+pub(crate) mod envelope;
 pub(crate) mod mdct;
 pub(crate) mod mqa;
 pub(crate) mod noise;
@@ -13,6 +14,26 @@ pub(crate) mod vorbis;
 use crate::model::*;
 
 pub(crate) fn append_observations(report: &mut AnalysisReport, rate: u32) {
+    for e in &report.envelope {
+        let mut measurements =
+            std::collections::BTreeMap::from([("active_frames".into(), e.active_frames as f64)]);
+        if let Some(value) = e.coefficient {
+            measurements.insert("pearson_coefficient".into(), value);
+        }
+        report.detectors.push(DetectorResult {
+            id: "band_envelope_correlation".into(), version: 1, family: "spectral_measurements".into(),
+            status: e.status.clone(), channel_index: Some(e.channel_index),
+            intervals: e.interval.iter().cloned().collect(), measurements,
+            thresholds: [("minimum_active_frames".into(), envelope::MIN_FRAMES as f64),
+                ("absolute_mean_band_power_floor".into(), envelope::ABSOLUTE_POWER),
+                ("relative_mean_band_power_floor".into(), envelope::RELATIVE_POWER),
+                ("absolute_envelope_std_floor".into(), envelope::MIN_STD),
+                ("minimum_coefficient_of_variation".into(), envelope::MIN_CV)].into(),
+            caveats: vec!["Signed Pearson correlation between 1–8 kHz and 16–22 kHz RMS envelopes across active native-channel STFT frames. Complete bands, usable energy and temporal variation are required; constant or quiet envelopes abstain.".into(),
+                "Correlation is a descriptive relationship, not evidence that high-frequency content is authentic or injected. Common modulation, filtering, musical arrangement and gaps can affect it.".into(),
+                "Every active frame contributes, including frames where only one band is quiet. Power gates apply to aggregate means; no per-band frame deletion is used. The interval encloses all STFT windows, not just active windows.".into()],
+        });
+    }
     for r in &report.rolloff {
         let mut measurements = std::collections::BTreeMap::from([
             ("active_frames".into(), r.active_frames as f64),
