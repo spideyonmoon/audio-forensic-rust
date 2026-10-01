@@ -137,6 +137,10 @@ collection was not rerun; its latest full-file validation remains v0.3.
 
 ## Remaining work
 
+Historical v0.6 next step below: v0.7 now implements explicitly circular band
+correlation and bounded block variation; see `NOISE_DYNAMICS_VALIDATION.md` for
+the completed scope and its differences from continuously filtered signals.
+
 Design bounded band-limited correlation/temporal-variation measurements with
 explicit intervals, leakage handling and insufficient-data outcomes before
 adding click or analog profiles. Correlation of raw broadband samples must not

@@ -191,6 +191,18 @@ fn run(args: Args) -> Result<i32, Box<dyn std::error::Error>> {
                         n.high_band.quiet_status,
                         n.high_band.quiet_rms_dbfs
                     )?;
+                    writeln!(
+                        out,
+                        "    high-band correlation {:?}; temporal variation {:?}, {:?} dB over {} complete seconds (measurements only)",
+                        n.high_band
+                            .correlations
+                            .iter()
+                            .map(|c| (c.lag_frames, c.coefficient))
+                            .collect::<Vec<_>>(),
+                        n.high_band.temporal_variation.status,
+                        n.high_band.temporal_variation.level_std_db,
+                        n.high_band.temporal_variation.blocks.len()
+                    )?;
                 }
                 for s in &report.spectral_structure {
                     writeln!(

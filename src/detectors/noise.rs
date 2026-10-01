@@ -1,4 +1,5 @@
 //! Bounded quiet-passage and window-normalized band-power measurements.
+use super::noise_dynamics::TemporalSpectra;
 use crate::{
     dsp::{HOP, WINDOW},
     model::{AnalysisInterval, BandPowerMeasurement, DetectorStatus, NoiseAnalysis},
@@ -24,6 +25,7 @@ pub(crate) struct NoiseStats {
     quiet_runs: u64,
     longest_run: u64,
     intervals: Vec<AnalysisInterval>,
+    temporal: TemporalSpectra,
 }
 
 impl NoiseStats {
@@ -42,6 +44,7 @@ impl NoiseStats {
             quiet_runs: 0,
             longest_run: 0,
             intervals: Vec::with_capacity(MAX_INTERVALS),
+            temporal: TemporalSpectra::new(rate),
         }
     }
 
@@ -51,9 +54,13 @@ impl NoiseStats {
         debug_assert_eq!(self.samples, self.frames * HOP as u64 + WINDOW as u64);
         self.frames += 1;
         let inside_run = self.run_samples >= WINDOW as u64;
+        let mut temporal = self.temporal.frame(self.samples);
         for (i, bin) in spectrum.iter().enumerate() {
             let power = f64::from(bin.re).powi(2) + f64::from(bin.im).powi(2);
             self.power[i] += power;
+            if let Some(block) = temporal.as_mut() {
+                block[i] += power;
+            }
             if inside_run {
                 self.run_power[i] += power;
             }
@@ -118,6 +125,13 @@ impl NoiseStats {
         let quiet_mean_square = measure(&self.quiet_power, self.quiet_frames);
         // Exact zero has a measured linear value; its logarithm is undefined.
         let db = |power: Option<f64>| power.filter(|&p| p > 0.0).map(|p| 10.0 * p.log10());
+        let (correlations, temporal_variation) = self.temporal.finish_band(
+            supported.then_some(start..=end),
+            &self.power,
+            self.frames,
+            self.samples,
+            normalization,
+        );
         BandPowerMeasurement {
             status: status(self.frames),
             quiet_status: status(self.quiet_frames),
@@ -130,6 +144,8 @@ impl NoiseStats {
             rms_dbfs: db(mean_square),
             quiet_mean_square,
             quiet_rms_dbfs: db(quiet_mean_square),
+            correlations,
+            temporal_variation,
         }
     }
 

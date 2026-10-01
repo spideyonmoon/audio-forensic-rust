@@ -2,6 +2,7 @@ pub(crate) mod aac;
 pub(crate) mod mdct;
 pub(crate) mod mqa;
 pub(crate) mod noise;
+pub(crate) mod noise_dynamics;
 pub(crate) mod resampling;
 pub(crate) mod segments;
 pub(crate) mod structure;
@@ -55,6 +56,7 @@ pub(crate) fn append_observations(report: &mut AnalysisReport, rate: u32) {
             });
         }
     }
+    noise_dynamics::append_observations(report);
     for s in &report.spectral_structure {
         let mut measurements = std::collections::BTreeMap::from([
             ("active_frames".into(), s.active_frames as f64),

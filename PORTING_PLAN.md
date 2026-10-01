@@ -141,6 +141,14 @@ aggregate counts. `NOISE_VALIDATION.md` defines normalization, intervals,
 applicability and numerical controls. Correlation, temporal variation, clicks,
 source profiles and noise-based scoring remain unimplemented.
 
+Version 0.7 adds explicitly circular band-limited correlation at two lags and
+one-second band-level variation over a capped 180-second history. It reuses STFT
+power, preserving all-window coverage for global correlations while bounding
+temporal spectra. Quiet/insufficient blocks abstain rather than becoming zeros
+or being dropped. `NOISE_DYNAMICS_VALIDATION.md` records independent inverse-FFT
+time-domain checks and deliberate differences from full-stream Pearson correlation.
+Next assess bounded click/transient measurements before analog-source profiles.
+
 Group evidence separately from the numerical port, so a changed score can be
 traced to policy rather than accidentally changed arithmetic. Add remaining
 loudness/reporting features with suitable reference measurements. A subset of

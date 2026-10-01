@@ -1,7 +1,7 @@
 # Audio Forensic Rust
 
-An offline Rust library and CLI for audio forensic analysis. Version 0.6 adds
-**bounded quiet-passage and normalized band-power measurements**. Every report keeps
+An offline Rust library and CLI for audio forensic analysis. Version 0.7 adds
+**band-limited circular correlation and temporal power variation**. Every report keeps
 ancestry `INCONCLUSIVE` and the evidence index `null` until the detector suite and
 aggregation policy are implemented and validated.
 
@@ -41,6 +41,8 @@ instructions. These files are maintained alongside the code.
 - Per-channel quiet-run counts, durations and bounded interval listings, plus
   Hann-normalized power in the high-frequency and above-cutoff bands. Separate
   estimates use only STFT windows wholly inside qualifying quiet passages.
+- Signed circular band correlation at two reported lags and band-level variation
+  across completed seconds, with explicit energy gates and bounded prefix history.
 - Shared prefix limits for every pass, cooperative cancellation and deadlines.
 - SHA-256 of the decoded interleaved samples, checked across both passes and
   available for comparison with an independent decoder. Integer hashes use
@@ -73,6 +75,14 @@ f64 accumulators and at most sixteen quiet intervals per channel (about 48.3 KiB
 of payload). Aggregate counts and power include all qualifying runs. Band power
 includes inactive frames; quiet passages are never concatenated across gaps.
 These descriptive measurements do not identify vinyl, cassette or codec noise.
+
+Band dynamics reuse the same FFT and retain at most 180 per-second spectra,
+adding about 2.82 MiB/channel plus bounded bookkeeping/report data. Storage stops
+growing after 180 seconds; global band powers and correlation continue over the
+analyzed stream. Correlation describes periodic band-filtered Hann windows, not
+continuous-stream Pearson correlation. Temporal variation excludes windows that
+cross second boundaries and requires every included second to pass energy gates.
+See [NOISE_DYNAMICS_VALIDATION.md](NOISE_DYNAMICS_VALIDATION.md) for exact definitions.
 
 ## Build and run
 

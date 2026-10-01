@@ -494,11 +494,12 @@ fn analyze(
         .enumerate()
         .map(|(ch, s)| s.finish(ch))
         .collect();
-    report.noise = noise
-        .into_iter()
-        .enumerate()
-        .map(|(ch, n)| n.finish(ch, report.channels[ch].spectral.cutoff_p95_hz))
-        .collect();
+    for (ch, n) in noise.into_iter().enumerate() {
+        check_control(options, cancel, start)?;
+        report
+            .noise
+            .push(n.finish(ch, report.channels[ch].spectral.cutoff_p95_hz));
+    }
     detectors::append_observations(report, rate);
     report.stream = Some(info);
     if !first.reached_end {

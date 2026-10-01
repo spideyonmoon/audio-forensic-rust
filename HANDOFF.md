@@ -5,26 +5,25 @@ another session, coding tool or human. Keep it current using `AGENTS.md`.
 
 ## Current state and next action
 
-- **Version 0.6.0 quiet passages and band power are implemented and locally validated.**
-  Schema: `0.6.0`; policy: `observations-only-v6`.
+- **Version 0.7.0 band correlation and temporal variation are implemented and locally validated.**
+  Schema: `0.7.0`; policy: `observations-only-v7`.
   The full engine is unfinished.
 - Goal: a Rust core that runs entirely on the phone. Build the Android app after
   the core is validated. Continue engineering with generated controls while the
   user collects recordings with independently known processing histories.
 - All overall ancestry reports remain `INCONCLUSIVE`; evidence index is `null`.
   Individual observations do not prove codec ancestry, authenticity or MQA.
-- **Next: design bounded band-limited correlation and temporal-variation
-  measurements**, with explicit intervals, leakage handling and generated
-  controls, before analog-source profiles.
+- **Next: assess bounded click/transient measurements**, including normal musical
+  attacks, clipping, silence and generated-click controls, before analog profiles.
 - AAC v0.4 is committed as `c66d705` (`feat: add bounded AAC lattice observations`).
   Local `main` still points to that AAC commit: the earlier handoff's claim of a
   v0.5 development commit was incorrect. The separate `publish/source-only` ref
   holds public source snapshots and is the branch to push to remote `main`.
-  Its v0.6 milestone is `feat: add bounded quiet-passage and band-power measurements`;
+  Its v0.7 milestone is `feat: measure band correlation and temporal variation`;
   inspect that ref for the exact hash and compare with remote `main`.
   The existing development index and local tests/scripts are preserved separately;
   do not push local `main` or commit the excluded research/test files.
-  All 57 tests passed in one full release run; the release executable and duration
+  All 60 tests passed in one full release run; the release executable and duration
   checks passed. No background jobs or partial detector implementation remain.
   No private audio was changed. Use `git log` / `git status` to verify current state.
 
@@ -35,6 +34,7 @@ another session, coding tool or human. Keep it current using `AGENTS.md`.
 | `AGENTS.md` | Persistent project and documentation instructions |
 | `README.md` | Current API/CLI coverage, usage, numerical conventions and limits |
 | `PORTING_PLAN.md` | Agreed architecture, policy, Python assessment decisions and acceptance gates |
+| `NOISE_DYNAMICS_VALIDATION.md` | Latest v0.7 circular band correlation, temporal variation, applicability and independent checks |
 | `NOISE_VALIDATION.md` | Latest v0.6 quiet runs, normalized band powers, coverage and numerical controls |
 | `STRUCTURE_VALIDATION.md` | Latest v0.5 scatter/phase measurements, applicability and reference differences |
 | `AAC_VALIDATION.md` | v0.4 AAC numerical tests, intentional differences and known trim miss |
@@ -68,6 +68,7 @@ MQA unittest methods passed, including the synthetic encoder cases.
 | `src/detectors/aac.rs` | Explicit mono/mid/side AAC lattice, bounded first-pass energy selection and at most sixteen second-pass captured spans per basis |
 | `src/detectors/structure.rs` | Native-channel streaming scatter bounds and energy-gated phase entropy; measurements only |
 | `src/detectors/noise.rs` | Bounded native-channel quiet runs and all/quiet Hann-normalized high/above-cutoff band powers |
+| `src/detectors/noise_dynamics.rs` | Signed circular band correlation at two lags; at most 180 complete seconds of band-power variation |
 | `src/detectors/mod.rs` | Detector reports, families, thresholds and caveats |
 | `src/main.rs` | Desktop text/JSON CLI, directory batches, limits and per-file failures |
 | `tests/` | Generated fixtures, reference outputs and Rust regression tests |
@@ -105,7 +106,36 @@ Preserve `Cargo.lock`. Ordinary tests need neither Python/FFmpeg nor private mus
 
 ## Verification actually completed
 
-### Current v0.6 checks — 2026-10-01
+### Current v0.7 checks — 2026-10-01
+
+- **60 tests passed in the full release suite:** 21 unit, 4 AAC, 13 core/CLI,
+  5 segment/MQA, 7 noise, 2 original parity/integrity, 3 structure and 5 transform.
+  No failures/ignored tests; debug suite not rerun for v0.7.
+- Formatting, all-target Clippy with warnings denied and no-CLI Android ARM64
+  compilation passed. The release CLI reports `0.7.0`. Android linking and phone
+  behavior remain untested.
+  A publication-only copy in `target/source-only-v7` passed production Clippy
+  without tests/scripts/fixtures, and the short-prefix text CLI smoke check passed.
+- Sixteen generated stereo cases / 32 native channels matched FFmpeg PCM exactly
+  and passed an independent inverse-FFT/time-domain correlation and block-power
+  oracle. Expected values are computed before Rust runs. This includes a 182-second
+  cap boundary, silence/quiet blocks, impulses, tones, level changes and 8–384 kHz.
+  Existing generated audio/oracles and the clean pinned reference were preserved.
+- Duration controls at 10/120/600 s matched PCM and used 19.98/23.61/25.53 MiB peak
+  Windows working set. Temporal spectra add up to 2.82 MiB/channel and stop growing
+  after 180 seconds. Timing overlapped compilation/tests; not a speed benchmark.
+- Full debug suite, remote CI completion, Android device behavior, the broad
+  encoding experiment matrix and private collection were not rerun. Overall
+  scoring and independent grouped source-accuracy evaluation remain outstanding.
+
+Local-only evidence: `corpus/local/results/noise-dynamics-v7/` contains expected
+measurements, CLI reports and `summary.json`; seven new generated WAVs are in
+`corpus/local/generated/noise-dynamics-v7/`. The other nine controls reuse v0.6
+generated WAVs unchanged. Duration records: `corpus/local/results/resources-v7/`.
+Local tests/script: `tests/noise.rs`, `scripts/check_noise_dynamics.py`.
+These files remain excluded from publication.
+
+### Historical v0.6 checks — 2026-10-01
 
 - **57 tests passed in one full release-suite run:** 21 unit, 4 AAC,
   13 core/CLI, 5 segment/MQA, 4 noise, 2 original parity/integrity,
@@ -277,15 +307,16 @@ generators; never regenerate saved oracles just to hide a mismatch.
 
 ## Next milestone and remaining work
 
-The reference `_silence_and_vinyl`, `_cassette_source`, `_fft_band_extract` and
-autocorrelation/temporal-variance helpers have been inspected. Version 0.6 supplies
-quiet-run and spectral-band power only; see `NOISE_VALIDATION.md` for deliberate
-differences. Next define a bounded band-limited signal/correlation and temporal
-variation design, including filter leakage/edge effects and insufficient-data
-outcomes, before implementing it. Do not substitute raw-sample correlation for
-filtered-band correlation or copy whole-prefix FFT buffers, source-confirmation
-language or score bypasses. Source labels require independently characterized
-recordings and later grouped evaluation.
+Version 0.7 supplies explicitly circular band-masked-window correlation and
+bounded temporal variation; it does not claim full-stream Pearson correlation.
+See `NOISE_DYNAMICS_VALIDATION.md` for windows, band/energy gates, intervals and
+inverse-FFT validation. Next inspect `_smooth_envelope`, `highpass_filter` and
+the click portion of `_silence_and_vinyl`, then define bounded transient
+measurements and independent controls before implementation. Ordinary musical
+attacks, clipping and inserted clicks must be distinguished in experiments.
+Do not copy whole-prefix buffers, source-confirmation language or score bypasses.
+Source labels require independently characterized recordings and later grouped
+evaluation. Continuous filtered-signal correlation would be separate future work.
 
 AAC's current port covers the reference long KBD window only. Exhaustive phase
 search, other window geometries and explicit TNS/SBR support would require
@@ -305,7 +336,7 @@ on 2026-09-30. Its first commit is `chore: checkpoint validated Rust core v0.3.0
 Use `git log --oneline` to find the checkpoint and `git status` to inspect later
 changes. The source-only publication target is
 `git@github.com:spideyonmoon/audio-forensic-rust.git`, remote branch `main`.
-Before v0.6, remote `main` was verified at `538c919333416192199940881078e1814a62249b`.
+Before v0.7, remote `main` was verified at `ca6c1f4f6496b0c2f2e157139449cb887c7faebe`.
 The separate local ref `publish/source-only` holds publication history; compare
 `git rev-parse publish/source-only` with `git ls-remote` to verify the latest push.
 Never push the development `main` history: it includes excluded test files.

@@ -8,8 +8,8 @@ use std::{
     time::Duration,
 };
 
-pub const SCHEMA_VERSION: &str = "0.6.0";
-pub const POLICY_VERSION: &str = "observations-only-v6";
+pub const SCHEMA_VERSION: &str = "0.7.0";
+pub const POLICY_VERSION: &str = "observations-only-v7";
 
 #[derive(Debug, Clone)]
 pub struct AnalysisOptions {
@@ -308,6 +308,40 @@ pub struct SpectralStructureAnalysis {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BandCorrelation {
+    pub lag_frames: u32,
+    pub lag_seconds: f64,
+    pub status: DetectorStatus,
+    /// Signed normalized circular correlation of band-masked Hann windows.
+    /// Energy-weighted across all STFT frames; not full-stream Pearson correlation.
+    pub coefficient: Option<f64>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BandPowerBlock {
+    /// Zero-based one-second block in the analyzed prefix.
+    pub block_index: u32,
+    /// Actual support envelope of complete windows wholly within that second.
+    pub interval: AnalysisInterval,
+    pub stft_frames: u64,
+    pub mean_square: Option<f64>,
+    pub rms_dbfs: Option<f64>,
+    pub eligible: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BandTemporalVariation {
+    pub status: DetectorStatus,
+    /// Maximum prefix considered; block intervals show actual coverage.
+    pub search_limit_frames: u64,
+    pub eligible_blocks: usize,
+    /// Population SD of block RMS dBFS; needs >=2 blocks, all above energy floors.
+    pub level_std_db: Option<f64>,
+    /// At most 180 completed one-second blocks, with no cross-boundary windows.
+    pub blocks: Vec<BandPowerBlock>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct BandPowerMeasurement {
     pub status: DetectorStatus,
     pub quiet_status: DetectorStatus,
@@ -323,6 +357,8 @@ pub struct BandPowerMeasurement {
     pub rms_dbfs: Option<f64>,
     pub quiet_mean_square: Option<f64>,
     pub quiet_rms_dbfs: Option<f64>,
+    pub correlations: Vec<BandCorrelation>,
+    pub temporal_variation: BandTemporalVariation,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
