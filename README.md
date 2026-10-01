@@ -1,7 +1,7 @@
 # Audio Forensic Rust
 
-An offline Rust library and CLI for audio forensic analysis. Version 0.10 adds
-**bounded native-channel cross-band envelope correlation**. Every report keeps
+An offline Rust library and CLI for audio forensic analysis. Version 0.11 adds
+**bounded native-channel below-cutoff sparsity measurements**. Every report keeps
 ancestry `INCONCLUSIVE` and the evidence index `null` until the detector suite and
 aggregation policy are implemented and validated.
 
@@ -49,6 +49,8 @@ instructions. These files are maintained alongside the code.
   explicit energy gates; EQ/filter controls demonstrate that this is not a source label.
 - Signed correlation between 1–8 and 16–22 kHz RMS envelopes, with bounded online
   covariance and explicit energy, temporal-variation and full-band coverage gates.
+- Below-cutoff sparse-bin fractions with explicit global cutoff, per-frame peak,
+  numerical floor, selected geometry and eligible-frame counts.
 - Shared prefix limits for every pass, cooperative cancellation and deadlines.
 - SHA-256 of the decoded interleaved samples, checked across both passes and
   available for comparison with an independent decoder. Integer hashes use
@@ -114,6 +116,13 @@ null for quiet, constant, unavailable or insufficient envelopes. Every active
 frame contributes; the result does not identify authentic or injected high-frequency
 content. See [ENVELOPE_VALIDATION.md](ENVELOPE_VALIDATION.md) for definitions and
 independent inverse-FFT/time-domain checks.
+
+Below-cutoff sparsity counts frequency bins more than 95 dB below each eligible
+frame's spectral peak, using the channel's final global p95 cutoff. It excludes
+DC/Nyquist, requires sufficient frames/bins and rejects frames below a coherent
+spectral-amplitude floor. Fixed per-bin counts add about 16 KiB/channel; no
+spectrogram is stored. Tones and filtered audio can also be sparse. See
+[SPARSITY_VALIDATION.md](SPARSITY_VALIDATION.md) for arithmetic and controls.
 
 ## Build and run
 

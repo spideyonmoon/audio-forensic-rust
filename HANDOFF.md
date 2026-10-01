@@ -5,32 +5,38 @@ another session, coding tool or human. Keep it current using `AGENTS.md`.
 
 ## Current state and next action
 
-- **Version 0.10.0 cross-band envelope correlation is implemented and locally validated.**
-  Schema: `0.10.0`; policy: `observations-only-v10`.
+- **Version 0.11.0 below-cutoff sparsity is implemented and locally validated.**
+  Schema: `0.11.0`; policy: `observations-only-v11`.
   The full engine is unfinished.
 - Goal: a Rust core that runs entirely on the phone. Build the Android app after
   the core is validated. Continue engineering with generated controls while the
   user collects recordings with independently known processing histories.
 - All overall ancestry reports remain `INCONCLUSIVE`; evidence index is `null`.
   Individual observations do not prove codec ancestry, authenticity or MQA.
-- **Next: assess bounded below-cutoff spectral sparsity**, with explicit global
-  versus per-frame cutoff, activity and absolute numerical floors. Continue core
-  milestones without waiting for a new prompt.
+- **Next: assess the remaining noise-floor/bit-depth profile**, with bounded
+  native-channel blocks, correct quiet-block indexing and explicit prefix coverage.
+  The user requested that the hourly continuation stop: automation
+  `continue-audio-forensic-core` is PAUSED. Continue only the active session;
+  do not restart scheduled runs without a new request.
   Do not infer a source medium or relabel cutoff variation as wow/flutter.
 - AAC v0.4 is committed as `c66d705` (`feat: add bounded AAC lattice observations`).
   Local `main` still points to that AAC commit: the earlier handoff's claim of a
   v0.5 development commit was incorrect. The separate `publish/source-only` ref
   holds public source snapshots and is the branch to push to remote `main`.
-  The v0.9 milestone `60208f3b94a85b5194b2c41b2e4995e4ebe36793` was verified on
-  remote `main`. The v0.10 checkpoint subject is
-  `feat: add bounded cross-band envelope correlation`; inspect the publication
+  The v0.10 milestone `376dc6783df0791521cb8d821dacb0932c86a649` was verified on
+  remote `main`. The v0.11 checkpoint subject is
+  `feat: add bounded below-cutoff sparsity measurements`; inspect the publication
   ref and compare with remote `main` for the latest publication state.
   The existing development index and local tests/scripts are preserved separately;
   do not push local `main` or commit the excluded research/test files.
-  v0.10 passed all 73 release tests, independent numerical controls, formatting,
+  v0.11 passed all 78 release tests, independent numerical controls, formatting,
   Clippy, Android compilation and duration/resource checks. No validation jobs
   or partial detector implementations remain running.
-  No private audio was changed. Use `git log` / `git status` to verify current state.
+  v0.11 adds a fixed per-bin sparse counter, report type and CLI observation.
+  All 19 generated stereo controls passed numerical/PCM checks; the largest
+  sparse-count discrepancy was one bin observation within a predeclared FFT
+  comparison allowance. No private audio was changed.
+  Use `git log` / `git status` to verify current state.
 
 ## Read in this order
 
@@ -39,6 +45,7 @@ another session, coding tool or human. Keep it current using `AGENTS.md`.
 | `AGENTS.md` | Persistent project and documentation instructions |
 | `README.md` | Current API/CLI coverage, usage, numerical conventions and limits |
 | `PORTING_PLAN.md` | Agreed architecture, policy, Python assessment decisions and acceptance gates |
+| `SPARSITY_VALIDATION.md` | v0.11 below-cutoff sparse counts, geometry, numerical floors and independent controls |
 | `ENVELOPE_VALIDATION.md` | Latest v0.10 paired band RMS correlation, energy/variation gates, independent inverse-FFT checks and limitations |
 | `ROLLOFF_VALIDATION.md` | Latest v0.9 two-band slope, geometry, energy gates, independent EQ/filter controls and limits |
 | `TRANSIENT_VALIDATION.md` | Latest v0.8 filter/envelope, baseline bounds, peak coverage, SciPy controls and interpretation limits |
@@ -80,6 +87,7 @@ MQA unittest methods passed, including the synthetic encoder cases.
 | `src/detectors/transients.rs` | Native-channel high-pass envelope maxima, bounded median survey and 180-second/128-event caps |
 | `src/detectors/rolloff.rs` | Active mean-spectrum endpoint slope with actual band geometry and per-bin energy gates |
 | `src/detectors/envelope.rs` | Constant-size running Pearson statistics for paired native-channel band RMS envelopes |
+| `src/detectors/sparsity.rs` | Fixed per-bin relative-magnitude counts, deferred global cutoff and explicit eligibility |
 | `src/detectors/mod.rs` | Detector reports, families, thresholds and caveats |
 | `src/main.rs` | Desktop text/JSON CLI, directory batches, limits and per-file failures |
 | `tests/` | Generated fixtures, reference outputs and Rust regression tests |
@@ -117,7 +125,33 @@ Preserve `Cargo.lock`. Ordinary tests need neither Python/FFmpeg nor private mus
 
 ## Verification actually completed
 
-### Current v0.10 checks — 2026-10-01
+### Current v0.11 checks — 2026-10-01
+
+- All **78 release tests** passed, including five new sparsity integration tests.
+- Independent NumPy dense frame/bin arithmetic passed on **19 generated stereo
+  files / 38 channels**; all FFmpeg decoded s32le hashes matched exactly. A notch
+  control differed by one sparse observation out of 141,243, within a predeclared
+  allowance of 28 near-threshold observations. Other counts agreed exactly.
+- Tones produced about 99% sparsity without codec processing. Filter and changing
+  bandwidth controls confirm that this measurement cannot establish ancestry.
+  Silence, tiny signals, inadequate bandwidth and short prefixes abstain.
+- Formatting, all-target Clippy with warnings denied, Android ARM64 library
+  compilation without CLI, and publication-only production Clippy passed.
+  The final caveat-text expansion was included in the release CLI rebuild and
+  publication-only check; production arithmetic is the fully tested version.
+- Generated 10/120/600-second files matched PCM and used
+  **20.07/23.70/25.57 MiB** peak Windows working set in **0.70/2.48/9.20 seconds**.
+  CLI version `0.11.0` and a 0.8-second-prefix text smoke check passed.
+- No full debug run, new transcode/resampler matrix, private collection pass,
+  grouped source evaluation, remote CI completion, Android linking or phone
+  testing. Reference clone remains clean at its pinned baseline.
+
+Details and numerical definitions: `SPARSITY_VALIDATION.md`. Local-only evidence:
+`corpus/local/generated/sparsity-v11/`, `corpus/local/results/sparsity-v11/`,
+`corpus/local/results/resources-v11/`, `tests/sparsity.rs` and
+`scripts/check_sparsity.py`. Publication contains no tests/scripts or local evidence.
+
+### Historical v0.10 checks — 2026-10-01
 
 - **73 tests passed in the full release suite:** 21 unit, 4 AAC, 13 core/CLI,
   5 segment/MQA, 4 envelope, 7 noise, 2 parity/integrity, 4 roll-off, 3 structure,
@@ -416,6 +450,9 @@ generators; never regenerate saved oracles just to hide a mismatch.
 
 ## Next milestone and remaining work
 
+Version 0.11 supplies bounded below-cutoff sparse counts using per-frame peaks
+and the channel's final global p95 cutoff. See `SPARSITY_VALIDATION.md` for
+numerical floors, actual geometry and natural tone/filter limitations.
 Version 0.10 supplies bounded paired band RMS correlation with usable-energy and
 temporal-variation gates; see `ENVELOPE_VALIDATION.md`. A signed coefficient does
 not identify authentic or injected content. Version 0.9 supplies a two-band slope with actual frequency
@@ -426,13 +463,16 @@ Version 0.8's envelope maxima are not physical click counts; see
 Version 0.7's circular band correlation still does not claim full-stream Pearson
 correlation. Do not reinterpret either measurement as a calibrated source test.
 
-Next inspect `_spectral_sparsity` and define a bounded measurement using existing
-per-channel STFT frames. Make clear whether the cutoff is per-frame or global;
-the reference uses a final global cutoff with per-frame relative magnitudes.
-Per-bin sparse counts can defer the final cutoff choice without a spectrogram.
-Declare numerical floors, minimum counts and DC/Nyquist treatment. Test sparse
-tones, band-limited/notched noise, flat impulse spectra, silence, quiet signals
-and native channels against independent arithmetic before interpretation.
+Next assess `_noise_floor_profile` in the pinned Python file. It computes 100 ms
+block RMS percentiles and quiet-block spectral color from a separate 30-second
+window. Inspection shows that it removes zero RMS entries before `argsort`, then
+uses those compacted indices on the original block array; silence can therefore
+misalign selection. It also downmixes stereo before measuring the floor. Build
+an explicit regression for both issues and define bounded per-native-channel
+coverage before porting useful measurements. Preserve exact selected block
+indices, account for all-zero blocks, and respect the shared prefix. A low or
+flat measured floor must not become proof of source bit depth; no inference or
+authenticity verdict should be imported from `_bit_depth_verdict`.
 Do not import the reference's source or injected-noise claims. Existing cutoff
 standard deviation is not a demonstrated measurement of tape wow/flutter.
 Source labels require independently characterized recordings and later grouped
@@ -445,7 +485,7 @@ threshold simply to hide the recorded trim miss. Neither a successful Python
 port nor synthetic encoder controls calibrates statistical thresholds.
 
 Other remaining areas: analog profiles, noise-floor bit-depth
-analysis, loudness, defensible MQA confirmation, additional format support,
+analysis, psychoacoustic artifacts, loudness, defensible MQA confirmation, additional format support,
 aggregation and independent grouped corpus evaluation. Android bindings, NDK
 linking, device resource/lifecycle checks and UI follow the core acceptance gates.
 
@@ -456,7 +496,7 @@ on 2026-09-30. Its first commit is `chore: checkpoint validated Rust core v0.3.0
 Use `git log --oneline` to find the checkpoint and `git status` to inspect later
 changes. The source-only publication target is
 `git@github.com:spideyonmoon/audio-forensic-rust.git`, remote branch `main`.
-Before v0.10, remote `main` was verified at `60208f3b94a85b5194b2c41b2e4995e4ebe36793`.
+Before v0.11, remote `main` was verified at `376dc6783df0791521cb8d821dacb0932c86a649`.
 The separate local ref `publish/source-only` holds publication history; compare
 `git rev-parse publish/source-only` with `git ls-remote` to verify the latest push.
 Never push the development `main` history: it includes excluded test files.

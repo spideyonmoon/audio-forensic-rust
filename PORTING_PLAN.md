@@ -168,9 +168,16 @@ envelopes with constant-size online covariance. Full-band geometry, mean energy,
 temporal variation and frame-count gates replace the reference's fabricated
 zero/one fallbacks. `ENVELOPE_VALIDATION.md` records independent time-domain band
 power and stored-envelope comparisons. This is not an authenticity or injected-noise
-classifier. Next assess bounded below-cutoff spectral sparsity, explicitly defining
-global versus per-frame cutoff, activity and absolute numerical floors. Avoid a
-full spectrogram buffer and preserve real tone/filter controls without source labels.
+classifier.
+
+Version 0.11 adds below-cutoff sparse-bin fractions using per-frame relative
+magnitudes and the channel's final global active-frame p95 cutoff. Per-bin counts
+replace a spectrogram; DC/Nyquist, low-amplitude frames and insufficient coverage
+are explicitly handled. `SPARSITY_VALIDATION.md` defines geometry and independent
+tone/filter controls. Sparsity is not a codec bin-zeroing diagnosis.
+Next assess the remaining noise-floor/bit-depth profile with bounded per-channel
+block statistics, correct quiet-block indexing and declared prefix coverage.
+Do not convert measured quietness or dither-shaped power into source bit depth.
 
 Group evidence separately from the numerical port, so a changed score can be
 traced to policy rather than accidentally changed arithmetic. Add remaining

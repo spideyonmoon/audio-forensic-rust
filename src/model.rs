@@ -8,8 +8,8 @@ use std::{
     time::Duration,
 };
 
-pub const SCHEMA_VERSION: &str = "0.10.0";
-pub const POLICY_VERSION: &str = "observations-only-v10";
+pub const SCHEMA_VERSION: &str = "0.11.0";
+pub const POLICY_VERSION: &str = "observations-only-v11";
 
 #[derive(Debug, Clone)]
 pub struct AnalysisOptions {
@@ -478,6 +478,27 @@ pub struct EnvelopeAnalysis {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SparsityAnalysis {
+    pub channel_index: usize,
+    pub status: DetectorStatus,
+    /// Support envelope of all STFT windows; eligible counts describe selection.
+    pub interval: Option<AnalysisInterval>,
+    pub stft_frames: u64,
+    pub active_frames: u64,
+    pub eligible_frames: u64,
+    pub below_peak_floor_frames: u64,
+    /// Existing global cutoff from all active frames, not a per-frame boundary.
+    pub cutoff_p95_hz: Option<f64>,
+    pub lower_bin_hz: Option<f64>,
+    pub upper_bin_hz: Option<f64>,
+    pub bin_count: usize,
+    pub sparse_bin_observations: Option<u64>,
+    pub total_bin_observations: Option<u64>,
+    /// Fraction below -95 dB relative to each eligible frame's spectral peak.
+    pub fraction: Option<f64>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AnalysisReport {
     pub schema_version: String,
     pub engine_version: String,
@@ -498,6 +519,7 @@ pub struct AnalysisReport {
     pub transients: Vec<TransientAnalysis>,
     pub rolloff: Vec<RolloffAnalysis>,
     pub envelope: Vec<EnvelopeAnalysis>,
+    pub sparsity: Vec<SparsityAnalysis>,
     pub unimplemented_detectors: Vec<String>,
     pub ancestry_verdict: String,
     pub evidence_index: Option<f64>,
@@ -511,7 +533,7 @@ impl AnalysisReport {
             schema_version: SCHEMA_VERSION.into(), engine_version: env!("CARGO_PKG_VERSION").into(),
             policy_version: POLICY_VERSION.into(), source, status: FileStatus::Failed,
             stream: None, coverage: None, channels: vec![], detectors: vec![], segments: vec![], mqa: None,
-            resampling: vec![], vorbis: vec![], aac: vec![], spectral_structure: vec![], noise: vec![], transients: vec![], rolloff: vec![], envelope: vec![],
+            resampling: vec![], vorbis: vec![], aac: vec![], spectral_structure: vec![], noise: vec![], transients: vec![], rolloff: vec![], envelope: vec![], sparsity: vec![],
             unimplemented_detectors: [
                 "analog_source", "mqa_confirmation",
                 "bit_depth_noise_floor", "loudness", "psychoacoustic_artifacts"]

@@ -7,6 +7,7 @@ pub(crate) mod noise_dynamics;
 pub(crate) mod resampling;
 pub(crate) mod rolloff;
 pub(crate) mod segments;
+pub(crate) mod sparsity;
 pub(crate) mod structure;
 pub(crate) mod transients;
 pub(crate) mod vorbis;
@@ -14,6 +15,31 @@ pub(crate) mod vorbis;
 use crate::model::*;
 
 pub(crate) fn append_observations(report: &mut AnalysisReport, rate: u32) {
+    for s in &report.sparsity {
+        let mut measurements = std::collections::BTreeMap::from([
+            ("eligible_frames".into(), s.eligible_frames as f64),
+            (
+                "below_peak_floor_frames".into(),
+                s.below_peak_floor_frames as f64,
+            ),
+            ("selected_bins".into(), s.bin_count as f64),
+        ]);
+        if let Some(value) = s.fraction {
+            measurements.insert("sparse_fraction".into(), value);
+        }
+        report.detectors.push(DetectorResult {
+            id: "below_cutoff_sparsity".into(), version: 1, family: "spectral_measurements".into(),
+            status: s.status.clone(), channel_index: Some(s.channel_index),
+            intervals: s.interval.iter().cloned().collect(), measurements,
+            thresholds: [("relative_magnitude_db_exclusive".into(), sparsity::RELATIVE_DB),
+                ("absolute_frame_peak_amplitude_floor".into(), sparsity::PEAK_AMPLITUDE_FLOOR),
+                ("minimum_eligible_frames".into(), sparsity::MIN_FRAMES as f64),
+                ("minimum_selected_bins".into(), sparsity::MIN_BINS as f64)].into(),
+            caveats: vec!["Fraction of below-threshold frame/bin observations, not a probability or proof of codec processing. Tones, spectral gaps, filtering and low-level numerical effects can create sparse spectra.".into(),
+                "Uses bins strictly below the channel's global active-frame p95 cutoff, excluding DC and Nyquist. That cutoff includes active frames below this measurement's absolute peak floor. Magnitudes are compared with each eligible frame's own peak; the cutoff is not recomputed per frame.".into(),
+                "Requires the shared activity gate and a peak above the coherent-amplitude floor. The interval encloses all STFT windows; counts expose active, eligible and rejected-quiet frames. No full spectrogram is retained.".into()],
+        });
+    }
     for e in &report.envelope {
         let mut measurements =
             std::collections::BTreeMap::from([("active_frames".into(), e.active_frames as f64)]);

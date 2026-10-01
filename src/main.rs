@@ -225,6 +225,13 @@ fn run(args: Args) -> Result<i32, Box<dyn std::error::Error>> {
                         e.channel_index, e.status, e.coefficient
                     )?;
                 }
+                for s in &report.sparsity {
+                    writeln!(
+                        out,
+                        "  channel {} below-cutoff sparsity: {:?}, {:?} (measurement only)",
+                        s.channel_index, s.status, s.fraction
+                    )?;
+                }
                 for s in &report.spectral_structure {
                     writeln!(
                         out,
