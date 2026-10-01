@@ -1,7 +1,8 @@
 use crate::{
     detectors::{
         self, aac::AacSelector, mqa::MqaScanner, noise::NoiseStats, resampling::ResamplingStats,
-        segments::SegmentCollector, structure::StructureStats, vorbis::VorbisCollector,
+        segments::SegmentCollector, structure::StructureStats, transients::TransientSurvey,
+        vorbis::VorbisCollector,
     },
     dsp::{PcmStats, SpectralStats, StreamingStft},
     model::*,
@@ -298,6 +299,7 @@ fn analyze(
     let mut stfts: Vec<_> = (0..channels).map(|_| StreamingStft::new()).collect();
     let mut mqa = MqaScanner::new(rate, channels, info.bits_per_sample);
     let mut aac_selector = AacSelector::new(rate, channels);
+    let mut transient_surveys: Vec<_> = (0..channels).map(|_| TransientSurvey::new(rate)).collect();
     let mut left_word = None;
     let context = ScanContext {
         info: &info,
@@ -308,6 +310,7 @@ fn analyze(
     };
     let first = scan(&mut *format, &mut *decoder, &context, |ch, x, word| {
         aac_selector.push(ch, x);
+        transient_surveys[ch].push(x);
         if ch == 0 {
             left_word = word;
         } else {
@@ -363,6 +366,11 @@ fn analyze(
     let mut aac = aac_selector.into_collector(first.frames);
     let mut structure: Vec<_> = (0..channels).map(|_| StructureStats::new(rate)).collect();
     let mut noise: Vec<_> = (0..channels).map(|_| NoiseStats::new(rate)).collect();
+    let mut transients: Vec<_> = transient_surveys
+        .into_iter()
+        .enumerate()
+        .map(|(ch, survey)| survey.into_detector(ch))
+        .collect();
     let second = scan(&mut *format, &mut *decoder, &context, |ch, x, _| {
         stfts[ch].push_spectrum(x as f32, |mags, spectrum| {
             noise[ch].push_spectrum(spectrum);
@@ -373,6 +381,7 @@ fn analyze(
             }
         });
         noise[ch].push_sample(x);
+        transients[ch].push(x);
         segments.push(ch, x);
         vorbis.push(ch, x);
         aac.push(ch, x);
@@ -500,6 +509,7 @@ fn analyze(
             .noise
             .push(n.finish(ch, report.channels[ch].spectral.cutoff_p95_hz));
     }
+    report.transients = transients.into_iter().map(|t| t.finish()).collect();
     detectors::append_observations(report, rate);
     report.stream = Some(info);
     if !first.reached_end {

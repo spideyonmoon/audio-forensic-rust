@@ -6,11 +6,49 @@ pub(crate) mod noise_dynamics;
 pub(crate) mod resampling;
 pub(crate) mod segments;
 pub(crate) mod structure;
+pub(crate) mod transients;
 pub(crate) mod vorbis;
 
 use crate::model::*;
 
 pub(crate) fn append_observations(report: &mut AnalysisReport, rate: u32) {
+    for t in &report.transients {
+        let mut measurements = std::collections::BTreeMap::new();
+        for (name, value) in [
+            ("peak_count", t.peak_count.map(|n| n as f64)),
+            ("peaks_per_minute", t.peaks_per_minute),
+            ("baseline_median_lower", t.baseline_median_lower),
+            ("baseline_median_upper", t.baseline_median_upper),
+        ] {
+            if let Some(value) = value {
+                measurements.insert(name.into(), value);
+            }
+        }
+        let mut thresholds = std::collections::BTreeMap::from([
+            (
+                "absolute_envelope_floor".into(),
+                transients::ABSOLUTE_THRESHOLD,
+            ),
+            ("baseline_multiplier".into(), transients::MEDIAN_MULTIPLIER),
+            ("minimum_eligible_seconds".into(), 0.5),
+            ("maximum_seconds".into(), transients::CAP_SECONDS as f64),
+            (
+                "minimum_peak_distance_samples".into(),
+                t.minimum_peak_distance_frames as f64,
+            ),
+        ]);
+        if let Some(threshold) = t.envelope_threshold {
+            thresholds.insert("envelope_threshold_exclusive".into(), threshold);
+        }
+        report.detectors.push(DetectorResult {
+            id: "highpass_envelope_peaks".into(), version: 1, family: "transient_measurements".into(),
+            status: t.status.clone(), channel_index: Some(t.channel_index),
+            intervals: t.eligible_peak_interval.iter().cloned().collect(), measurements, thresholds,
+            caveats: vec!["Counts high-pass envelope maxima, not proven vinyl clicks. Musical attacks, percussion, clipping, edits and interference can produce the same observation.".into(),
+                "Native channels use a causal fourth-order 1 kHz Butterworth high-pass, centered 0.5 ms rectified smoothing and a 20 ms startup exclusion. Peak timestamps include filter/envelope effects; they are not physical impulse onsets.".into(),
+                "The threshold uses three times the conservative median upper bound from a 0.25 dB histogram, with an absolute floor. Peaks are selected chronologically with a 10 ms minimum distance, not by global peak height. Only the first 128 events are listed; counts cover the capped prefix.".into()],
+        });
+    }
     for n in &report.noise {
         report.detectors.push(DetectorResult {
             id: "quiet_passages".into(), version: 1, family: "noise_measurements".into(),

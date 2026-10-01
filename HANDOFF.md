@@ -5,25 +5,26 @@ another session, coding tool or human. Keep it current using `AGENTS.md`.
 
 ## Current state and next action
 
-- **Version 0.7.0 band correlation and temporal variation are implemented and locally validated.**
-  Schema: `0.7.0`; policy: `observations-only-v7`.
+- **Version 0.8.0 bounded high-pass envelope peaks are implemented and locally validated.**
+  Schema: `0.8.0`; policy: `observations-only-v8`.
   The full engine is unfinished.
 - Goal: a Rust core that runs entirely on the phone. Build the Android app after
   the core is validated. Continue engineering with generated controls while the
   user collects recordings with independently known processing histories.
 - All overall ancestry reports remain `INCONCLUSIVE`; evidence index is `null`.
   Individual observations do not prove codec ancestry, authenticity or MQA.
-- **Next: assess bounded click/transient measurements**, including normal musical
-  attacks, clipping, silence and generated-click controls, before analog profiles.
+- **Next: assess the remaining cassette-profile spectral roll-off measurement**
+  against generated EQ/filter controls, with explicit silence and band-coverage
+  gates. Do not infer a source medium or relabel cutoff variation as wow/flutter.
 - AAC v0.4 is committed as `c66d705` (`feat: add bounded AAC lattice observations`).
   Local `main` still points to that AAC commit: the earlier handoff's claim of a
   v0.5 development commit was incorrect. The separate `publish/source-only` ref
   holds public source snapshots and is the branch to push to remote `main`.
-  Its v0.7 milestone is `feat: measure band correlation and temporal variation`;
+  Its v0.8 milestone is `feat: add bounded high-pass envelope peak measurements`;
   inspect that ref for the exact hash and compare with remote `main`.
   The existing development index and local tests/scripts are preserved separately;
   do not push local `main` or commit the excluded research/test files.
-  All 60 tests passed in one full release run; the release executable and duration
+  All 65 tests passed in one full release run; the release executable and duration
   checks passed. No background jobs or partial detector implementation remain.
   No private audio was changed. Use `git log` / `git status` to verify current state.
 
@@ -34,6 +35,7 @@ another session, coding tool or human. Keep it current using `AGENTS.md`.
 | `AGENTS.md` | Persistent project and documentation instructions |
 | `README.md` | Current API/CLI coverage, usage, numerical conventions and limits |
 | `PORTING_PLAN.md` | Agreed architecture, policy, Python assessment decisions and acceptance gates |
+| `TRANSIENT_VALIDATION.md` | Latest v0.8 filter/envelope, baseline bounds, peak coverage, SciPy controls and interpretation limits |
 | `NOISE_DYNAMICS_VALIDATION.md` | Latest v0.7 circular band correlation, temporal variation, applicability and independent checks |
 | `NOISE_VALIDATION.md` | Latest v0.6 quiet runs, normalized band powers, coverage and numerical controls |
 | `STRUCTURE_VALIDATION.md` | Latest v0.5 scatter/phase measurements, applicability and reference differences |
@@ -69,6 +71,7 @@ MQA unittest methods passed, including the synthetic encoder cases.
 | `src/detectors/structure.rs` | Native-channel streaming scatter bounds and energy-gated phase entropy; measurements only |
 | `src/detectors/noise.rs` | Bounded native-channel quiet runs and all/quiet Hann-normalized high/above-cutoff band powers |
 | `src/detectors/noise_dynamics.rs` | Signed circular band correlation at two lags; at most 180 complete seconds of band-power variation |
+| `src/detectors/transients.rs` | Native-channel high-pass envelope maxima, bounded median survey and 180-second/128-event caps |
 | `src/detectors/mod.rs` | Detector reports, families, thresholds and caveats |
 | `src/main.rs` | Desktop text/JSON CLI, directory batches, limits and per-file failures |
 | `tests/` | Generated fixtures, reference outputs and Rust regression tests |
@@ -106,7 +109,40 @@ Preserve `Cargo.lock`. Ordinary tests need neither Python/FFmpeg nor private mus
 
 ## Verification actually completed
 
-### Current v0.7 checks — 2026-10-01
+### Current v0.8 checks — 2026-10-01
+
+- **65 tests passed in the full release suite:** 21 unit, 4 AAC, 13 core/CLI,
+  5 segment/MQA, 7 noise, 2 original parity/integrity, 3 structure, 5 transform
+  and 5 transient. No failures/ignored tests; full debug suite not rerun.
+- Formatting, all-target Clippy with warnings denied and no-CLI Android ARM64
+  compilation passed. Android linking and phone behavior remain untested.
+- The release CLI reports `0.8.0` and its 0.8-second-prefix text smoke check
+  passed. A publication-only copy in `target/source-only-v8` passed production
+  Clippy with tests/scripts/fixtures absent.
+- Fourteen generated stereo 24-bit controls / 28 native channels matched FFmpeg
+  PCM exactly and passed independent SciPy filter/convolution/median/peak checks.
+  Counts, retained positions, intervals, applicability and list caps matched;
+  maximum retained envelope-peak error was 1.562e-15. Expected values were saved
+  before Rust ran. Tests cover 8–384 kHz and a 181-second cap boundary.
+- Three smooth tone bursts produce **60** envelope maxima. This is not a physical
+  click counter or proof of vinyl. Near-pair controls demonstrate the deliberate
+  chronological peak choice instead of Python's height-priority selection.
+- Unchanged generated 10/120/600-second controls matched PCM and used
+  20.11/23.76/25.64 MiB peak Windows working set, in 0.78/2.59/8.89 s. Checks
+  overlapped other work; these are not controlled speed comparisons.
+- Full debug suite, remote CI completion, Android device behavior, new encoding/
+  resampling experiments and the private collection were not rerun. Independent
+  grouped source evaluation and scoring remain outstanding. The reference clone
+  remains clean at its pinned baseline.
+
+Local-only evidence: `corpus/local/results/transients-v8/` contains independent
+expected values, CLI reports and `summary.json`; generated WAVs are under
+`corpus/local/generated/transients-v8/`. Duration evidence is in
+`corpus/local/results/resources-v8/`. Local script/test:
+`scripts/check_transients.py`, `tests/transients.rs`. These files are excluded
+from publication and are not included in the source-only Git backup.
+
+### Historical v0.7 checks — 2026-10-01
 
 - **60 tests passed in the full release suite:** 21 unit, 4 AAC, 13 core/CLI,
   5 segment/MQA, 7 noise, 2 original parity/integrity, 3 structure and 5 transform.
@@ -307,14 +343,18 @@ generators; never regenerate saved oracles just to hide a mismatch.
 
 ## Next milestone and remaining work
 
-Version 0.7 supplies explicitly circular band-masked-window correlation and
-bounded temporal variation; it does not claim full-stream Pearson correlation.
-See `NOISE_DYNAMICS_VALIDATION.md` for windows, band/energy gates, intervals and
-inverse-FFT validation. Next inspect `_smooth_envelope`, `highpass_filter` and
-the click portion of `_silence_and_vinyl`, then define bounded transient
-measurements and independent controls before implementation. Ordinary musical
-attacks, clipping and inserted clicks must be distinguished in experiments.
-Do not copy whole-prefix buffers, source-confirmation language or score bypasses.
+Version 0.8 supplies bounded high-pass envelope maxima, with median bounds,
+an absolute floor, chronological spacing and explicit edge/coverage rules.
+See `TRANSIENT_VALIDATION.md` for the contract and the musical-attack limitation.
+Version 0.7's circular band correlation still does not claim full-stream Pearson
+correlation. Do not reinterpret either measurement as a calibrated source test.
+
+Next inspect `_cassette_source`'s 12–18 kHz roll-off calculation and existing Rust
+spectral accumulators. Define a bounded descriptive slope with actual band/bin
+coverage, useful energy gates and independent EQ/filter/tone/silence controls.
+Assess which reference arithmetic is useful before implementation; do not copy
+out-of-Nyquist -120 dB placeholders or score bypasses. Existing cutoff standard
+deviation is not a demonstrated measurement of tape wow/flutter.
 Source labels require independently characterized recordings and later grouped
 evaluation. Continuous filtered-signal correlation would be separate future work.
 
@@ -336,7 +376,7 @@ on 2026-09-30. Its first commit is `chore: checkpoint validated Rust core v0.3.0
 Use `git log --oneline` to find the checkpoint and `git status` to inspect later
 changes. The source-only publication target is
 `git@github.com:spideyonmoon/audio-forensic-rust.git`, remote branch `main`.
-Before v0.7, remote `main` was verified at `ca6c1f4f6496b0c2f2e157139449cb887c7faebe`.
+Before v0.8, remote `main` was verified at `43c10b52c7add827b0f52a0db8fd758fd37c0696`.
 The separate local ref `publish/source-only` holds publication history; compare
 `git rev-parse publish/source-only` with `git ls-remote` to verify the latest push.
 Never push the development `main` history: it includes excluded test files.

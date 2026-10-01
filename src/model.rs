@@ -8,8 +8,8 @@ use std::{
     time::Duration,
 };
 
-pub const SCHEMA_VERSION: &str = "0.7.0";
-pub const POLICY_VERSION: &str = "observations-only-v7";
+pub const SCHEMA_VERSION: &str = "0.8.0";
+pub const POLICY_VERSION: &str = "observations-only-v8";
 
 #[derive(Debug, Clone)]
 pub struct AnalysisOptions {
@@ -384,6 +384,38 @@ pub struct NoiseAnalysis {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TransientEvent {
+    /// Native sample index of an envelope local maximum, not an impulse onset.
+    pub frame: u64,
+    pub envelope_peak: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TransientAnalysis {
+    pub channel_index: usize,
+    pub status: DetectorStatus,
+    /// Input prefix supplied to the causal filter; at most 180 seconds.
+    pub interval: AnalysisInterval,
+    /// Eligible envelope-peak centers after warmup and both-neighbor exclusions.
+    pub eligible_peak_interval: Option<AnalysisInterval>,
+    pub envelope_samples: u64,
+    pub highpass_cutoff_hz: f64,
+    pub filter_order: u8,
+    pub smoothing_frames: u32,
+    pub warmup_frames: u64,
+    pub minimum_peak_distance_frames: u32,
+    /// Bounds from a fixed 0.25-dB histogram, not an exact stored-sample median.
+    pub baseline_median_lower: Option<f64>,
+    pub baseline_median_upper: Option<f64>,
+    pub envelope_threshold: Option<f64>,
+    pub peak_count: Option<u64>,
+    pub peaks_per_minute: Option<f64>,
+    pub events_truncated: bool,
+    /// First 128 accepted peaks; the total count includes all accepted peaks.
+    pub events: Vec<TransientEvent>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AnalysisReport {
     pub schema_version: String,
     pub engine_version: String,
@@ -401,6 +433,7 @@ pub struct AnalysisReport {
     pub aac: Vec<AacAnalysis>,
     pub spectral_structure: Vec<SpectralStructureAnalysis>,
     pub noise: Vec<NoiseAnalysis>,
+    pub transients: Vec<TransientAnalysis>,
     pub unimplemented_detectors: Vec<String>,
     pub ancestry_verdict: String,
     pub evidence_index: Option<f64>,
@@ -414,7 +447,7 @@ impl AnalysisReport {
             schema_version: SCHEMA_VERSION.into(), engine_version: env!("CARGO_PKG_VERSION").into(),
             policy_version: POLICY_VERSION.into(), source, status: FileStatus::Failed,
             stream: None, coverage: None, channels: vec![], detectors: vec![], segments: vec![], mqa: None,
-            resampling: vec![], vorbis: vec![], aac: vec![], spectral_structure: vec![], noise: vec![],
+            resampling: vec![], vorbis: vec![], aac: vec![], spectral_structure: vec![], noise: vec![], transients: vec![],
             unimplemented_detectors: [
                 "analog_source", "mqa_confirmation",
                 "bit_depth_noise_floor", "loudness", "psychoacoustic_artifacts"]

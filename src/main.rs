@@ -204,6 +204,13 @@ fn run(args: Args) -> Result<i32, Box<dyn std::error::Error>> {
                         n.high_band.temporal_variation.blocks.len()
                     )?;
                 }
+                for t in &report.transients {
+                    writeln!(
+                        out,
+                        "  channel {} high-pass envelope peaks: {:?}, count {:?}, {:?}/minute (transient measurements only)",
+                        t.channel_index, t.status, t.peak_count, t.peaks_per_minute
+                    )?;
+                }
                 for s in &report.spectral_structure {
                     writeln!(
                         out,

@@ -1,7 +1,7 @@
 # Audio Forensic Rust
 
-An offline Rust library and CLI for audio forensic analysis. Version 0.7 adds
-**band-limited circular correlation and temporal power variation**. Every report keeps
+An offline Rust library and CLI for audio forensic analysis. Version 0.8 adds
+**bounded native-channel high-pass envelope peak measurements**. Every report keeps
 ancestry `INCONCLUSIVE` and the evidence index `null` until the detector suite and
 aggregation policy are implemented and validated.
 
@@ -43,6 +43,8 @@ instructions. These files are maintained alongside the code.
   estimates use only STFT windows wholly inside qualifying quiet passages.
 - Signed circular band correlation at two reported lags and band-level variation
   across completed seconds, with explicit energy gates and bounded prefix history.
+- High-pass envelope peak counts/rates and bounded event listings, with explicit
+  baseline bounds, threshold, startup exclusion and eligible analysis intervals.
 - Shared prefix limits for every pass, cooperative cancellation and deadlines.
 - SHA-256 of the decoded interleaved samples, checked across both passes and
   available for comparison with an independent decoder. Integer hashes use
@@ -83,6 +85,16 @@ analyzed stream. Correlation describes periodic band-filtered Hann windows, not
 continuous-stream Pearson correlation. Temporal variation excludes windows that
 cross second boundaries and requires every included second to pass energy gates.
 See [NOISE_DYNAMICS_VALIDATION.md](NOISE_DYNAMICS_VALIDATION.md) for exact definitions.
+
+Transient measurements reuse the two decode passes with a causal 1 kHz high-pass
+filter and centered rectified-envelope smoothing. A fixed histogram estimates
+median bounds in the first pass; the second counts qualifying local maxima in
+time order, with about 10 ms spacing. Only the first 180 seconds contribute and
+only 128 events per channel are listed. Musical attacks and edits can produce
+the same observations; counts do not identify physical clicks or a source medium.
+See [TRANSIENT_VALIDATION.md](TRANSIENT_VALIDATION.md) for thresholds, exact frame
+coverage and independent SciPy checks, including a three-burst control that
+produces 60 envelope peaks.
 
 ## Build and run
 
@@ -313,7 +325,7 @@ engineering check, not a source-provenance or accuracy evaluation.
 ## Remaining work
 
 Analog profiling, MQA confirmation, bit-depth noise-floor
-analysis, loudness, scoring/calibration and Android bindings/UI remain to be
+analysis, psychoacoustic artifacts, loudness, scoring/calibration and Android bindings/UI remain to be
 implemented. Reports enumerate this missing coverage. The initial core is useful
 for validating decoding, numerical behavior and resource use while the real
 validation corpus is collected.
@@ -324,6 +336,7 @@ The new detector checks are recorded in [DETECTOR_VALIDATION.md](DETECTOR_VALIDA
 The resampling/Vorbis milestone is recorded in [TRANSFORM_VALIDATION.md](TRANSFORM_VALIDATION.md).
 The AAC milestone is recorded in [AAC_VALIDATION.md](AAC_VALIDATION.md).
 The spectral-structure milestone is recorded in [STRUCTURE_VALIDATION.md](STRUCTURE_VALIDATION.md).
+The transient milestone is recorded in [TRANSIENT_VALIDATION.md](TRANSIENT_VALIDATION.md).
 
 ## License and attribution
 

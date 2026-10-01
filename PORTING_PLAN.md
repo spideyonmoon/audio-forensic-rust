@@ -147,7 +147,17 @@ power, preserving all-window coverage for global correlations while bounding
 temporal spectra. Quiet/insufficient blocks abstain rather than becoming zeros
 or being dropped. `NOISE_DYNAMICS_VALIDATION.md` records independent inverse-FFT
 time-domain checks and deliberate differences from full-stream Pearson correlation.
-Next assess bounded click/transient measurements before analog-source profiles.
+
+Version 0.8 adds capped native-channel high-pass envelope peaks using the existing
+two decode passes, a bounded median histogram and chronological peak selection.
+Reports expose baseline bounds, thresholds, eligible intervals and capped event
+lists. Independent SciPy controls and limitations appear in
+`TRANSIENT_VALIDATION.md`: three smooth musical bursts produce 60 envelope maxima,
+so these measurements must not be described as physical click counts or source
+confirmation. Next assess the remaining cassette-profile spectral roll-off
+measurement against generated EQ/filter controls, with explicit band coverage
+and silence gates. Existing cutoff variation must not be relabeled wow/flutter;
+analog-source inference remains gated on independent recordings and evaluation.
 
 Group evidence separately from the numerical port, so a changed score can be
 traced to policy rather than accidentally changed arithmetic. Add remaining
