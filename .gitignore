@@ -1,0 +1,5 @@
+/target/
+/reference/
+/corpus/local/
+/.tools/
+**/__pycache__/
