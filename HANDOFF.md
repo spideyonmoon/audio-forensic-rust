@@ -263,8 +263,14 @@ linking, device resource/lifecycle checks and UI follow the core acceptance gate
 This Rust project root is now a **local Git repository on `main`**, initialized
 on 2026-09-30. Its first commit is `chore: checkpoint validated Rust core v0.3.0`.
 Use `git log --oneline` to find the checkpoint and `git status` to inspect later
-changes. No remote is configured and no remote backup has been established.
-The nested Python reference clone remains separate and ignored.
+changes. The source-only publication was pushed to
+`git@github.com:spideyonmoon/audio-forensic-rust.git` on `main` at commit
+`2a9095a8c3d64acbaa39d48bece5a012863a80af`. That remote tree contains only
+production Rust, manifests, CI and Markdown documents; it intentionally omits
+tests, validation scripts, generated fixtures, `reference/`, `corpus/`, build
+artifacts and other work files. The local checkout still retains those files
+and its full development history. The nested Python reference clone remains
+separate and ignored.
 
 To carry the project to another tool/machine, retain all root documents,
 `Cargo.toml`, `Cargo.lock`, `LICENSE`, `.gitignore`, `.gitattributes`, `.github/`, `src/`, `scripts/`
@@ -272,7 +278,7 @@ and **all of `tests/`, including binary generated fixtures**. The code and these
 Markdown files are ordinary local files; reading them needs no chat history.
 Preserve the root `.git/` directory as well to retain local commit history.
 
-For a complete research backup, separately preserve `corpus/local/` and
+For a complete local research backup, separately preserve `corpus/local/` and
 `reference/` (private recordings, local reports and the pinned Python clone).
 They are excluded from Git tracking by default. `target/` and `.tools/`
 are rebuildable host artifacts. A second folder or archive on the same drive is
