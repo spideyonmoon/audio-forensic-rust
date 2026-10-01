@@ -8,8 +8,8 @@ use std::{
     time::Duration,
 };
 
-pub const SCHEMA_VERSION: &str = "0.8.0";
-pub const POLICY_VERSION: &str = "observations-only-v8";
+pub const SCHEMA_VERSION: &str = "0.9.0";
+pub const POLICY_VERSION: &str = "observations-only-v9";
 
 #[derive(Debug, Clone)]
 pub struct AnalysisOptions {
@@ -416,6 +416,37 @@ pub struct TransientAnalysis {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RolloffBand {
+    pub status: DetectorStatus,
+    pub requested_center_hz: f64,
+    pub requested_lower_hz: f64,
+    pub requested_upper_hz: f64,
+    pub lower_bin_hz: Option<f64>,
+    pub upper_bin_hz: Option<f64>,
+    pub mean_bin_hz: Option<f64>,
+    pub bin_count: usize,
+    pub eligible_bins: usize,
+    /// 2 * mean FFT magnitude / sum(Hann), not integrated band RMS.
+    pub minimum_bin_amplitude: Option<f64>,
+    /// Mean log magnitude relative to the peak of the active mean spectrum.
+    pub mean_relative_level_db: Option<f64>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RolloffAnalysis {
+    pub channel_index: usize,
+    pub status: DetectorStatus,
+    /// Support envelope of all STFT windows; only active windows contribute.
+    pub interval: Option<AnalysisInterval>,
+    pub stft_frames: u64,
+    pub active_frames: u64,
+    pub reference_peak_amplitude: Option<f64>,
+    pub lower_band: RolloffBand,
+    pub upper_band: RolloffBand,
+    pub slope_db_per_khz: Option<f64>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AnalysisReport {
     pub schema_version: String,
     pub engine_version: String,
@@ -434,6 +465,7 @@ pub struct AnalysisReport {
     pub spectral_structure: Vec<SpectralStructureAnalysis>,
     pub noise: Vec<NoiseAnalysis>,
     pub transients: Vec<TransientAnalysis>,
+    pub rolloff: Vec<RolloffAnalysis>,
     pub unimplemented_detectors: Vec<String>,
     pub ancestry_verdict: String,
     pub evidence_index: Option<f64>,
@@ -447,7 +479,7 @@ impl AnalysisReport {
             schema_version: SCHEMA_VERSION.into(), engine_version: env!("CARGO_PKG_VERSION").into(),
             policy_version: POLICY_VERSION.into(), source, status: FileStatus::Failed,
             stream: None, coverage: None, channels: vec![], detectors: vec![], segments: vec![], mqa: None,
-            resampling: vec![], vorbis: vec![], aac: vec![], spectral_structure: vec![], noise: vec![], transients: vec![],
+            resampling: vec![], vorbis: vec![], aac: vec![], spectral_structure: vec![], noise: vec![], transients: vec![], rolloff: vec![],
             unimplemented_detectors: [
                 "analog_source", "mqa_confirmation",
                 "bit_depth_noise_floor", "loudness", "psychoacoustic_artifacts"]

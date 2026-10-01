@@ -4,6 +4,7 @@ pub(crate) mod mqa;
 pub(crate) mod noise;
 pub(crate) mod noise_dynamics;
 pub(crate) mod resampling;
+pub(crate) mod rolloff;
 pub(crate) mod segments;
 pub(crate) mod structure;
 pub(crate) mod transients;
@@ -12,6 +13,33 @@ pub(crate) mod vorbis;
 use crate::model::*;
 
 pub(crate) fn append_observations(report: &mut AnalysisReport, rate: u32) {
+    for r in &report.rolloff {
+        let mut measurements = std::collections::BTreeMap::from([
+            ("active_frames".into(), r.active_frames as f64),
+            (
+                "lower_eligible_bins".into(),
+                r.lower_band.eligible_bins as f64,
+            ),
+            (
+                "upper_eligible_bins".into(),
+                r.upper_band.eligible_bins as f64,
+            ),
+        ]);
+        if let Some(slope) = r.slope_db_per_khz {
+            measurements.insert("slope_db_per_khz".into(), slope);
+        }
+        report.detectors.push(DetectorResult {
+            id: "spectral_rolloff".into(), version: 1, family: "spectral_measurements".into(),
+            status: r.status.clone(), channel_index: Some(r.channel_index),
+            intervals: r.interval.iter().cloned().collect(), measurements,
+            thresholds: [("minimum_active_frames".into(), rolloff::MIN_FRAMES as f64),
+                ("absolute_bin_amplitude_floor".into(), rolloff::ABSOLUTE_BIN_AMPLITUDE),
+                ("relative_bin_amplitude_floor".into(), rolloff::RELATIVE_BIN_AMPLITUDE)].into(),
+            caveats: vec!["Descriptive two-band spectral slope only. EQ, filters, musical spectra and processing can produce the same slope; it does not identify cassette or another source medium.".into(),
+                "Uses mean log magnitude of the active mean spectrum in complete 500 Hz bands centered at 12 and 18 kHz, divided by their actual bin-center separation. This is an endpoint contrast, not a regression fit or monotonicity test.".into(),
+                "Every selected bin must exceed absolute and relative amplitude floors. Amplitudes use 2*mean FFT magnitude/sum(Hann), not integrated band RMS. Only active windows contribute; the reported interval is the support envelope of all windows.".into()],
+        });
+    }
     for t in &report.transients {
         let mut measurements = std::collections::BTreeMap::new();
         for (name, value) in [

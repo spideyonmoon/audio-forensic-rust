@@ -211,6 +211,13 @@ fn run(args: Args) -> Result<i32, Box<dyn std::error::Error>> {
                         t.channel_index, t.status, t.peak_count, t.peaks_per_minute
                     )?;
                 }
+                for r in &report.rolloff {
+                    writeln!(
+                        out,
+                        "  channel {} spectral roll-off: {:?}, {:?} dB/kHz (measurement only)",
+                        r.channel_index, r.status, r.slope_db_per_khz
+                    )?;
+                }
                 for s in &report.spectral_structure {
                     writeln!(
                         out,

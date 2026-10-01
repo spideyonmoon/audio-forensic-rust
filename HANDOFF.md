@@ -5,26 +5,27 @@ another session, coding tool or human. Keep it current using `AGENTS.md`.
 
 ## Current state and next action
 
-- **Version 0.8.0 bounded high-pass envelope peaks are implemented and locally validated.**
-  Schema: `0.8.0`; policy: `observations-only-v8`.
+- **Version 0.9.0 bounded spectral roll-off is implemented and locally validated.**
+  Schema: `0.9.0`; policy: `observations-only-v9`.
   The full engine is unfinished.
 - Goal: a Rust core that runs entirely on the phone. Build the Android app after
   the core is validated. Continue engineering with generated controls while the
   user collects recordings with independently known processing histories.
 - All overall ancestry reports remain `INCONCLUSIVE`; evidence index is `null`.
   Individual observations do not prove codec ancestry, authenticity or MQA.
-- **Next: assess the remaining cassette-profile spectral roll-off measurement**
-  against generated EQ/filter controls, with explicit silence and band-coverage
-  gates. Do not infer a source medium or relabel cutoff variation as wow/flutter.
+- **Next: assess bounded spectral sparsity and cross-band envelope correlation**
+  from the reference, with explicit silence, constant-envelope, bandwidth and
+  frame-count gates. Continue core milestones without waiting for a new prompt.
+  Do not infer a source medium or relabel cutoff variation as wow/flutter.
 - AAC v0.4 is committed as `c66d705` (`feat: add bounded AAC lattice observations`).
   Local `main` still points to that AAC commit: the earlier handoff's claim of a
   v0.5 development commit was incorrect. The separate `publish/source-only` ref
   holds public source snapshots and is the branch to push to remote `main`.
-  Its v0.8 milestone is `feat: add bounded high-pass envelope peak measurements`;
+  Its v0.9 milestone is `feat: add bounded spectral roll-off measurements`;
   inspect that ref for the exact hash and compare with remote `main`.
   The existing development index and local tests/scripts are preserved separately;
   do not push local `main` or commit the excluded research/test files.
-  All 65 tests passed in one full release run; the release executable and duration
+  All 69 tests passed in the full release suite; the release executable and duration
   checks passed. No background jobs or partial detector implementation remain.
   No private audio was changed. Use `git log` / `git status` to verify current state.
 
@@ -35,6 +36,7 @@ another session, coding tool or human. Keep it current using `AGENTS.md`.
 | `AGENTS.md` | Persistent project and documentation instructions |
 | `README.md` | Current API/CLI coverage, usage, numerical conventions and limits |
 | `PORTING_PLAN.md` | Agreed architecture, policy, Python assessment decisions and acceptance gates |
+| `ROLLOFF_VALIDATION.md` | Latest v0.9 two-band slope, geometry, energy gates, independent EQ/filter controls and limits |
 | `TRANSIENT_VALIDATION.md` | Latest v0.8 filter/envelope, baseline bounds, peak coverage, SciPy controls and interpretation limits |
 | `NOISE_DYNAMICS_VALIDATION.md` | Latest v0.7 circular band correlation, temporal variation, applicability and independent checks |
 | `NOISE_VALIDATION.md` | Latest v0.6 quiet runs, normalized band powers, coverage and numerical controls |
@@ -72,6 +74,7 @@ MQA unittest methods passed, including the synthetic encoder cases.
 | `src/detectors/noise.rs` | Bounded native-channel quiet runs and all/quiet Hann-normalized high/above-cutoff band powers |
 | `src/detectors/noise_dynamics.rs` | Signed circular band correlation at two lags; at most 180 complete seconds of band-power variation |
 | `src/detectors/transients.rs` | Native-channel high-pass envelope maxima, bounded median survey and 180-second/128-event caps |
+| `src/detectors/rolloff.rs` | Active mean-spectrum endpoint slope with actual band geometry and per-bin energy gates |
 | `src/detectors/mod.rs` | Detector reports, families, thresholds and caveats |
 | `src/main.rs` | Desktop text/JSON CLI, directory batches, limits and per-file failures |
 | `tests/` | Generated fixtures, reference outputs and Rust regression tests |
@@ -109,7 +112,40 @@ Preserve `Cargo.lock`. Ordinary tests need neither Python/FFmpeg nor private mus
 
 ## Verification actually completed
 
-### Current v0.8 checks — 2026-10-01
+### Current v0.9 checks — 2026-10-01
+
+- **69 tests passed in the full release suite:** 21 unit, 4 AAC, 13 core/CLI,
+  5 segment/MQA, 7 noise, 2 parity/integrity, 4 roll-off, 3 structure, 5 transform
+  and 5 transient. Full debug suite not rerun.
+- Formatting, all-target Clippy with warnings denied, Android ARM64 no-CLI
+  compilation and publication-only production Clippy passed. The latter used
+  `target/source-only-v9` with tests/scripts/fixtures absent. Android linking
+  and phone behavior remain untested.
+- The release CLI reports `0.9.0` and passed a 0.8-second-prefix text smoke
+  check on generated EQ audio with explicit prefix coverage and measured slopes.
+- Eighteen generated stereo 24-bit controls / 36 native channels passed exact
+  FFmpeg PCM hashes and independent NumPy spectral checks. Statuses, counts,
+  intervals and geometry matched; maximum slope error was 2.518e-8 dB/kHz.
+  Controls include known EQ, filters, spectral gaps, antiphase/gain, inactive
+  gaps, silence, tones and sample-rate coverage from 8–384 kHz.
+- Initial roll-off test failures were traced to two generator mistakes: excessive
+  float amplitude and a two-impulse comb incorrectly expected to be flat. The
+  generator was corrected and the comb retained as an abstention control. A
+  Clippy comparison-style finding was fixed; no production threshold or
+  historical reference output was changed to make tests pass.
+- Unchanged generated 10/120/600-second controls matched PCM and used
+  20.16/23.79/25.71 MiB peak Windows working set, in 0.55/2.40/8.43 s.
+  Checks overlapped compilation; these are not controlled speed comparisons.
+- No new encoder/resampler matrix, private collection run, full debug suite,
+  remote CI completion or independent source-accuracy evaluation. The Python
+  reference remains clean at the pinned baseline. Overall scoring remains gated.
+
+Local-only evidence: `corpus/local/generated/rolloff-v9/`,
+`corpus/local/results/rolloff-v9/`, `corpus/local/results/resources-v9/`,
+`scripts/check_rolloff.py` and `tests/rolloff.rs`. These are excluded from the
+source-only Git backup.
+
+### Historical v0.8 checks — 2026-10-01
 
 - **65 tests passed in the full release suite:** 21 unit, 4 AAC, 13 core/CLI,
   5 segment/MQA, 7 noise, 2 original parity/integrity, 3 structure, 5 transform
@@ -343,18 +379,23 @@ generators; never regenerate saved oracles just to hide a mismatch.
 
 ## Next milestone and remaining work
 
-Version 0.8 supplies bounded high-pass envelope maxima, with median bounds,
-an absolute floor, chronological spacing and explicit edge/coverage rules.
-See `TRANSIENT_VALIDATION.md` for the contract and the musical-attack limitation.
+Version 0.9 supplies a bounded two-band spectral slope with actual frequency
+geometry and per-bin amplitude gates. EQ alone reproduces a purported source
+slope; this remains descriptive. See `ROLLOFF_VALIDATION.md`.
+Version 0.8's envelope maxima are not physical click counts; see
+`TRANSIENT_VALIDATION.md` for the musical-attack limitation.
 Version 0.7's circular band correlation still does not claim full-stream Pearson
 correlation. Do not reinterpret either measurement as a calibrated source test.
 
-Next inspect `_cassette_source`'s 12–18 kHz roll-off calculation and existing Rust
-spectral accumulators. Define a bounded descriptive slope with actual band/bin
-coverage, useful energy gates and independent EQ/filter/tone/silence controls.
-Assess which reference arithmetic is useful before implementation; do not copy
-out-of-Nyquist -120 dB placeholders or score bypasses. Existing cutoff standard
-deviation is not a demonstrated measurement of tape wow/flutter.
+Next inspect `_spectral_sparsity` and `_ultrasonic_envelope_correlation`, then
+define bounded measurements using existing per-channel STFT frames. Make clear
+whether sparsity's cutoff is per-frame or global, and avoid retaining a full
+spectrogram. Correlation needs explicit band power and temporal-variation gates;
+constant or unavailable envelopes must abstain. Test generated band-limited
+noise, sparse tones, independent/co-modulated bands, silence and native channels
+against independent arithmetic before interpreting the measurements.
+Do not import the reference's source or injected-noise claims. Existing cutoff
+standard deviation is not a demonstrated measurement of tape wow/flutter.
 Source labels require independently characterized recordings and later grouped
 evaluation. Continuous filtered-signal correlation would be separate future work.
 
@@ -376,7 +417,7 @@ on 2026-09-30. Its first commit is `chore: checkpoint validated Rust core v0.3.0
 Use `git log --oneline` to find the checkpoint and `git status` to inspect later
 changes. The source-only publication target is
 `git@github.com:spideyonmoon/audio-forensic-rust.git`, remote branch `main`.
-Before v0.8, remote `main` was verified at `43c10b52c7add827b0f52a0db8fd758fd37c0696`.
+Before v0.9, remote `main` was verified at `06489cbd2e803b84dcbf2720cf48da942a6620b5`.
 The separate local ref `publish/source-only` holds publication history; compare
 `git rev-parse publish/source-only` with `git ls-remote` to verify the latest push.
 Never push the development `main` history: it includes excluded test files.

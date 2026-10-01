@@ -1,8 +1,8 @@
 use crate::{
     detectors::{
         self, aac::AacSelector, mqa::MqaScanner, noise::NoiseStats, resampling::ResamplingStats,
-        segments::SegmentCollector, structure::StructureStats, transients::TransientSurvey,
-        vorbis::VorbisCollector,
+        rolloff::RolloffStats, segments::SegmentCollector, structure::StructureStats,
+        transients::TransientSurvey, vorbis::VorbisCollector,
     },
     dsp::{PcmStats, SpectralStats, StreamingStft},
     model::*,
@@ -365,6 +365,7 @@ fn analyze(
     let mut vorbis = VorbisCollector::new(first.frames, rate, channels);
     let mut aac = aac_selector.into_collector(first.frames);
     let mut structure: Vec<_> = (0..channels).map(|_| StructureStats::new(rate)).collect();
+    let mut rolloff: Vec<_> = (0..channels).map(|_| RolloffStats::new(rate)).collect();
     let mut noise: Vec<_> = (0..channels).map(|_| NoiseStats::new(rate)).collect();
     let mut transients: Vec<_> = transient_surveys
         .into_iter()
@@ -375,6 +376,7 @@ fn analyze(
         stfts[ch].push_spectrum(x as f32, |mags, spectrum| {
             noise[ch].push_spectrum(spectrum);
             let active = spectral[ch].push(mags);
+            rolloff[ch].push(mags, active);
             structure[ch].push(mags, spectrum, active);
             if active {
                 resampling[ch].push(mags);
@@ -510,6 +512,11 @@ fn analyze(
             .push(n.finish(ch, report.channels[ch].spectral.cutoff_p95_hz));
     }
     report.transients = transients.into_iter().map(|t| t.finish()).collect();
+    report.rolloff = rolloff
+        .into_iter()
+        .enumerate()
+        .map(|(ch, r)| r.finish(ch))
+        .collect();
     detectors::append_observations(report, rate);
     report.stream = Some(info);
     if !first.reached_end {

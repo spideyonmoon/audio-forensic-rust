@@ -1,7 +1,7 @@
 # Audio Forensic Rust
 
-An offline Rust library and CLI for audio forensic analysis. Version 0.8 adds
-**bounded native-channel high-pass envelope peak measurements**. Every report keeps
+An offline Rust library and CLI for audio forensic analysis. Version 0.9 adds
+**bounded native-channel spectral roll-off measurements**. Every report keeps
 ancestry `INCONCLUSIVE` and the evidence index `null` until the detector suite and
 aggregation policy are implemented and validated.
 
@@ -45,6 +45,8 @@ instructions. These files are maintained alongside the code.
   across completed seconds, with explicit energy gates and bounded prefix history.
 - High-pass envelope peak counts/rates and bounded event listings, with explicit
   baseline bounds, threshold, startup exclusion and eligible analysis intervals.
+- Two-band 12–18 kHz spectral roll-off, using actual frequency-bin coverage and
+  explicit energy gates; EQ/filter controls demonstrate that this is not a source label.
 - Shared prefix limits for every pass, cooperative cancellation and deadlines.
 - SHA-256 of the decoded interleaved samples, checked across both passes and
   available for comparison with an independent decoder. Integer hashes use
@@ -95,6 +97,14 @@ the same observations; counts do not identify physical clicks or a source medium
 See [TRANSIENT_VALIDATION.md](TRANSIENT_VALIDATION.md) for thresholds, exact frame
 coverage and independent SciPy checks, including a three-burst control that
 produces 60 envelope peaks.
+
+Spectral roll-off averages log magnitudes of the active mean spectrum in two
+500 Hz endpoint bands near 12 and 18 kHz, then divides their level difference by
+the actual bin-center separation. It adds a fixed 16 KiB/channel accumulator.
+Both complete bands and every selected bin must pass applicability gates; silence,
+sparse spectra and unavailable bands give null slopes. This is an endpoint
+contrast, not a fitted curve or proof of tape origin. Details and numerical checks
+are in [ROLLOFF_VALIDATION.md](ROLLOFF_VALIDATION.md).
 
 ## Build and run
 
@@ -337,6 +347,7 @@ The resampling/Vorbis milestone is recorded in [TRANSFORM_VALIDATION.md](TRANSFO
 The AAC milestone is recorded in [AAC_VALIDATION.md](AAC_VALIDATION.md).
 The spectral-structure milestone is recorded in [STRUCTURE_VALIDATION.md](STRUCTURE_VALIDATION.md).
 The transient milestone is recorded in [TRANSIENT_VALIDATION.md](TRANSIENT_VALIDATION.md).
+The spectral roll-off milestone is recorded in [ROLLOFF_VALIDATION.md](ROLLOFF_VALIDATION.md).
 
 ## License and attribution
 

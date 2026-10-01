@@ -154,10 +154,17 @@ Reports expose baseline bounds, thresholds, eligible intervals and capped event
 lists. Independent SciPy controls and limitations appear in
 `TRANSIENT_VALIDATION.md`: three smooth musical bursts produce 60 envelope maxima,
 so these measurements must not be described as physical click counts or source
-confirmation. Next assess the remaining cassette-profile spectral roll-off
-measurement against generated EQ/filter controls, with explicit band coverage
-and silence gates. Existing cutoff variation must not be relabeled wow/flutter;
+confirmation. Existing cutoff variation must not be relabeled wow/flutter;
 analog-source inference remains gated on independent recordings and evaluation.
+
+Version 0.9 adds the cassette profile's useful two-endpoint roll-off measurement,
+with actual bin geometry, coherent-amplitude applicability gates and constant
+storage. Generated EQ changes demonstrate that the slope cannot identify a medium.
+Unsupported/quiet endpoint bands abstain instead of receiving fabricated levels.
+See `ROLLOFF_VALIDATION.md`. Next assess bounded spectral sparsity and cross-band
+envelope correlation from the reference, with explicit silence, constant-envelope,
+bandwidth and frame-count gates; do not import source labels or injected-noise
+claims without independent evaluation.
 
 Group evidence separately from the numerical port, so a changed score can be
 traced to policy rather than accidentally changed arithmetic. Add remaining
