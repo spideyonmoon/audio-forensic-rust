@@ -179,6 +179,19 @@ fn run(args: Args) -> Result<i32, Box<dyn std::error::Error>> {
                         a.probes.len()
                     )?;
                 }
+                for n in &report.noise {
+                    writeln!(
+                        out,
+                        "  channel {} quiet passages: {} runs, {} samples; high-band {:?}, {:?} dBFS; quiet band {:?}, {:?} dBFS (measurements only)",
+                        n.channel_index,
+                        n.quiet_runs,
+                        n.quiet_samples,
+                        n.high_band.status,
+                        n.high_band.rms_dbfs,
+                        n.high_band.quiet_status,
+                        n.high_band.quiet_rms_dbfs
+                    )?;
+                }
                 for s in &report.spectral_structure {
                     writeln!(
                         out,

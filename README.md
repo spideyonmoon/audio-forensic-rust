@@ -1,7 +1,7 @@
 # Audio Forensic Rust
 
-An offline Rust library and CLI for audio forensic analysis. Version 0.5 adds
-**streaming spectral scatter and high-band phase measurements**. Every report keeps
+An offline Rust library and CLI for audio forensic analysis. Version 0.6 adds
+**bounded quiet-passage and normalized band-power measurements**. Every report keeps
 ancestry `INCONCLUSIVE` and the evidence index `null` until the detector suite and
 aggregation policy are implemented and validated.
 
@@ -38,6 +38,9 @@ instructions. These files are maintained alongside the code.
   labeled mono or stereo mid/side signals, independent active anchors and band gates.
 - Per-native-channel spectral-scatter bounds and high-band phase-difference
   entropy, with explicit activity/energy gates and no source-history label.
+- Per-channel quiet-run counts, durations and bounded interval listings, plus
+  Hann-normalized power in the high-frequency and above-cutoff bands. Separate
+  estimates use only STFT windows wholly inside qualifying quiet passages.
 - Shared prefix limits for every pass, cooperative cancellation and deadlines.
 - SHA-256 of the decoded interleaved samples, checked across both passes and
   available for comparison with an independent decoder. Integer hashes use
@@ -65,16 +68,28 @@ fixed per-bin buffers and histograms, adding about 66.4 KiB per channel, without
 an extra transform or decode pass. Every active frame contributes; phases across
 inactive gaps are never compared as adjacent frames.
 
+Quiet/noise measurements also reuse that FFT, adding three fixed 2049-element
+f64 accumulators and at most sixteen quiet intervals per channel (about 48.3 KiB
+of payload). Aggregate counts and power include all qualifying runs. Band power
+includes inactive frames; quiet passages are never concatenated across gaps.
+These descriptive measurements do not identify vinyl, cassette or codec noise.
+
 ## Build and run
 
 With Rust installed normally:
 
 ```text
-cargo test --locked
 cargo build --release --locked
 cargo run --release -- --json path/to/track.flac
 cargo run --release -- --fast path/to/album-directory
 ```
+
+The published source-only tree omits `tests/`, generated fixtures, validation
+scripts and private work files. Public CI builds and lints production targets;
+the full validation suite runs in the local research workspace. `cargo test`
+and `cargo clippy --all-targets` require that workspace, including the AAC
+numerical fixture referenced by an internal test. A source checkout alone is
+not a backup of the local validation evidence.
 
 On this Windows workspace a project-local toolchain was installed under `.tools/`
 without changing the system PATH. Use:
@@ -127,6 +142,15 @@ Ctrl+C requests cooperative cancellation.
   from Python's f32 reductions are expected and tested with explicit tolerances.
 - High-frequency ratio is a **magnitude** ratio; above-cutoff level is based on
   unnormalized FFT magnitudes and must not be displayed as calibrated dBFS.
+- The separate `noise` fields use one-sided power `2 * sum(|X[k]|^2) /
+  (4096 * sum(Hann^2))`, then average over windows. Their dBFS values describe
+  window-weighted band RMS, not the earlier unnormalized magnitude field.
+  A band needs at least two bins and four windows per estimate. Exact zero has
+  linear power zero and null dBFS; unavailable or insufficient estimates are null.
+- Quiet runs require every sample's absolute value to be strictly below 0.01
+  for at least `ceil(sample_rate / 2)` samples. Runs are clipped to analysis
+  coverage. This peak threshold is not a perceptual-silence test. Actual band
+  edges, frame counts and separate quiet applicability appear in the report.
 - Exact bit usage and the reference thresholded effective-bit statistic are
   separate. A padding observation requires exact unused bits in the analyzed
   interval. Exercised low bits do not prove recording depth.

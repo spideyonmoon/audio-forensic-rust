@@ -133,6 +133,14 @@ return measurements rather than importing Python's codec/analog interpretations
 or score adjustments. See `STRUCTURE_VALIDATION.md` for numerical comparisons and
 intentional policy differences. Vinyl/cassette profiling remains separate work.
 
+Version 0.6 adds bounded native-channel quiet-run statistics and normalized
+high/above-cutoff band power over all STFT windows and qualifying quiet windows.
+Three fixed spectral accumulators replace whole-prefix filtering; no extra FFT
+or decode pass is needed. Quiet intervals are capped in the report, with complete
+aggregate counts. `NOISE_VALIDATION.md` defines normalization, intervals,
+applicability and numerical controls. Correlation, temporal variation, clicks,
+source profiles and noise-based scoring remain unimplemented.
+
 Group evidence separately from the numerical port, so a changed score can be
 traced to policy rather than accidentally changed arithmetic. Add remaining
 loudness/reporting features with suitable reference measurements. A subset of

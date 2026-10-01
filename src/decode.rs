@@ -1,6 +1,6 @@
 use crate::{
     detectors::{
-        self, aac::AacSelector, mqa::MqaScanner, resampling::ResamplingStats,
+        self, aac::AacSelector, mqa::MqaScanner, noise::NoiseStats, resampling::ResamplingStats,
         segments::SegmentCollector, structure::StructureStats, vorbis::VorbisCollector,
     },
     dsp::{PcmStats, SpectralStats, StreamingStft},
@@ -362,14 +362,17 @@ fn analyze(
     let mut vorbis = VorbisCollector::new(first.frames, rate, channels);
     let mut aac = aac_selector.into_collector(first.frames);
     let mut structure: Vec<_> = (0..channels).map(|_| StructureStats::new(rate)).collect();
+    let mut noise: Vec<_> = (0..channels).map(|_| NoiseStats::new(rate)).collect();
     let second = scan(&mut *format, &mut *decoder, &context, |ch, x, _| {
         stfts[ch].push_spectrum(x as f32, |mags, spectrum| {
+            noise[ch].push_spectrum(spectrum);
             let active = spectral[ch].push(mags);
             structure[ch].push(mags, spectrum, active);
             if active {
                 resampling[ch].push(mags);
             }
         });
+        noise[ch].push_sample(x);
         segments.push(ch, x);
         vorbis.push(ch, x);
         aac.push(ch, x);
@@ -490,6 +493,11 @@ fn analyze(
         .into_iter()
         .enumerate()
         .map(|(ch, s)| s.finish(ch))
+        .collect();
+    report.noise = noise
+        .into_iter()
+        .enumerate()
+        .map(|(ch, n)| n.finish(ch, report.channels[ch].spectral.cutoff_p95_hz))
         .collect();
     detectors::append_observations(report, rate);
     report.stream = Some(info);

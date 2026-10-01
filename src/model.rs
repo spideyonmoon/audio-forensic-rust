@@ -8,8 +8,8 @@ use std::{
     time::Duration,
 };
 
-pub const SCHEMA_VERSION: &str = "0.5.0";
-pub const POLICY_VERSION: &str = "observations-only-v5";
+pub const SCHEMA_VERSION: &str = "0.6.0";
+pub const POLICY_VERSION: &str = "observations-only-v6";
 
 #[derive(Debug, Clone)]
 pub struct AnalysisOptions {
@@ -308,6 +308,46 @@ pub struct SpectralStructureAnalysis {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct BandPowerMeasurement {
+    pub status: DetectorStatus,
+    pub quiet_status: DetectorStatus,
+    /// None when no usable channel cutoff exists for the above-cutoff band.
+    pub requested_lower_hz: Option<f64>,
+    pub requested_upper_hz: f64,
+    pub lower_bin_hz: Option<f64>,
+    pub upper_bin_hz: Option<f64>,
+    pub bin_count: usize,
+    /// One-sided, Hann-energy-normalized mean square, averaged over STFT frames.
+    pub mean_square: Option<f64>,
+    /// 10 log10(mean_square); null for missing data or exact zero power.
+    pub rms_dbfs: Option<f64>,
+    pub quiet_mean_square: Option<f64>,
+    pub quiet_rms_dbfs: Option<f64>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NoiseAnalysis {
+    pub channel_index: usize,
+    /// All examined samples, including unframed tails. Prefix boundaries clip runs.
+    pub interval: AnalysisInterval,
+    /// abs(sample) < 0.01 for at least ceil(sample_rate / 2) consecutive samples.
+    pub minimum_quiet_run_frames: u64,
+    pub quiet_runs: u64,
+    pub quiet_samples: u64,
+    pub longest_quiet_run_frames: u64,
+    /// First sixteen qualifying runs; aggregates include all qualifying runs.
+    pub quiet_intervals: Vec<AnalysisInterval>,
+    pub quiet_intervals_truncated: bool,
+    /// Envelope of complete strict-boundary STFT windows, including inactive ones.
+    pub stft_interval: Option<AnalysisInterval>,
+    pub stft_frames: u64,
+    /// Windows wholly inside qualifying quiet runs. Boundaries are never joined.
+    pub quiet_stft_frames: u64,
+    pub high_band: BandPowerMeasurement,
+    pub above_cutoff_band: BandPowerMeasurement,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AnalysisReport {
     pub schema_version: String,
     pub engine_version: String,
@@ -324,6 +364,7 @@ pub struct AnalysisReport {
     pub vorbis: Vec<VorbisAnalysis>,
     pub aac: Vec<AacAnalysis>,
     pub spectral_structure: Vec<SpectralStructureAnalysis>,
+    pub noise: Vec<NoiseAnalysis>,
     pub unimplemented_detectors: Vec<String>,
     pub ancestry_verdict: String,
     pub evidence_index: Option<f64>,
@@ -337,7 +378,7 @@ impl AnalysisReport {
             schema_version: SCHEMA_VERSION.into(), engine_version: env!("CARGO_PKG_VERSION").into(),
             policy_version: POLICY_VERSION.into(), source, status: FileStatus::Failed,
             stream: None, coverage: None, channels: vec![], detectors: vec![], segments: vec![], mqa: None,
-            resampling: vec![], vorbis: vec![], aac: vec![], spectral_structure: vec![],
+            resampling: vec![], vorbis: vec![], aac: vec![], spectral_structure: vec![], noise: vec![],
             unimplemented_detectors: [
                 "analog_source", "mqa_confirmation",
                 "bit_depth_noise_floor", "loudness", "psychoacoustic_artifacts"]

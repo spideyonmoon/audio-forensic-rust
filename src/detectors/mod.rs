@@ -1,6 +1,7 @@
 pub(crate) mod aac;
 pub(crate) mod mdct;
 pub(crate) mod mqa;
+pub(crate) mod noise;
 pub(crate) mod resampling;
 pub(crate) mod segments;
 pub(crate) mod structure;
@@ -9,6 +10,51 @@ pub(crate) mod vorbis;
 use crate::model::*;
 
 pub(crate) fn append_observations(report: &mut AnalysisReport, rate: u32) {
+    for n in &report.noise {
+        report.detectors.push(DetectorResult {
+            id: "quiet_passages".into(), version: 1, family: "noise_measurements".into(),
+            status: DetectorStatus::Measured, channel_index: Some(n.channel_index),
+            intervals: vec![n.interval.clone()],
+            measurements: [("quiet_runs".into(), n.quiet_runs as f64),
+                ("quiet_samples".into(), n.quiet_samples as f64)].into(),
+            thresholds: [("absolute_sample_threshold_exclusive".into(), noise::QUIET_THRESHOLD),
+                ("minimum_run_samples".into(), n.minimum_quiet_run_frames as f64),
+                ("maximum_listed_intervals".into(), noise::MAX_INTERVALS as f64)].into(),
+            caveats: vec!["Quiet means consecutive samples below -40 dBFS peak for at least 0.5 seconds; it is not perceptual silence. Prefix boundaries clip runs. Only the first sixteen intervals are listed; counts and band powers include every qualifying run.".into()],
+        });
+        for (id, band) in [
+            ("high_band_power", &n.high_band),
+            ("above_cutoff_band_power", &n.above_cutoff_band),
+        ] {
+            let mut measurements = std::collections::BTreeMap::from([
+                ("stft_frames".into(), n.stft_frames as f64),
+                ("quiet_stft_frames".into(), n.quiet_stft_frames as f64),
+                ("bin_count".into(), band.bin_count as f64),
+            ]);
+            for (name, value) in [
+                ("mean_square", band.mean_square),
+                ("rms_dbfs", band.rms_dbfs),
+                ("quiet_mean_square", band.quiet_mean_square),
+                ("quiet_rms_dbfs", band.quiet_rms_dbfs),
+                ("lower_bin_hz", band.lower_bin_hz),
+                ("upper_bin_hz", band.upper_bin_hz),
+            ] {
+                if let Some(value) = value {
+                    measurements.insert(name.into(), value);
+                }
+            }
+            report.detectors.push(DetectorResult {
+                id: id.into(), version: 1, family: "noise_measurements".into(),
+                status: band.status.clone(), channel_index: Some(n.channel_index),
+                intervals: n.stft_interval.iter().cloned().collect(), measurements,
+                thresholds: [("minimum_stft_frames_per_estimate".into(), noise::MIN_BAND_FRAMES as f64),
+                    ("minimum_band_bins".into(), 2.0)].into(),
+                caveats: vec!["Hann-energy-normalized one-sided band power uses all framed samples, without the activity gate. Quiet power uses only windows wholly within qualifying runs; see its separate status in noise. Exact zero power has null dBFS.".into(),
+                    "The bands are 16 kHz to min(22 kHz, Nyquist-100 Hz), and channel cutoff+1 kHz to Nyquist-100 Hz. At least two actual FFT bins and four frames are needed per estimate.".into(),
+                    "Band power can include music, interference, quantization and window leakage. It does not identify noise origin, codec history, vinyl, cassette or authenticity; no silence ratio or score is inferred.".into()],
+            });
+        }
+    }
     for s in &report.spectral_structure {
         let mut measurements = std::collections::BTreeMap::from([
             ("active_frames".into(), s.active_frames as f64),
