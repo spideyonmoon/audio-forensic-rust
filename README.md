@@ -1,13 +1,27 @@
 # Audio Forensic Rust
 
-An offline Rust library and CLI for audio forensic analysis. Version 0.11 adds
-**bounded native-channel below-cutoff sparsity measurements**. Every report keeps
+An offline Rust library and CLI for audio forensic analysis. Version 0.18.3 adds
+**FLAC frame continuity, complete packet framing and independent reader rewind**,
+following the WAV applicability and source/batch resilience fixes. Every report keeps
 ancestry `INCONCLUSIVE` and the evidence index `null` until the detector suite and
 aggregation policy are implemented and validated.
 
 Continuing in a new session or tool? Read [HANDOFF.md](HANDOFF.md) for the current
 state, checks, known issues and next task, and [AGENTS.md](AGENTS.md) for project
 instructions. These files are maintained alongside the code.
+
+The current [JSON report schema](schemas/analysis-report-0.18.0.schema.json)
+preserves required nullable fields and the observations-only policy. Its
+[usage guide](schemas/README.md) explains strict producer validation and exact
+integer handling. [Report contract validation](REPORT_SCHEMA_VALIDATION.md)
+records 125 passing reports across all file outcomes and 53 contract controls;
+the Rust API and detector suite remain under development.
+The [source/batch validation record](SOURCE_API_VALIDATION.md) documents the
+0.18.1 fixes, generated failure controls and container mutation campaign.
+The [WAV validation record](WAV_FORMAT_VALIDATION.md) defines the tested PCM
+support matrix and explicit format limits in 0.18.2.
+The [FLAC validation record](FLAC_INTEGRITY_VALIDATION.md) documents generated
+continuity, framing, unknown-total/checksum and compression controls in 0.18.3.
 
 ## Implemented
 
@@ -51,7 +65,31 @@ instructions. These files are maintained alongside the code.
   covariance and explicit energy, temporal-variation and full-band coverage gates.
 - Below-cutoff sparse-bin fractions with explicit global cutoff, per-frame peak,
   numerical floor, selected geometry and eligible-frame counts.
-- Shared prefix limits for every pass, cooperative cancellation and deadlines.
+- Bounded native-channel quiet-block RMS percentiles and selected spectral color,
+  with original block indices, silence exclusion and explicit prefix/cap coverage.
+- BS.1770 integrated programme loudness and ungated momentary/short-term maxima
+  on a 100 ms grid, with explicit gate counts, complete-window coverage and nulls.
+  Loudness supports rates divisible by ten; other rates return unsupported for
+  this measurement.
+- Per-channel fourfold FIR true-peak estimates, with sample-peak bounds and explicit
+  zero extension at prefix boundaries. The fixed filter covers all native rates;
+  below 48 kHz its output rate is below the standard's 192 kHz recommendation.
+- Complete-window loudness range with exact two-pass gates, a fixed 0.01 LU
+  histogram, quantization bounds and explicit applicability. No synthetic tail
+  silence is appended; certified EBU meter conformance is not claimed.
+- Signed lag products of the centered 16–20 kHz mean active log spectrum at three
+  rate/64 separations and neighbouring bins, with exact band geometry and explicit
+  energy, variance and pair-count gates. Periodic spectra do not identify MP3.
+- Sample crest factor in linear/dB units and scaled native-channel RMS, preserving
+  tiny float levels without squaring underflow. Signed centered stereo correlation
+  uses all shared-prefix PCM pairs, with explicit variation gates and mono abstention.
+- Causal 10–20 kHz power in eligible 20–10 ms contexts before selected envelope
+  peaks, with bounded median baseline, history, aggregate counts and event lists.
+  Musical attacks can exceed the baseline; this does not identify codec pre-echo.
+- Shared prefix limits for every pass, cooperative cancellation and deadlines,
+  including waiting for the one-active-analysis process budget.
+- Native-container preflight with explicit metadata byte/block/record/field
+  limits, nested artwork checks and PCM WAV geometry checks before decoder parsing.
 - SHA-256 of the decoded interleaved samples, checked across both passes and
   available for comparison with an independent decoder. Integer hashes use
   MSB-aligned signed 32-bit little-endian samples; float hashes use f64le.
@@ -67,6 +105,45 @@ The Vorbis search captures at most twelve 3071-sample spans per channel from the
 first 180 analyzed seconds. It searches those spans after decoding, using a
 reusable MDCT workspace and cancellation/deadline checks between phase batches.
 No full-track audio or coefficient matrix is retained.
+
+One analysis runs at a time per process; waiting callers can cancel or expire.
+Caller-owned sources/reports and blocked I/O are outside this cooperative budget.
+Native WAV/FLAC metadata is capped at 16 MiB, 1024 leading blocks/chunks and 4096
+records; text fields are capped at 1 MiB and artwork at 8 MiB. PCM WAV frames and
+alignment/byte rate must be consistent. Leading ID3 wrappers and compressed WAV
+are unsupported. Decoded frame count and capacity are checked before PCM copies.
+These limits require stable seekable inputs and do not impose a hard process RSS
+cap. See [CORE_ACCEPTANCE_VALIDATION.md](CORE_ACCEPTANCE_VALIDATION.md).
+Caller sources retry interrupted reads with cooperative control and preserve
+terminal I/O failures even when decoder probing substitutes another error.
+Failed float reports retain known native precision; measurements are published
+only after both passes agree. See [SOURCE_API_VALIDATION.md](SOURCE_API_VALIDATION.md).
+
+WAV applicability is explicit; the first declared data chunk defines the audio
+interval. Trailing ancillary chunks are not whole-container integrity checks.
+
+| WAV representation | Supported behavior |
+| --- | --- |
+| Ordinary integer PCM | Unsigned 8-bit; signed little-endian 16/24/32-bit |
+| Ordinary IEEE float PCM | Little-endian 32/64-bit; finite samples with absolute value at most 16 |
+| Standard extensible PCM/float GUIDs | Same container widths; 22-byte extension; mono mask 0/1/4 or stereo mask 0/3 |
+| Reduced valid integer bits | Positive precision up to container width; left-aligned samples, unused low bits zero throughout the analyzed interval |
+| Unknown source byte length | Supported for stable seekable sources with concrete WAV data length |
+| Unknown RIFF size, concrete data size | Supported |
+| Unknown data size, RF64/BW64, RIFX | Explicitly unsupported |
+| Ambisonic/custom GUIDs or other channel masks | Explicitly unsupported |
+
+Exact PCM controls and the documented FFmpeg auto-detection disagreement for
+24 valid bits in 32-bit containers are in [WAV_FORMAT_VALIDATION.md](WAV_FORMAT_VALIDATION.md).
+
+FLAC accepts stable seekable sources with unknown byte length, unknown total
+samples or absent MD5. Each analyzed packet must contain exactly one complete
+frame, with contiguous sample timestamps, matching duration and no skipped bytes.
+The second pass rechecks STREAMINFO and probes a fresh bounded reader. A prefix
+does not validate later frames or the whole-stream MD5. Without a declared total
+or MD5, a byte-complete shorter stream cannot reveal a removed whole final frame.
+Frame layout checks use bounded bit reads without reconstructing another PCM
+buffer. See [FLAC_INTEGRITY_VALIDATION.md](FLAC_INTEGRITY_VALIDATION.md).
 
 AAC uses the same two decoding passes: the first retains at most 8436 hop-energy
 values per basis from the first 180 seconds; the second captures up to sixteen
@@ -102,6 +179,14 @@ See [TRANSIENT_VALIDATION.md](TRANSIENT_VALIDATION.md) for thresholds, exact fra
 coverage and independent SciPy checks, including a three-burst control that
 produces 60 envelope peaks.
 
+Preceding-event energy uses causal high/low-pass filters, a bounded median-power
+survey and at most 250 ms squared-sample history in the second pass. Contexts
+affected by startup or expired history remain explicit and are excluded from the
+fraction denominator. Only the first 180 seconds and first 128 listed events are
+used; aggregate counts include all selected events. See
+[PRECEDING_ENERGY_VALIDATION.md](PRECEDING_ENERGY_VALIDATION.md), including the
+smooth musical attack control with a 95% above-baseline fraction.
+
 Spectral roll-off averages log magnitudes of the active mean spectrum in two
 500 Hz endpoint bands near 12 and 18 kHz, then divides their level difference by
 the actual bin-center separation. It adds a fixed 16 KiB/channel accumulator.
@@ -124,6 +209,13 @@ spectral-amplitude floor. Fixed per-bin counts add about 16 KiB/channel; no
 spectrogram is stored. Tones and filtered audio can also be sparse. See
 [SPARSITY_VALIDATION.md](SPARSITY_VALIDATION.md) for arithmetic and controls.
 
+Quiet-block profiles use up to 300 complete `floor(rate/10)`-sample blocks from
+frame zero, within the requested prefix. They report nonzero block-RMS
+percentiles, exact zero/underflow counts, original quiet-block indices and
+energy-gated spectral color. Native channels remain separate; partial tails
+and detector caps are explicit. No source bit depth or dither identity is
+inferred. See [NOISE_FLOOR_VALIDATION.md](NOISE_FLOOR_VALIDATION.md).
+
 ## Build and run
 
 With Rust installed normally:
@@ -134,12 +226,37 @@ cargo run --release -- --json path/to/track.flac
 cargo run --release -- --fast path/to/album-directory
 ```
 
+The declared minimum is Rust 1.85 (edition 2024). Engine 0.18.1 passed all 147
+tests in an ordinary Rust 1.85.0 debug run. Desktop all-target compilation/Clippy,
+source-only CLI build/Clippy, no-CLI library compilation and Android
+ARM64 target compilation have now passed locally with the locked dependencies.
+CI declares minimum-compiler desktop/Android checks; those remote jobs have not
+run. See [CORE_ACCEPTANCE_VALIDATION.md](CORE_ACCEPTANCE_VALIDATION.md) for actual
+checks and the Windows LLVM linker workaround.
+Engine 0.18.1 also passed all-target Clippy, a CLI-free library check and an
+offline production-only source build with the current report schema included.
+See [SOURCE_API_VALIDATION.md](SOURCE_API_VALIDATION.md) for the patch's actual
+checks; its full regression used ordinary debug, and prior release evidence is
+recorded separately.
+Engine 0.18.2 passed all 153 Rust 1.98.1 release tests, 23 focused Rust 1.85
+tests, MSRV all-target Clippy, formatting and schema drift checks. Its
+production-only source snapshot passed offline
+Rust 1.85 build/Clippy and no-CLI library checks. Generated validation passed
+the 128-report WAV-format matrix, 440 precision/amplitude-boundary reports and
+788 container mutations. The precision matrix covers every declared integer
+precision in the supported container widths and both float widths, including
+signed zero, subnormals and invalid amplitudes inside/outside a prefix. See
+[WAV_FORMAT_VALIDATION.md](WAV_FORMAT_VALIDATION.md) for the exact-PCM comparisons,
+FFmpeg detection disagreements and regression status.
+
 The published source-only tree omits `tests/`, generated fixtures, validation
 scripts and private work files. Public CI builds and lints production targets;
 the full validation suite runs in the local research workspace. `cargo test`
 and `cargo clippy --all-targets` require that workspace, including the AAC
 numerical fixture referenced by an internal test. A source checkout alone is
 not a backup of the local validation evidence.
+Future source-only publication should include `schemas/` for consumer validation;
+the new contract files currently exist in this local workspace.
 
 On this Windows workspace a project-local toolchain was installed under `.tools/`
 without changing the system PATH. Use:
@@ -168,6 +285,10 @@ shared library, or establish device runtime behavior.
 
 Directories scan their immediate `.wav`/`.flac` children in sorted order. Explicit
 file arguments always produce a result, including unsupported or missing files.
+Directory enumeration/entry/metadata errors and empty directories also produce
+failed reports without discarding other inputs. Library callers can use
+`AnalysisReport::input_failure(source, message)` for their own discovery/opening
+errors, retaining current versions, diagnostics and observations-only policy.
 Progress is written to stderr, JSON to stdout. Exit codes are 0 for successful
 measurements, 1 for any failed/unsupported file, 2 for command/setup errors and
 130 for cancellation. Successful measurements do not mean authentic audio.
@@ -299,6 +420,48 @@ excluding the unframed tail. See [STRUCTURE_VALIDATION.md](STRUCTURE_VALIDATION.
 
 ## Validation
 
+The v0.18 acceptance record is in
+[CORE_ACCEPTANCE_VALIDATION.md](CORE_ACCEPTANCE_VALIDATION.md): 130 release tests,
+69 independent generated numerical cases and nine duration/rate resource controls
+passed. These validate engineering/arithmetic, not forensic accuracy or phone
+behavior. Four existing files abstain under explicit signature/artwork limits
+in a separate private five-second compatibility run; prefix success does not
+establish full-file integrity.
+
+Native RMS/crest and stereo contracts and generated gain/phase/DC controls are
+in [PCM_RELATIONSHIPS_VALIDATION.md](PCM_RELATIONSHIPS_VALIDATION.md).
+
+Local corpus intake is available in `scripts/ingest_corpus.py`, with explicit
+provenance/group declarations, hashes, full-file receipts, leakage checks and
+reserved locked groups. Its 16 stdlib controls and six generated end-to-end
+controls passed; see [CORPUS_INTAKE_VALIDATION.md](CORPUS_INTAKE_VALIDATION.md) and
+[TEST_CORPUS.md](TEST_CORPUS.md). This optional development tooling requires
+Python, adds no Rust runtime dependency and verifies no ancestry labels.
+
+A subsequent private full-file collection check analyzed 37/44 originals with
+exact independent PCM; six were unsupported and one failed. Twenty-one generated
+comparison FLACs passed exact PCM checks. Music-based codec experiments also
+exposed detection limits, including Vorbis sensitivity to final quantization that
+matches the pinned Python heuristic. Details and private evidence locations are
+in [CORPUS_INTAKE_VALIDATION.md](CORPUS_INTAKE_VALIDATION.md); this does not establish
+ancestry accuracy or change the support matrix.
+
+The follow-up [AAC music audit](AAC_MUSIC_VALIDATION.md) passed 44 matched-basis
+checks and reproduces the known piano AAC miss in the pinned Python method.
+TNS/stereo-setting controls retain the miss. A subsequent 27-file excerpt/tool
+experiment passed 72 comparisons (54 new, 18 repeated), including exact PCM and
+parent trims; later piano excerpts and intensity-stereo/PNS controls retain the
+miss. A private integer-phase diagnostic recovers the generated 137-sample trim
+case while leaving the four piano AAC excerpt maxima unchanged. The production
+phase grid and threshold remain unchanged. `scripts/audit_aac_receipts.py`
+provides an optional private-receipt comparator; it adds no Rust dependency or
+new ancestry claim.
+
+The high-band spectral-lag contract and independent generated controls are in
+[SPECTRAL_LAGS_VALIDATION.md](SPECTRAL_LAGS_VALIDATION.md). This measurement reuses
+existing mean-spectrum sums and adds at most about 3.21 KiB of temporary centered
+data per finalization, without another FFT or decoding pass.
+
 `cargo test --locked` uses generated audio and checked-in Python numerical
 oracles. It does not require private music, Python or FFmpeg. To regenerate the
 oracles, install the reference requirements and FFmpeg and run:
@@ -352,8 +515,9 @@ engineering check, not a source-provenance or accuracy evaluation.
 
 ## Remaining work
 
-Analog profiling, MQA confirmation, bit-depth noise-floor
-analysis, psychoacoustic artifacts, loudness, scoring/calibration and Android bindings/UI remain to be
+Analog profiling, MQA confirmation, source bit-depth inference and validated
+frequency-mirroring research,
+scoring/calibration and Android bindings/UI remain to be
 implemented. Reports enumerate this missing coverage. The initial core is useful
 for validating decoding, numerical behavior and resource use while the real
 validation corpus is collected.
@@ -373,3 +537,10 @@ The cross-band envelope milestone is recorded in [ENVELOPE_VALIDATION.md](ENVELO
 MIT; see `LICENSE`. DSP conventions and portions of the algorithms are ported
 from Bishal Das's Python audio-forensic project at the pinned reference commit.
 Dependencies have their own licenses, including Symphonia's MPL-2.0.
+
+The quiet-block profile milestone is recorded in [NOISE_FLOOR_VALIDATION.md](NOISE_FLOOR_VALIDATION.md).
+The loudness milestone is recorded in [LOUDNESS_VALIDATION.md](LOUDNESS_VALIDATION.md).
+Its fixed-size power ring and two decode passes avoid duration-sized loudness
+storage. Maxima are grid-sampled; full EBU meter conformance is not claimed.
+True-peak and range contracts and checks are recorded in
+[LISTENING_LEVELS_VALIDATION.md](LISTENING_LEVELS_VALIDATION.md).

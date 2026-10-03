@@ -1,0 +1,166 @@
+{
+  "reference_commit": "c6ecce2296256b516709d87088896d1be913908c",
+  "numpy": "2.3.5",
+  "scipy": "1.17.1",
+  "ffmpeg": "ffmpeg version 7.1.1-full_build-www.gyan.dev Copyright (c) 2000-2025 the FFmpeg developers",
+  "resampling": [
+    {
+      "file": "rate_full.flac",
+      "pcm_sha256": "a5054ce2fbdc60bea3b5fa793b2430ea6e658427d1b3ecdd332c465a500e3c37",
+      "original_hit": null,
+      "active_frames": 22,
+      "candidates": [
+        {
+          "source_rate": 44100,
+          "edge_relative_db": -2.639519776044795,
+          "notch_relative_db": -2.862565226490169,
+          "above_relative_db": -3.136829161842038,
+          "ceiling_relative_db": -3.136829161842038,
+          "mirror_correlation": 0.07357872460884217
+        }
+      ]
+    },
+    {
+      "file": "rate_notch.flac",
+      "pcm_sha256": "4ccbcca4220d728dbb9fae475819072872cd66af2f05a6f3cbb645d2262ce455",
+      "original_hit": [
+        44100,
+        "notch",
+        38.60725873896018
+      ],
+      "active_frames": 22,
+      "candidates": [
+        {
+          "source_rate": 44100,
+          "edge_relative_db": -2.639521397691069,
+          "notch_relative_db": -71.74408551759787,
+          "above_relative_db": -33.13682677863769,
+          "ceiling_relative_db": -33.13682677863769,
+          "mirror_correlation": 0.07358082172350533
+        }
+      ]
+    },
+    {
+      "file": "rate_wall.flac",
+      "pcm_sha256": "ecf25b30741ad3f0e0751e81993dbf361942bb21c6bd91fbf918a908923c7b66",
+      "original_hit": [
+        44100,
+        "wall",
+        116.97220737196317
+      ],
+      "active_frames": 22,
+      "candidates": [
+        {
+          "source_rate": 44100,
+          "edge_relative_db": -2.6395164870403742,
+          "notch_relative_db": -41.534597598856536,
+          "above_relative_db": -119.61172385900353,
+          "ceiling_relative_db": -119.61172385900353,
+          "mirror_correlation": null
+        }
+      ]
+    },
+    {
+      "file": "rate_mirror.flac",
+      "pcm_sha256": "111eaa62a77d8d106aeff9bd24295f366d240315988b26d660cf12c3fdba92f7",
+      "original_hit": [
+        44100,
+        "mirror",
+        0.9526105740672726
+      ],
+      "active_frames": 22,
+      "candidates": [
+        {
+          "source_rate": 44100,
+          "edge_relative_db": -2.639518497743498,
+          "notch_relative_db": -6.253525795359759,
+          "above_relative_db": -9.083794431806567,
+          "ceiling_relative_db": -9.083794431806567,
+          "mirror_correlation": 0.9526105740672726
+        }
+      ]
+    },
+    {
+      "file": "rate_codec_wall.flac",
+      "pcm_sha256": "c0bbebef24465b872adba07b5ffc8651a77fbfcf37c46f5b01f74258a510a3cc",
+      "original_hit": null,
+      "active_frames": 22,
+      "candidates": [
+        {
+          "source_rate": 44100,
+          "edge_relative_db": -119.77077177886208,
+          "notch_relative_db": -130.50642322218397,
+          "above_relative_db": -135.36851684905403,
+          "ceiling_relative_db": -135.36851684905403,
+          "mirror_correlation": null
+        }
+      ]
+    },
+    {
+      "file": "rate_full96.flac",
+      "pcm_sha256": "1c772c85a7e6527743cd550524ea0572a9b240d10c301ac0bdee25936bb07086",
+      "original_hit": null,
+      "active_frames": 45,
+      "candidates": [
+        {
+          "source_rate": 44100,
+          "edge_relative_db": -2.0866750148729656,
+          "notch_relative_db": -2.1605008371096583,
+          "above_relative_db": -2.0951852425762523,
+          "ceiling_relative_db": -2.2510594252076803,
+          "mirror_correlation": 0.00775382234545842
+        },
+        {
+          "source_rate": 48000,
+          "edge_relative_db": -2.285339720787864,
+          "notch_relative_db": -1.7529550825489393,
+          "above_relative_db": -2.1745553066005465,
+          "ceiling_relative_db": -2.268969860645851,
+          "mirror_correlation": 0.008074697127636409
+        },
+        {
+          "source_rate": 88200,
+          "edge_relative_db": -1.9634318447445434,
+          "notch_relative_db": -2.317786172400078,
+          "above_relative_db": -2.3772212992309507,
+          "ceiling_relative_db": -2.3168457767823254,
+          "mirror_correlation": 0.015463328655603206
+        }
+      ]
+    }
+  ],
+  "vorbis": [
+    {
+      "file": "grid_clean_44100.flac",
+      "pcm_sha256": "07fca0bc2a1cb055cc1ddc0e3e7667067eb729840101f2720a2e7b614f87a296",
+      "score": 0.0,
+      "support": 0,
+      "active": 12,
+      "encoded": false
+    },
+    {
+      "file": "grid_q6_44100.flac",
+      "pcm_sha256": "237d4644ffacb7310d5b1af81b65a6c97098b58d9bdee3405a629b5c8de9e620",
+      "score": 0.44786682615629986,
+      "support": 12,
+      "active": 12,
+      "encoded": true
+    },
+    {
+      "file": "grid_clean_48000.flac",
+      "pcm_sha256": "b89553872797b795a4e42de5096efb8ac16687b164872fa4b48aadf6fbffd15e",
+      "score": 0.0,
+      "support": 0,
+      "active": 12,
+      "encoded": false
+    },
+    {
+      "file": "grid_q10_48000.flac",
+      "pcm_sha256": "be13f789dc7f74174dd0e26025119b7b659b5b027a797b529614f8e85eaa7000",
+      "score": 0.059244791666666664,
+      "support": 12,
+      "active": 12,
+      "encoded": true
+    }
+  ]
+}

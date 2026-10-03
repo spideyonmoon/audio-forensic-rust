@@ -1,0 +1,222 @@
+{
+  "reference_commit": "c6ecce2296256b516709d87088896d1be913908c",
+  "numpy": "2.3.5",
+  "scipy": "1.17.1",
+  "ffmpeg": "ffmpeg version 7.1.1-full_build-www.gyan.dev Copyright (c) 2000-2025 the FFmpeg developers",
+  "policy": "All active native-channel frames; centered f64 scatter; exact-bin mode; energy-gated adjacent phase pairs >=10 kHz, excluding Nyquist",
+  "cases": [
+    {
+      "file": "noise16.wav",
+      "sample_rate": 44100,
+      "pcm_sha256": "1981c82a788cf0be394f6c6326e6e7576a788076b51e7f7834286cada2b0f0e4",
+      "channels": [
+        {
+          "reference": {
+            "average_bound_hz": 22036.29705255682,
+            "histogram_mode_hz": 22047.039184570312,
+            "ungated_phase_entropy_bits": 5.167562274615291
+          },
+          "expected": {
+            "stft_frames": 11,
+            "active_frames": 11,
+            "bound_frames": 11,
+            "flat_frames": 0,
+            "average_scatter_bound_hz": 22036.29705255682,
+            "modal_scatter_bound_hz": 22050.0,
+            "phase_band_start_hz": 10002.1728515625,
+            "phase_frame_pairs": 10,
+            "phase_bin_pairs": 11190,
+            "high_band_phase_entropy_bits": 5.167574532923106
+          }
+        },
+        {
+          "reference": {
+            "average_bound_hz": 22037.275834517044,
+            "histogram_mode_hz": 22047.039184570312,
+            "ungated_phase_entropy_bits": 5.166906454253591
+          },
+          "expected": {
+            "stft_frames": 11,
+            "active_frames": 11,
+            "bound_frames": 11,
+            "flat_frames": 0,
+            "average_scatter_bound_hz": 22037.275834517044,
+            "modal_scatter_bound_hz": 22050.0,
+            "phase_band_start_hz": 10002.1728515625,
+            "phase_frame_pairs": 10,
+            "phase_bin_pairs": 11190,
+            "high_band_phase_entropy_bits": 5.166936736622842
+          }
+        }
+      ]
+    },
+    {
+      "file": "wall24.wav",
+      "sample_rate": 44100,
+      "pcm_sha256": "e8d235fdda32a5cb4ead626ccce2b9e253f8deba86d3cf9faf644324158d22e1",
+      "channels": [
+        {
+          "reference": {
+            "average_bound_hz": 16338.807262073864,
+            "histogram_mode_hz": 15226.666259765625,
+            "ungated_phase_entropy_bits": 5.168361712578473
+          },
+          "expected": {
+            "stft_frames": 11,
+            "active_frames": 11,
+            "bound_frames": 11,
+            "flat_frames": 0,
+            "average_scatter_bound_hz": 16338.807262073864,
+            "modal_scatter_bound_hz": 15073.2421875,
+            "phase_band_start_hz": 10002.1728515625,
+            "phase_frame_pairs": 10,
+            "phase_bin_pairs": 9250,
+            "high_band_phase_entropy_bits": 5.168200279833691
+          }
+        },
+        {
+          "reference": {
+            "average_bound_hz": 16338.807262073864,
+            "histogram_mode_hz": 15226.666259765625,
+            "ungated_phase_entropy_bits": 5.168361712578473
+          },
+          "expected": {
+            "stft_frames": 11,
+            "active_frames": 11,
+            "bound_frames": 11,
+            "flat_frames": 0,
+            "average_scatter_bound_hz": 16338.807262073864,
+            "modal_scatter_bound_hz": 15073.2421875,
+            "phase_band_start_hz": 10002.1728515625,
+            "phase_frame_pairs": 10,
+            "phase_bin_pairs": 9250,
+            "high_band_phase_entropy_bits": 5.168200279833691
+          }
+        }
+      ]
+    },
+    {
+      "file": "activity16.wav",
+      "sample_rate": 44100,
+      "pcm_sha256": "785c7aee9f3aa0200b79c16dd9ed001bd7dea676a6bd3e078bb44c75ddead2f9",
+      "channels": [
+        {
+          "reference": {
+            "average_bound_hz": 22024.16015625,
+            "histogram_mode_hz": 22047.039184570312,
+            "ungated_phase_entropy_bits": 5.161846722677074
+          },
+          "expected": {
+            "stft_frames": 11,
+            "active_frames": 5,
+            "bound_frames": 5,
+            "flat_frames": 0,
+            "average_scatter_bound_hz": 22024.16015625,
+            "modal_scatter_bound_hz": 22050.0,
+            "phase_band_start_hz": 10002.1728515625,
+            "phase_frame_pairs": 4,
+            "phase_bin_pairs": 4476,
+            "high_band_phase_entropy_bits": 5.162022558178505
+          }
+        },
+        {
+          "reference": {
+            "average_bound_hz": 22017.7001953125,
+            "histogram_mode_hz": 22045.962524414062,
+            "ungated_phase_entropy_bits": 5.161547178008238
+          },
+          "expected": {
+            "stft_frames": 11,
+            "active_frames": 5,
+            "bound_frames": 5,
+            "flat_frames": 0,
+            "average_scatter_bound_hz": 22017.7001953125,
+            "modal_scatter_bound_hz": 22050.0,
+            "phase_band_start_hz": 10002.1728515625,
+            "phase_frame_pairs": 4,
+            "phase_bin_pairs": 4476,
+            "high_band_phase_entropy_bits": 5.161669511787199
+          }
+        }
+      ]
+    },
+    {
+      "file": "rate_full96.flac",
+      "sample_rate": 96000,
+      "pcm_sha256": "1c772c85a7e6527743cd550524ea0572a9b240d10c301ac0bdee25936bb07086",
+      "channels": [
+        {
+          "reference": {
+            "average_bound_hz": 47984.895833333336,
+            "histogram_mode_hz": 47994.7265625,
+            "ungated_phase_entropy_bits": 5.169207504790689
+          },
+          "expected": {
+            "stft_frames": 45,
+            "active_frames": 45,
+            "bound_frames": 45,
+            "flat_frames": 0,
+            "average_scatter_bound_hz": 47984.895833333336,
+            "modal_scatter_bound_hz": 48000.0,
+            "phase_band_start_hz": 10007.8125,
+            "phase_frame_pairs": 44,
+            "phase_bin_pairs": 71324,
+            "high_band_phase_entropy_bits": 5.169230420978462
+          }
+        }
+      ]
+    },
+    {
+      "file": "clip_wall.wav",
+      "sample_rate": 44100,
+      "pcm_sha256": "f29f64abb0de84dc828750c7fe56a245cce3a773993cad2d350540042b327893",
+      "channels": [
+        {
+          "reference": {
+            "average_bound_hz": 16883.056640625,
+            "histogram_mode_hz": 16884.722900390625,
+            "ungated_phase_entropy_bits": 5.168486640407464
+          },
+          "expected": {
+            "stft_frames": 42,
+            "active_frames": 42,
+            "bound_frames": 42,
+            "flat_frames": 0,
+            "average_scatter_bound_hz": 16883.056640625,
+            "modal_scatter_bound_hz": 16882.03125,
+            "phase_band_start_hz": 10002.1728515625,
+            "phase_frame_pairs": 41,
+            "phase_bin_pairs": 26064,
+            "high_band_phase_entropy_bits": 5.169034433363575
+          }
+        }
+      ]
+    },
+    {
+      "file": "aac_256_44100.flac",
+      "sample_rate": 44100,
+      "pcm_sha256": "f5ab57f33e9c78eaad6e3fa980f545eace9d840ee125cec6c283596a4551d8f2",
+      "channels": [
+        {
+          "reference": {
+            "average_bound_hz": 22033.33740234375,
+            "histogram_mode_hz": 22045.962524414062,
+            "ungated_phase_entropy_bits": 5.169215693814705
+          },
+          "expected": {
+            "stft_frames": 42,
+            "active_frames": 42,
+            "bound_frames": 42,
+            "flat_frames": 0,
+            "average_scatter_bound_hz": 22033.33740234375,
+            "modal_scatter_bound_hz": 22050.0,
+            "phase_band_start_hz": 10002.1728515625,
+            "phase_frame_pairs": 41,
+            "phase_bin_pairs": 45877,
+            "high_band_phase_entropy_bits": 5.169236165537184
+          }
+        }
+      ]
+    }
+  ]
+}

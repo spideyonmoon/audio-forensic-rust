@@ -1,9 +1,11 @@
-use audio_forensic::{AnalysisOptions, CancellationToken, FileStatus, analyze_path};
+use audio_forensic::{
+    AnalysisOptions, AnalysisReport, CancellationToken, FileStatus, analyze_path,
+};
 use clap::Parser;
 use std::{
     fs,
     io::{self, Write},
-    path::PathBuf,
+    path::{Path, PathBuf},
     time::Duration,
 };
 
@@ -32,6 +34,79 @@ struct Args {
     deadline_seconds: u64,
 }
 
+enum BatchInput {
+    Audio(PathBuf),
+    Failed(PathBuf, String),
+}
+
+impl BatchInput {
+    fn path(&self) -> &Path {
+        match self {
+            Self::Audio(path) | Self::Failed(path, _) => path,
+        }
+    }
+
+    fn analyze(&self, options: &AnalysisOptions, cancel: &CancellationToken) -> AnalysisReport {
+        match self {
+            Self::Audio(path) => analyze_path(path, options, cancel),
+            Self::Failed(path, message) => {
+                AnalysisReport::input_failure(path.to_string_lossy(), message)
+            }
+        }
+    }
+}
+
+fn directory_inputs(
+    directory: PathBuf,
+    entries: io::Result<impl IntoIterator<Item = io::Result<PathBuf>>>,
+) -> Vec<BatchInput> {
+    let entries = match entries {
+        Ok(entries) => entries,
+        Err(error) => {
+            return vec![BatchInput::Failed(
+                directory,
+                format!("Cannot enumerate directory: {error}"),
+            )];
+        }
+    };
+    let mut inputs = Vec::new();
+    for entry in entries {
+        let path = match entry {
+            Ok(path) => path,
+            Err(error) => {
+                inputs.push(BatchInput::Failed(
+                    directory.clone(),
+                    format!("Cannot read directory entry: {error}"),
+                ));
+                continue;
+            }
+        };
+        if !path
+            .extension()
+            .and_then(|s| s.to_str())
+            .is_some_and(|s| s.eq_ignore_ascii_case("wav") || s.eq_ignore_ascii_case("flac"))
+        {
+            continue;
+        }
+        match fs::metadata(&path) {
+            Ok(metadata) if metadata.is_file() => inputs.push(BatchInput::Audio(path)),
+            Ok(_) => {}
+            Err(error) => inputs.push(BatchInput::Failed(
+                path,
+                format!("Cannot inspect directory entry: {error}"),
+            )),
+        }
+    }
+    if inputs.is_empty() {
+        inputs.push(BatchInput::Failed(
+            directory,
+            "No WAV/FLAC files found in directory".into(),
+        ));
+    }
+    inputs.sort_by(|left, right| left.path().cmp(right.path()));
+    inputs
+}
+
 fn run(args: Args) -> Result<i32, Box<dyn std::error::Error>> {
     let options = AnalysisOptions {
         track_id: args.track_id,
@@ -45,28 +120,14 @@ fn run(args: Args) -> Result<i32, Box<dyn std::error::Error>> {
     let cancel = CancellationToken::default();
     let token = cancel.clone();
     ctrlc::set_handler(move || token.cancel())?;
-    let mut paths = vec![];
+    let mut inputs = vec![];
     for input in args.inputs {
         if input.is_dir() {
-            let mut entries: Vec<_> = fs::read_dir(&input)?
-                .collect::<Result<Vec<_>, _>>()?
-                .into_iter()
-                .map(|e| e.path())
-                .filter(|p| {
-                    p.is_file()
-                        && p.extension().and_then(|s| s.to_str()).is_some_and(|s| {
-                            s.eq_ignore_ascii_case("wav") || s.eq_ignore_ascii_case("flac")
-                        })
-                })
-                .collect();
-            entries.sort();
-            if entries.is_empty() {
-                paths.push(input);
-            } else {
-                paths.extend(entries);
-            }
+            let entries = fs::read_dir(&input)
+                .map(|entries| entries.map(|entry| entry.map(|entry| entry.path())));
+            inputs.extend(directory_inputs(input, entries));
         } else {
-            paths.push(input);
+            inputs.push(BatchInput::Audio(input));
         }
     }
     let mut out = io::BufWriter::new(io::stdout().lock());
@@ -74,9 +135,10 @@ fn run(args: Args) -> Result<i32, Box<dyn std::error::Error>> {
     if args.json {
         write!(out, "[")?;
     }
-    for (i, path) in paths.iter().enumerate() {
-        eprintln!("[{}/{}] {}", i + 1, paths.len(), path.display());
-        let report = analyze_path(path, &options, &cancel);
+    for (i, input) in inputs.iter().enumerate() {
+        let path = input.path();
+        eprintln!("[{}/{}] {}", i + 1, inputs.len(), path.display());
+        let report = input.analyze(&options, &cancel);
         failed |= report.status != FileStatus::Analyzed;
         if args.json {
             if i > 0 {
@@ -96,6 +158,47 @@ fn run(args: Args) -> Result<i32, Box<dyn std::error::Error>> {
                     "  {} Hz, {} channels, {:.3}s measured, full stream: {}",
                     info.sample_rate, info.channels, coverage.end_seconds, coverage.reached_end
                 )?;
+                if let Some(l) = &report.loudness {
+                    writeln!(
+                        out,
+                        "  programme loudness: {:?}; integrated {:?} LUFS, momentary max {:?} LUFS, short-term max {:?} LUFS (100 ms grid; {} gated / {} complete blocks)",
+                        l.status,
+                        l.integrated_lufs,
+                        l.momentary_max_lufs,
+                        l.short_term_max_lufs,
+                        l.relative_gated_blocks,
+                        l.complete_blocks
+                    )?;
+                    writeln!(
+                        out,
+                        "  loudness range: {:?}, {:?} LU, quantization bounds {:?}..{:?} LU (complete windows)",
+                        l.range.status,
+                        l.range.range_lu,
+                        l.range.range_lower_lu,
+                        l.range.range_upper_lu
+                    )?;
+                }
+                if let Some(s) = &report.stereo_correlation {
+                    writeln!(
+                        out,
+                        "  native stereo correlation: {:?}, {:?} (zero-lag centered PCM; {} pairs)",
+                        s.status, s.coefficient, s.pair_count
+                    )?;
+                }
+                for c in &report.channels {
+                    writeln!(
+                        out,
+                        "  channel {} sample crest factor: {:?}, {:?} dB (measurement only)",
+                        c.channel_index, c.crest_factor_status, c.crest_factor_db
+                    )?;
+                }
+                for p in &report.true_peak {
+                    writeln!(
+                        out,
+                        "  channel {} true-peak estimate: {:?} dBTP, sample peak {:.6} (4x FIR, zero-extended prefix)",
+                        p.channel_index, p.estimated_peak_dbtp, p.sample_peak
+                    )?;
+                }
                 for ch in &report.channels {
                     writeln!(
                         out,
@@ -211,6 +314,26 @@ fn run(args: Args) -> Result<i32, Box<dyn std::error::Error>> {
                         t.channel_index, t.status, t.peak_count, t.peaks_per_minute
                     )?;
                 }
+                for e in &report.preceding_energy {
+                    writeln!(
+                        out,
+                        "  channel {} preceding-event band energy: {:?}, {} eligible / {:?} selected, fraction {:?} (context measurement only)",
+                        e.channel_index,
+                        e.status,
+                        e.eligible_event_count,
+                        e.selected_peak_count,
+                        e.above_baseline_fraction
+                    )?;
+                }
+                for s in &report.spectral_lags {
+                    let coefficients: Vec<_> =
+                        s.lags.iter().map(|p| p.target.coefficient).collect();
+                    writeln!(
+                        out,
+                        "  channel {} high-band spectral lags: {:?}, {:?} (measurements only)",
+                        s.channel_index, s.status, coefficients
+                    )?;
+                }
                 for r in &report.rolloff {
                     writeln!(
                         out,
@@ -223,6 +346,17 @@ fn run(args: Args) -> Result<i32, Box<dyn std::error::Error>> {
                         out,
                         "  channel {} band-envelope correlation: {:?}, {:?} (measurement only)",
                         e.channel_index, e.status, e.coefficient
+                    )?;
+                }
+                for n in &report.noise_floor {
+                    writeln!(
+                        out,
+                        "  channel {} quiet-block profile: {:?}, nonzero RMS p1.5 {:?} dBFS; color {:?}, HF-LF {:?} dB (measurements only)",
+                        n.channel_index,
+                        n.status,
+                        n.nonzero_rms_p015_dbfs,
+                        n.color_status,
+                        n.high_minus_low_db
                     )?;
                 }
                 for s in &report.sparsity {
@@ -272,4 +406,79 @@ fn main() {
         }
     };
     std::process::exit(code);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn directory_enumeration_failure_is_a_reportable_input() {
+        let input = PathBuf::from("generated-inaccessible-directory");
+        let items = directory_inputs(
+            input.clone(),
+            Err::<Vec<io::Result<PathBuf>>, _>(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "generated permission error",
+            )),
+        );
+        assert_eq!(items.len(), 1);
+        assert_eq!(items[0].path(), input);
+        let report = items[0].analyze(&AnalysisOptions::default(), &CancellationToken::default());
+        assert_eq!(report.status, FileStatus::Failed);
+        assert!(
+            report.diagnostics[0]
+                .message
+                .contains("generated permission error")
+        );
+        assert_eq!(report.diagnostics[0].code, "invalid_input");
+        assert!(report.stream.is_none() && report.coverage.is_none());
+        assert!(report.channels.is_empty() && report.detectors.is_empty());
+        assert_eq!(report.ancestry_verdict, "INCONCLUSIVE");
+        assert!(report.evidence_index.is_none());
+    }
+
+    #[test]
+    fn entry_and_metadata_failures_keep_sorted_valid_inputs() {
+        let dir = tempfile::tempdir().unwrap();
+        let a = dir.path().join("a.FLAC");
+        let b = dir.path().join("b.WAV");
+        let vanished = dir.path().join("vanished.wav");
+        let ignored = dir.path().join("notes.txt");
+        let nested = dir.path().join("nested.wav");
+        fs::write(&a, []).unwrap();
+        fs::write(&b, []).unwrap();
+        fs::create_dir(&nested).unwrap();
+        let items = directory_inputs(
+            dir.path().into(),
+            Ok(vec![
+                Ok(b.clone()),
+                Err(io::Error::other("generated entry error")),
+                Ok(vanished.clone()),
+                Ok(ignored),
+                Ok(nested),
+                Ok(a.clone()),
+            ]),
+        );
+        assert_eq!(items.len(), 4);
+        assert!(
+            matches!(&items[0], BatchInput::Failed(_, message) if message.contains("generated entry error"))
+        );
+        assert!(matches!(&items[1], BatchInput::Audio(path) if path == &a));
+        assert!(matches!(&items[2], BatchInput::Audio(path) if path == &b));
+        assert!(
+            matches!(&items[3], BatchInput::Failed(path, message) if path == &vanished && message.contains("Cannot inspect"))
+        );
+    }
+
+    #[test]
+    fn empty_directory_has_an_explicit_failure() {
+        let items = directory_inputs(
+            PathBuf::from("empty"),
+            Ok(Vec::<io::Result<PathBuf>>::new()),
+        );
+        assert!(
+            matches!(&items[..], [BatchInput::Failed(_, message)] if message.contains("No WAV/FLAC"))
+        );
+    }
 }

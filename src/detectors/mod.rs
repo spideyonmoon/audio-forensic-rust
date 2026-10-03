@@ -4,10 +4,13 @@ pub(crate) mod mdct;
 pub(crate) mod mqa;
 pub(crate) mod noise;
 pub(crate) mod noise_dynamics;
+pub(crate) mod noise_floor;
+pub(crate) mod preceding_energy;
 pub(crate) mod resampling;
 pub(crate) mod rolloff;
 pub(crate) mod segments;
 pub(crate) mod sparsity;
+pub(crate) mod spectral_lags;
 pub(crate) mod structure;
 pub(crate) mod transients;
 pub(crate) mod vorbis;
@@ -15,6 +18,220 @@ pub(crate) mod vorbis;
 use crate::model::*;
 
 pub(crate) fn append_observations(report: &mut AnalysisReport, rate: u32) {
+    for e in &report.preceding_energy {
+        let mut measurements = std::collections::BTreeMap::from([
+            ("eligible_events".into(), e.eligible_event_count as f64),
+            (
+                "startup_ineligible_events".into(),
+                e.startup_ineligible_count as f64,
+            ),
+            (
+                "history_expired_events".into(),
+                e.history_expired_count as f64,
+            ),
+        ]);
+        if let Some(value) = e.above_baseline_fraction {
+            measurements.insert("above_baseline_fraction".into(), value);
+        }
+        report.detectors.push(DetectorResult {
+            id: "preceding_event_band_energy".into(), version: 1, family: "transient_measurements".into(),
+            status: e.status.clone(), channel_index: Some(e.channel_index), intervals: vec![e.interval.clone()], measurements,
+            thresholds: [("absolute_mean_square_floor".into(), preceding_energy::ABSOLUTE_POWER),
+                ("median_upper_power_multiplier".into(), preceding_energy::BASELINE_MULTIPLIER)].into(),
+            caveats: vec!["Measures causal 10-20 kHz filtered power in complete windows 20-10 ms before the existing high-pass envelope peak centers. Uses fourth-order high-pass followed by fourth-order low-pass, with zero initial states and 20 ms startup exclusion; timestamps are affected by causal filtering and envelope timing.".into(),
+                "The baseline is a bounded 0.25 dB power histogram over the first 180 seconds, independent for each native channel. Only context-eligible events enter the fraction denominator; late-detected plateaus whose 250 ms history expired abstain explicitly. All counts include events beyond the first 128 listed.".into(),
+                "Preceding musical energy, smooth attacks, noise, edits and filter timing can produce above-baseline observations. This is not a demonstrated codec pre-echo test, a probability, source label or score.".into()],
+        });
+    }
+    for c in &report.channels {
+        let mut measurements = std::collections::BTreeMap::new();
+        if let Some(value) = c.crest_factor_linear {
+            measurements.insert("crest_factor_linear".into(), value);
+        }
+        if let Some(value) = c.crest_factor_db {
+            measurements.insert("crest_factor_db".into(), value);
+        }
+        report.detectors.push(DetectorResult {
+            id: "sample_crest_factor".into(), version: 1, family: "listening_level".into(),
+            status: c.crest_factor_status.clone(), channel_index: Some(c.channel_index),
+            intervals: vec![AnalysisInterval { start_frame: 0, end_frame: c.samples }], measurements,
+            thresholds: Default::default(),
+            caveats: vec!["Native-channel sample peak divided by uncentered RMS over every sample in the shared prefix, including DC and silence. Exact silence has no ratio. Tiny amplitudes use scaled sums to avoid squaring underflow.".into(),
+                "Crest factor is not true-peak crest, a DR score, a compressor/limiter detector or a mastering grade. Content, DC, fades, editing and the selected interval affect it.".into()],
+        });
+    }
+    if let Some(s) = &report.stereo_correlation {
+        let mut measurements =
+            std::collections::BTreeMap::from([("paired_frames".into(), s.pair_count as f64)]);
+        if let Some(value) = s.coefficient {
+            measurements.insert("pearson_coefficient".into(), value);
+        }
+        report.detectors.push(DetectorResult {
+            id: "native_stereo_correlation".into(),
+            version: 1,
+            family: "channel_measurements".into(),
+            status: s.status.clone(),
+            channel_index: None,
+            intervals: s.interval.iter().cloned().collect(),
+            measurements,
+            thresholds: [
+                ("minimum_pairs".into(), crate::stereo::MIN_PAIRS as f64),
+                (
+                    "minimum_channel_std_exclusive".into(),
+                    crate::stereo::MIN_STD,
+                ),
+                (
+                    "minimum_std_relative_to_peak_exclusive".into(),
+                    crate::stereo::MIN_RELATIVE_STD,
+                ),
+            ]
+            .into(),
+            caveats: s.caveats.clone(),
+        });
+    }
+    for s in &report.spectral_lags {
+        let mut measurements = std::collections::BTreeMap::from([
+            ("active_frames".into(), s.active_frames as f64),
+            ("selected_bins".into(), s.bin_count as f64),
+            ("eligible_bins".into(), s.eligible_bins as f64),
+        ]);
+        if let Some(value) = s.log_magnitude_std_db {
+            measurements.insert("log_magnitude_std_db".into(), value);
+        }
+        for probe in &s.lags {
+            if let Some(value) = probe.target.coefficient {
+                measurements.insert(format!("lag_{}_coefficient", probe.multiple), value);
+            }
+        }
+        report.detectors.push(DetectorResult {
+            id: "high_band_spectral_lags".into(), version: 1, family: "spectral_measurements".into(),
+            status: s.status.clone(), channel_index: Some(s.channel_index),
+            intervals: s.interval.iter().cloned().collect(), measurements,
+            thresholds: [("minimum_active_frames".into(), spectral_lags::MIN_FRAMES as f64),
+                ("minimum_band_bins".into(), spectral_lags::MIN_BINS as f64),
+                ("minimum_lag_pairs".into(), spectral_lags::MIN_PAIRS as f64),
+                ("absolute_bin_amplitude_floor_exclusive".into(), spectral_lags::ABSOLUTE_AMPLITUDE),
+                ("relative_bin_amplitude_floor_exclusive".into(), spectral_lags::RELATIVE_AMPLITUDE),
+                ("minimum_log_magnitude_std_db_exclusive".into(), spectral_lags::MIN_STD_DB)].into(),
+            caveats: vec!["Signed lag products of the centered 16-20 kHz mean active log-magnitude spectrum, divided by its full squared norm. This is not overlap-centered Pearson correlation or time-domain autocorrelation.".into(),
+                "Native channels share the existing activity mask and strict STFT prefix boundary. Each requested separation is a multiple of rate/64; neighbours are three bins away. Incomplete bands, too few pairs, weak bins and nearly flat spectra abstain explicitly.".into(),
+                "EQ, comb filtering, noise and musical tones can produce periodic spectra. These coefficients do not identify MP3, filterbank residue, aliasing or authenticity; no hit threshold or score is applied.".into()],
+        });
+    }
+    for p in &report.true_peak {
+        let mut measurements = std::collections::BTreeMap::from([
+            ("sample_peak".into(), p.sample_peak),
+            ("interpolated_peak".into(), p.interpolated_peak),
+            ("estimated_peak".into(), p.estimated_peak),
+        ]);
+        if let Some(db) = p.estimated_peak_dbtp {
+            measurements.insert("estimated_peak_dbtp".into(), db);
+        }
+        report.detectors.push(DetectorResult {
+            id: "true_peak_estimate".into(),
+            version: 1,
+            family: "listening_level".into(),
+            status: p.status.clone(),
+            channel_index: Some(p.channel_index),
+            intervals: vec![p.interval.clone()],
+            measurements,
+            thresholds: Default::default(),
+            caveats: p.caveats.clone(),
+        });
+    }
+    if let Some(l) = &report.loudness {
+        let r = &l.range;
+        let mut measurements = std::collections::BTreeMap::new();
+        for (name, value) in [
+            ("range_lu", r.range_lu),
+            ("range_lower_lu", r.range_lower_lu),
+            ("range_upper_lu", r.range_upper_lu),
+            ("relative_gate_lufs", r.relative_gate_lufs),
+        ] {
+            if let Some(value) = value {
+                measurements.insert(name.into(), value);
+            }
+        }
+        report.detectors.push(DetectorResult {
+            id: "short_term_loudness_range".into(),
+            version: 1,
+            family: "listening_level".into(),
+            status: r.status.clone(),
+            channel_index: None,
+            intervals: r.interval.iter().cloned().collect(),
+            measurements,
+            thresholds: [
+                ("absolute_gate_lufs".into(), -70.),
+                ("relative_gate_offset_lu".into(), -20.),
+                ("minimum_gated_windows".into(), 2.),
+            ]
+            .into(),
+            caveats: r.caveats.clone(),
+        });
+        let mut measurements = std::collections::BTreeMap::from([
+            ("complete_blocks".into(), l.complete_blocks as f64),
+            (
+                "absolute_gated_blocks".into(),
+                l.absolute_gated_blocks as f64,
+            ),
+            (
+                "relative_gated_blocks".into(),
+                l.relative_gated_blocks as f64,
+            ),
+        ]);
+        for (name, value) in [
+            ("integrated_lufs", l.integrated_lufs),
+            ("momentary_max_lufs", l.momentary_max_lufs),
+            ("short_term_max_lufs", l.short_term_max_lufs),
+            ("relative_gate_lufs", l.relative_gate_lufs),
+        ] {
+            if let Some(value) = value {
+                measurements.insert(name.into(), value);
+            }
+        }
+        report.detectors.push(DetectorResult {
+            id: "programme_loudness".into(),
+            version: 1,
+            family: "listening_level".into(),
+            status: l.status.clone(),
+            channel_index: None,
+            intervals: l.interval.iter().cloned().collect(),
+            measurements,
+            thresholds: [
+                (
+                    "absolute_gate_lufs".into(),
+                    crate::loudness::ABSOLUTE_GATE_LUFS,
+                ),
+                ("relative_gate_offset_lu".into(), -10.),
+            ]
+            .into(),
+            caveats: l.caveats.clone(),
+        });
+    }
+    for n in &report.noise_floor {
+        let mut measurements = std::collections::BTreeMap::from([
+            ("nonzero_blocks".into(), n.nonzero_blocks as f64),
+            ("zero_blocks".into(), n.zero_blocks as f64),
+        ]);
+        if let Some(value) = n.nonzero_rms_p015_dbfs {
+            measurements.insert("nonzero_block_rms_p015_dbfs".into(), value);
+        }
+        if let Some(value) = n.high_minus_low_db {
+            measurements.insert("quiet_high_minus_low_db".into(), value);
+        }
+        report.detectors.push(DetectorResult {
+            id: "quiet_block_profile".into(), version: 1, family: "noise_measurements".into(),
+            status: n.status.clone(), channel_index: Some(n.channel_index),
+            intervals: n.interval.iter().cloned().collect(), measurements,
+            thresholds: [("minimum_nonzero_blocks".into(), noise_floor::MIN_NONZERO as f64),
+                ("maximum_complete_blocks".into(), noise_floor::MAX_BLOCKS as f64),
+                ("color_absolute_mean_bin_power_floor".into(), noise_floor::ABSOLUTE_POWER),
+                ("color_relative_to_total_power_floor".into(), noise_floor::RELATIVE_POWER)].into(),
+            caveats: vec!["Nonzero-block RMS percentiles and quiet-block spectral color describe signal levels, not isolated noise, source bit depth, dither type, medium or authenticity.".into(),
+                "Uses the first 300 complete floor(rate/10)-sample native-channel blocks within the shared prefix. All-zero blocks are counted and excluded from percentiles/selection; partial tails are discarded. Selected original indices are preserved, with chronological tie breaking.".into(),
+                "Color has a separate energy-gated status. Music, DC, fades, gain, filtering, numerical leakage and quantization affect these measurements. No flatness label, source-depth verdict or score is inferred.".into()],
+        });
+    }
     for s in &report.sparsity {
         let mut measurements = std::collections::BTreeMap::from([
             ("eligible_frames".into(), s.eligible_frames as f64),

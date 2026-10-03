@@ -175,9 +175,79 @@ magnitudes and the channel's final global active-frame p95 cutoff. Per-bin count
 replace a spectrogram; DC/Nyquist, low-amplitude frames and insufficient coverage
 are explicitly handled. `SPARSITY_VALIDATION.md` defines geometry and independent
 tone/filter controls. Sparsity is not a codec bin-zeroing diagnosis.
-Next assess the remaining noise-floor/bit-depth profile with bounded per-channel
-block statistics, correct quiet-block indexing and declared prefix coverage.
-Do not convert measured quietness or dither-shaped power into source bit depth.
+Version 0.12 adds the useful quiet-block profile arithmetic: bounded native-channel
+RMS percentiles and selected-block spectral color using the existing two decode
+passes. Original indices survive silence removal; all-zero/underflow blocks,
+partial tails, energy gates and first-300-block coverage are explicit.
+`NOISE_FLOOR_VALIDATION.md` records differences from the reference's downmix,
+compacted-index bug and independent midpoint window. Measured quietness or
+spectral color must not become a source bit-depth or authenticity verdict.
+Version 0.13 adds BS.1770 integrated programme loudness using exact two-pass
+gating and a fixed power ring. Ungated 400 ms/3 s maxima are sampled every 100 ms.
+Native channel powers are summed without a downmix, and shared-prefix, window,
+gate and unsupported-rate coverage are explicit. `LOUDNESS_VALIDATION.md` records
+the numerical contract and independent controls. True peak, loudness range and
+meter conformance are separate work; no mastering-quality score is introduced.
+Version 0.14 adds per-native-channel fourfold FIR true-peak estimates and
+complete-window loudness range. Fixed history/histogram storage, exact two-pass
+range gates, quantization bounds, prefix/tail conventions and limitations are
+explicit. `LISTENING_LEVELS_VALIDATION.md` records independent numerical controls.
+These measurements do not certify a meter or establish mastering quality.
+Version 0.15 implements the reference's high-band spectral-lag arithmetic using
+existing mean-spectrum sums. Full 16–20 kHz geometry, every-bin energy/variance
+gates, signed products, neighbours and individual lag applicability are explicit.
+`SPECTRAL_LAGS_VALIDATION.md` records independent comb/EQ/noise/tone controls and
+actual checks. No MP3 verdict or scoring rule is imported.
+Version 0.16 adds native sample crest with linear/dB units, scaled underflow-safe
+RMS and signed centered stereo PCM correlation over simultaneous pairs. Numerical
+variation gates, shared-prefix coverage and independent gain/phase/DC controls
+are in `PCM_RELATIONSHIPS_VALIDATION.md`. No compression, fake-stereo or quality
+label is imported.
+Version 0.17 adds bounded causal 10–20 kHz energy in eligible contexts before
+existing envelope peaks. Baseline bounds, startup/history exclusions, complete
+aggregate counts and independent impulse/attack/gain controls are recorded in
+`PRECEDING_ENERGY_VALIDATION.md`. Smooth musical attacks often exceed the baseline;
+this does not establish codec pre-echo.
+Version 0.18 adds one active core analysis per process, cooperative waiting that
+counts toward deadlines, bounded container preflight and decoded-capacity checks.
+Native signatures, metadata limits and PCM WAV geometry are explicit support
+conditions. `CORE_ACCEPTANCE_VALIDATION.md` records the audit, actual checks and
+remaining engineering/corpus/device gates. No Android app or score is introduced.
+Its final 130-test release regression, 69 independent generated numerical cases,
+nine duration/rate resource controls, Clippy/formatting and ARM64 target compilation
+passed. A private prefix-only compatibility run returned four explicit unsupported
+inputs; those are support-limit observations, not provenance labels. Engineering
+evidence does not close grouped-corpus accuracy, schema stability or Android
+link/device gates.
+Fractional loudness hops at rates not divisible by ten remain explicitly unsupported.
+
+The declared Rust 1.85 minimum now passes all 130 ordinary debug tests,
+local desktop all-target compilation/Clippy,
+source-only CLI build/Clippy, no-CLI library compilation and ARM64 Android target
+compilation with the frozen lockfile. Minimum-compiler desktop/Android jobs are
+declared in CI; remote CI and NDK linking remain outstanding. Detailed compiler,
+host-linker and execution evidence is in `CORE_ACCEPTANCE_VALIDATION.md`.
+
+Remaining-reference assessment (2026-10-02, pinned source inspected):
+
+- `_psychoacoustic_artifacts` combines three unrelated heuristics. Its 16–20 kHz
+  spectral autocorrelation at `sample_rate/64` multiples can reuse a fixed
+  mean-spectrum accumulator. Report actual lag/bin geometry and neighbours;
+  a periodic spectrum does not establish an MP3 filterbank history. Do not keep
+  its outer cutoff/MP3 gate as an undocumented condition on an ordinary measurement.
+- Its alleged HF mirror test correlates two time-domain bandpass signals after
+  negating one, then takes absolute Pearson correlation. Negation disappears
+  under the absolute value and does not reverse frequency order. This cannot be
+  ported as a demonstrated frequency-mirroring or codec-aliasing detector.
+- Its pre-echo pass selects peaks above an absolute -3 dB envelope threshold,
+  counts preceding-band energy above a median baseline, and includes edge-ineligible
+  peaks in the denominator. A bounded port needs explicit eligible-event counts,
+  filter timing, baseline scope and gain/attack controls. Preceding musical energy
+  is not itself evidence of codec pre-echo.
+- Remaining stereo correlation and crest-factor presentation are descriptive
+  measurements; the reference's fake-stereo/compression/quality labels are not
+  accepted. Source-profile verdicts, MQA confirmation and evidence aggregation
+  still require independent characterization and grouped evaluation.
 
 Group evidence separately from the numerical port, so a changed score can be
 traced to policy rather than accidentally changed arithmetic. Add remaining
@@ -193,9 +263,86 @@ false positives, misses, abstentions, coverage and uncertainty. Derivatives of
 one recording are related observations, not independent evidence of accuracy.
 Unknown-provenance examples are diagnostic cases, not ground-truth labels.
 
+Local intake tooling now accepts explicit provenance/group/split declarations,
+fingerprints originals/notes and the binary, and preserves full-file measurements
+in immutable private receipts. Parent lineage, declared split consistency and
+identical encoded/decoded copies are checked without deriving ancestry labels.
+Locked groups are hashed and reserved without analysis; exact decoded-duplicate
+checks apply only to measured groups. See `CORPUS_INTAKE_VALIDATION.md` for the
+16 stdlib and six generated end-to-end controls, and `TEST_CORPUS.md` for ingestion.
+This prepares evaluation; independent source histories still require review.
+
+The 2026-10-02 private follow-up analyzed 37 of 44 supplied originals with exact
+independent PCM and preserved seven explicit unsupported/failed results. Added
+codec experiments found real-music coverage limits, including Vorbis sensitivity
+to final 16/24-bit quantization with exact pinned-Python feature agreement. These
+challenge receipts do not supply verified negative ancestry labels or calibration;
+see `CORPUS_INTAKE_VALIDATION.md`. Extra voice/capture hardware notes are optional
+and do not block core engineering with the supplied music.
+
+The subsequent AAC music audit passed 44 matched-basis comparisons, including
+unchanged generated oracles and sparse abstention controls. The missed piano
+conversion reproduces in the pinned method and persists across tested TNS/M/S
+settings. Do not lower a threshold to make this recording pass; broader excerpt,
+stereo and encoder-tool controls are required. The subsequent fixed-excerpt and
+intensity-stereo/PNS audit passed 72 matched-basis comparisons (54 new, 18 reused)
+with exact PCM and native-parent trims. Those piano cases still miss, while the
+other source groups retain hits. A private all-integer-phase diagnostic passed
+20 coarse-subset/PCM checks: it recovers the generated 137-sample trim but leaves
+all four piano AAC excerpt maxima unchanged. A production phase expansion still
+needs resource/cancellation and broader false-hit controls; source-dependent
+coverage research must preserve the existing threshold/denominator until grouped
+validation supports changes. See `AAC_MUSIC_VALIDATION.md`.
+
 Validate runtime/memory limits, corrupt-input handling and cancellation. Stabilize
 the public API/report schema and support matrix. A small ARM64 build/link check
 during core work may catch portability issues; it is not Android app development.
+
+The 2026-10-03 report-contract milestone exports 47 serialized model definitions
+as versioned JSON Schema and adds optional offline validation. All 125 fresh/saved
+v0.18 reports passed shape, policy and interval/channel checks; 51 invalid
+controls were rejected and two numeric boundary controls passed. A generated-only
+Rust 1.85 integration passed all five file outcomes with exact PCM hashes.
+See `REPORT_SCHEMA_VALIDATION.md` and `schemas/README.md`. This adds validation
+without changing wire output or declaring the evolving API stable. The user
+deferred Android. The following engine 0.18.1 continuation fixes interrupted
+reads, probe-masked I/O errors, failed float precision and batch directory error
+handling. Focused source/CLI controls and a 788-case generated header/truncation
+campaign passed; all 147 final Rust 1.85 debug tests, all-target Clippy,
+no-CLI library check and offline production-only snapshot build also passed. Read
+`SOURCE_API_VALIDATION.md`. Schema and detector policy remain unchanged.
+The 0.18.2 WAV follow-up characterizes integer/float container widths, valid-bit
+padding, channel masks, GUIDs, unknown lengths and RF64 with generated exact PCM.
+It rejects unknown data lengths consistently in full/prefix mode, checks the
+whole subtype GUID and supported mono/stereo mask, validates header geometry and
+rejects nonzero PCM padding within the measured interval. RF64/BW64/RIFX remain
+explicitly unsupported; unknown source byte length is distinct from an unknown
+WAV data length. See `WAV_FORMAT_VALIDATION.md` for actual checks and the retained
+FFmpeg 24-in-32-bit auto-detection disagreement. No decoder dependency, report
+schema, detector threshold or ancestry policy changes in this patch.
+The expanded generated WAV audit covers every valid integer precision within
+8/16/24/32-bit containers plus float amplitude and underflow boundaries. All 220
+cases / 440 full-prefix reports and 180 independent PCM comparisons passed;
+invalid measured floats fail while errors outside a requested prefix remain
+outside its scope. The production-only 0.18.2 Rust 1.85 build/Clippy/no-CLI checks
+and its 128-report format matrix passed. The deterministic 788-case mutation
+regression also passed, with stricter byte-rate failures recorded explicitly.
+The final frozen-source Rust 1.98.1 release regression passed all 153 tests,
+zero failed/ignored; 23 focused Rust 1.85 tests and all-target MSRV Clippy passed.
+The interrupted MSRV debug run is retained as incomplete, not a full-suite pass.
+These validate engineering contracts, not source ancestry or detector accuracy.
+
+The 0.18.3 FLAC follow-up replaces reader rewind with a bounded fresh probe,
+checks unchanged STREAMINFO, continuous sample timestamps and complete accounted
+packet framing. Generated controls exposed retained reader sequence state and
+valid-CRC packets with extra ignored bytes; both are now explicitly checked.
+Unknown source length, unknown total samples and absent MD5 remain supported
+availability conditions. Prefixes do not validate later frames or whole-stream
+checksums, and a byte-complete shorter stream without total/MD5 cannot establish
+missing final frames. The 270-case integrity matrix and 96 compressed controls
+passed with exact independent PCM and 732 schema-valid reports; MSRV regression
+and production-only validation are in progress. Read `FLAC_INTEGRITY_VALIDATION.md`.
+Schema, dependencies and detector policy are unchanged; Android stays deferred.
 
 ### 5. Build the Android application
 

@@ -1,0 +1,259 @@
+{
+  "reference_commit": "c6ecce2296256b516709d87088896d1be913908c",
+  "numpy": "2.3.5",
+  "scipy": "1.17.1",
+  "cases": [
+    {
+      "file": "noise16.wav",
+      "channels": [
+        {
+          "samples": 24577,
+          "peak": 0.732421875,
+          "rms": 0.42434074919279613,
+          "dc_offset": 0.0026886784749524453,
+          "effective_bits": 16,
+          "spectral": {
+            "frames": 11,
+            "active_frames": 11,
+            "cutoff_p95_hz": 22050.0,
+            "cutoff_variance_hz2": 0.0,
+            "cliff_depth_db": 3.7754123210906982,
+            "sharpness_db_per_bin": 4.481501579284668,
+            "hf_magnitude_ratio": 0.32261961976679837,
+            "entropy_bits": 10.980486869812012,
+            "noise_above_cutoff_db": 24.300718649649802
+          }
+        },
+        {
+          "samples": 24577,
+          "peak": 0.732391357421875,
+          "rms": 0.42142893264010634,
+          "dc_offset": -0.0019248474719599372,
+          "effective_bits": 16,
+          "spectral": {
+            "frames": 11,
+            "active_frames": 11,
+            "cutoff_p95_hz": 22050.0,
+            "cutoff_variance_hz2": 0.0,
+            "cliff_depth_db": -2.0793657302856445,
+            "sharpness_db_per_bin": 6.622309684753418,
+            "hf_magnitude_ratio": 0.3190699605496738,
+            "entropy_bits": 10.98187255859375,
+            "noise_above_cutoff_db": 26.69849256163209
+          }
+        }
+      ],
+      "pcm_sha256": "1981c82a788cf0be394f6c6326e6e7576a788076b51e7f7834286cada2b0f0e4"
+    },
+    {
+      "file": "noise16.flac",
+      "channels": [
+        {
+          "samples": 24577,
+          "peak": 0.732421875,
+          "rms": 0.42434074919279613,
+          "dc_offset": 0.0026886784749524453,
+          "effective_bits": 16,
+          "spectral": {
+            "frames": 11,
+            "active_frames": 11,
+            "cutoff_p95_hz": 22050.0,
+            "cutoff_variance_hz2": 0.0,
+            "cliff_depth_db": 3.7754123210906982,
+            "sharpness_db_per_bin": 4.481501579284668,
+            "hf_magnitude_ratio": 0.32261961976679837,
+            "entropy_bits": 10.980486869812012,
+            "noise_above_cutoff_db": 24.300718649649802
+          }
+        },
+        {
+          "samples": 24577,
+          "peak": 0.732391357421875,
+          "rms": 0.42142893264010634,
+          "dc_offset": -0.0019248474719599372,
+          "effective_bits": 16,
+          "spectral": {
+            "frames": 11,
+            "active_frames": 11,
+            "cutoff_p95_hz": 22050.0,
+            "cutoff_variance_hz2": 0.0,
+            "cliff_depth_db": -2.0793657302856445,
+            "sharpness_db_per_bin": 6.622309684753418,
+            "hf_magnitude_ratio": 0.3190699605496738,
+            "entropy_bits": 10.98187255859375,
+            "noise_above_cutoff_db": 26.69849256163209
+          }
+        }
+      ],
+      "pcm_sha256": "1981c82a788cf0be394f6c6326e6e7576a788076b51e7f7834286cada2b0f0e4"
+    },
+    {
+      "file": "wall24.wav",
+      "channels": [
+        {
+          "samples": 24577,
+          "peak": 0.9765625,
+          "rms": 0.349956462740834,
+          "dc_offset": 0.0026814479806926955,
+          "effective_bits": 16,
+          "spectral": {
+            "frames": 11,
+            "active_frames": 11,
+            "cutoff_p95_hz": 22050.0,
+            "cutoff_variance_hz2": 11234139.232428605,
+            "cliff_depth_db": 1.3119049072265625,
+            "sharpness_db_per_bin": 1.192901611328125,
+            "hf_magnitude_ratio": 0.0021808923485543636,
+            "entropy_bits": 10.4373779296875,
+            "noise_above_cutoff_db": -26.4469063886083
+          }
+        },
+        {
+          "samples": 24577,
+          "peak": 0.9765625,
+          "rms": 0.349956462740834,
+          "dc_offset": -0.0026814479806926955,
+          "effective_bits": 16,
+          "spectral": {
+            "frames": 11,
+            "active_frames": 11,
+            "cutoff_p95_hz": 22050.0,
+            "cutoff_variance_hz2": 11234139.232428605,
+            "cliff_depth_db": 1.3119049072265625,
+            "sharpness_db_per_bin": 1.192901611328125,
+            "hf_magnitude_ratio": 0.0021808923485543636,
+            "entropy_bits": 10.4373779296875,
+            "noise_above_cutoff_db": -26.4469063886083
+          }
+        }
+      ],
+      "pcm_sha256": "e8d235fdda32a5cb4ead626ccce2b9e253f8deba86d3cf9faf644324158d22e1"
+    },
+    {
+      "file": "wall24.flac",
+      "channels": [
+        {
+          "samples": 24577,
+          "peak": 0.9765625,
+          "rms": 0.349956462740834,
+          "dc_offset": 0.0026814479806926955,
+          "effective_bits": 16,
+          "spectral": {
+            "frames": 11,
+            "active_frames": 11,
+            "cutoff_p95_hz": 22050.0,
+            "cutoff_variance_hz2": 11234139.232428605,
+            "cliff_depth_db": 1.3119049072265625,
+            "sharpness_db_per_bin": 1.192901611328125,
+            "hf_magnitude_ratio": 0.0021808923485543636,
+            "entropy_bits": 10.4373779296875,
+            "noise_above_cutoff_db": -26.4469063886083
+          }
+        },
+        {
+          "samples": 24577,
+          "peak": 0.9765625,
+          "rms": 0.349956462740834,
+          "dc_offset": -0.0026814479806926955,
+          "effective_bits": 16,
+          "spectral": {
+            "frames": 11,
+            "active_frames": 11,
+            "cutoff_p95_hz": 22050.0,
+            "cutoff_variance_hz2": 11234139.232428605,
+            "cliff_depth_db": 1.3119049072265625,
+            "sharpness_db_per_bin": 1.192901611328125,
+            "hf_magnitude_ratio": 0.0021808923485543636,
+            "entropy_bits": 10.4373779296875,
+            "noise_above_cutoff_db": -26.4469063886083
+          }
+        }
+      ],
+      "pcm_sha256": "e8d235fdda32a5cb4ead626ccce2b9e253f8deba86d3cf9faf644324158d22e1"
+    },
+    {
+      "file": "activity16.wav",
+      "channels": [
+        {
+          "samples": 24577,
+          "peak": 0.732208251953125,
+          "rms": 0.26476645275312477,
+          "dc_offset": 0.00043623857862534076,
+          "effective_bits": 16,
+          "spectral": {
+            "frames": 11,
+            "active_frames": 5,
+            "cutoff_p95_hz": 22050.0,
+            "cutoff_variance_hz2": 0.0,
+            "cliff_depth_db": 11.196539878845215,
+            "sharpness_db_per_bin": 7.752406120300293,
+            "hf_magnitude_ratio": 0.3231171035005176,
+            "entropy_bits": 10.953712463378906,
+            "noise_above_cutoff_db": 19.62767240031884
+          }
+        },
+        {
+          "samples": 24577,
+          "peak": 0.73236083984375,
+          "rms": 0.2626776621987693,
+          "dc_offset": -0.003212050531715374,
+          "effective_bits": 16,
+          "spectral": {
+            "frames": 11,
+            "active_frames": 5,
+            "cutoff_p95_hz": 22050.0,
+            "cutoff_variance_hz2": 0.0,
+            "cliff_depth_db": 2.957949638366699,
+            "sharpness_db_per_bin": 6.579926490783691,
+            "hf_magnitude_ratio": 0.31788540691109957,
+            "entropy_bits": 10.955227851867676,
+            "noise_above_cutoff_db": 22.49613996937068
+          }
+        }
+      ],
+      "pcm_sha256": "785c7aee9f3aa0200b79c16dd9ed001bd7dea676a6bd3e078bb44c75ddead2f9"
+    },
+    {
+      "file": "activity16.flac",
+      "channels": [
+        {
+          "samples": 24577,
+          "peak": 0.732208251953125,
+          "rms": 0.26476645275312477,
+          "dc_offset": 0.00043623857862534076,
+          "effective_bits": 16,
+          "spectral": {
+            "frames": 11,
+            "active_frames": 5,
+            "cutoff_p95_hz": 22050.0,
+            "cutoff_variance_hz2": 0.0,
+            "cliff_depth_db": 11.196539878845215,
+            "sharpness_db_per_bin": 7.752406120300293,
+            "hf_magnitude_ratio": 0.3231171035005176,
+            "entropy_bits": 10.953712463378906,
+            "noise_above_cutoff_db": 19.62767240031884
+          }
+        },
+        {
+          "samples": 24577,
+          "peak": 0.73236083984375,
+          "rms": 0.2626776621987693,
+          "dc_offset": -0.003212050531715374,
+          "effective_bits": 16,
+          "spectral": {
+            "frames": 11,
+            "active_frames": 5,
+            "cutoff_p95_hz": 22050.0,
+            "cutoff_variance_hz2": 0.0,
+            "cliff_depth_db": 2.957949638366699,
+            "sharpness_db_per_bin": 6.579926490783691,
+            "hf_magnitude_ratio": 0.31788540691109957,
+            "entropy_bits": 10.955227851867676,
+            "noise_above_cutoff_db": 22.49613996937068
+          }
+        }
+      ],
+      "pcm_sha256": "785c7aee9f3aa0200b79c16dd9ed001bd7dea676a6bd3e078bb44c75ddead2f9"
+    }
+  ]
+}

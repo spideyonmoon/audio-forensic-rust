@@ -1,0 +1,50 @@
+{
+  "reference_commit": "c6ecce2296256b516709d87088896d1be913908c",
+  "numpy": "2.3.5",
+  "cases": [
+    {
+      "file": "clip_noise.wav",
+      "sample_rate": 44100,
+      "cutoff_hz": 22050.0,
+      "cliff_db": null,
+      "high_band_relative_db": -10.83667932433491,
+      "peak_dbfs": -3.0980386080356075,
+      "above_cutoff_relative_db": null,
+      "occupied_band_fraction": 0.9997506234413965,
+      "wall_observed": false
+    },
+    {
+      "file": "clip_wall.wav",
+      "sample_rate": 44100,
+      "cutoff_hz": 16750.5,
+      "cliff_db": 134.10890247342678,
+      "high_band_relative_db": -145.28191524767857,
+      "peak_dbfs": -3.0980386080356075,
+      "above_cutoff_relative_db": -145.19399822252305,
+      "occupied_band_fraction": 0.9997627199077997,
+      "wall_observed": true
+    },
+    {
+      "file": "clip_high_wall.wav",
+      "sample_rate": 44100,
+      "cutoff_hz": 20200.5,
+      "cliff_db": 132.6293080834216,
+      "high_band_relative_db": -13.350436294715205,
+      "peak_dbfs": -3.0980386080356075,
+      "above_cutoff_relative_db": -143.67284229078757,
+      "occupied_band_fraction": 0.9997527540452186,
+      "wall_observed": true
+    },
+    {
+      "file": "clip_overlap.wav",
+      "sample_rate": 48000,
+      "cutoff_hz": 19550.5,
+      "cliff_db": 134.2549569825072,
+      "high_band_relative_db": -17.802849361172477,
+      "peak_dbfs": -3.0980386080356075,
+      "above_cutoff_relative_db": -144.119927829917,
+      "occupied_band_fraction": 0.9997151078316857,
+      "wall_observed": true
+    }
+  ]
+}

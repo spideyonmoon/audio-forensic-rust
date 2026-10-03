@@ -76,7 +76,7 @@ pub(crate) struct PcmStats {
     count: u64,
     peak: f64,
     sum: f64,
-    sum_square: f64,
+    scaled_sum_square: f64,
     zeros: u64,
     full_scale: u64,
     nonzero: u64,
@@ -86,9 +86,15 @@ pub(crate) struct PcmStats {
 impl PcmStats {
     pub fn push(&mut self, x: f64, integer: Option<i32>, bits: Option<u32>) {
         self.count += 1;
-        self.peak = self.peak.max(x.abs());
+        if x.abs() > self.peak {
+            let factor = self.peak / x.abs();
+            self.scaled_sum_square *= factor * factor;
+            self.peak = x.abs();
+        }
         self.sum += x;
-        self.sum_square += x * x;
+        if self.peak > 0.0 {
+            self.scaled_sum_square += (x / self.peak).powi(2);
+        }
         self.zeros += u64::from(x == 0.0);
         let upper = bits.map(|n| 1.0 - 2f64.powi(1 - n as i32)).unwrap_or(1.0);
         self.full_scale += u64::from(x <= -1.0 || x >= upper);
@@ -121,11 +127,19 @@ impl PcmStats {
                 })
                 .map(|n| 32 - n as u32)
         };
+        let crest = (self.peak > 0.0).then(|| (self.count as f64 / self.scaled_sum_square).sqrt());
         ChannelMeasurements {
             channel_index,
             samples: self.count,
             peak: self.peak,
-            rms: (self.sum_square / self.count.max(1) as f64).sqrt(),
+            rms: self.peak * (self.scaled_sum_square / self.count.max(1) as f64).sqrt(),
+            crest_factor_status: if crest.is_some() {
+                crate::model::DetectorStatus::Measured
+            } else {
+                crate::model::DetectorStatus::Inconclusive
+            },
+            crest_factor_linear: crest,
+            crest_factor_db: crest.map(|v| 20.0 * v.log10()),
             dc_offset: self.sum / self.count.max(1) as f64,
             zero_samples: self.zeros,
             full_scale_samples: self.full_scale,
@@ -187,6 +201,16 @@ impl SpectralStats {
             }
         }
         self.cutoffs.len() - 1
+    }
+
+    pub fn spectral_lags(&self, channel_index: usize) -> crate::model::SpectralLagAnalysis {
+        crate::detectors::spectral_lags::analyze(
+            channel_index,
+            self.rate,
+            self.frames,
+            self.active,
+            &self.sum,
+        )
     }
 
     pub fn finish(self) -> SpectralMeasurements {

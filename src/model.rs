@@ -8,15 +8,16 @@ use std::{
     time::Duration,
 };
 
-pub const SCHEMA_VERSION: &str = "0.11.0";
-pub const POLICY_VERSION: &str = "observations-only-v11";
+pub const SCHEMA_VERSION: &str = "0.18.0";
+pub const POLICY_VERSION: &str = "observations-only-v18";
 
 #[derive(Debug, Clone)]
 pub struct AnalysisOptions {
     pub track_id: Option<u32>,
     /// All measurements use [0, max_seconds); None reads the full selected stream.
     pub max_seconds: Option<f64>,
-    /// Cooperative deadline between packets/transform batches, not an interruptible I/O timeout.
+    /// Includes worker-queue waiting; cooperative between packets/transform batches,
+    /// not an interruptible I/O timeout. One active core analysis per process.
     pub deadline: Duration,
 }
 
@@ -98,6 +99,10 @@ pub struct ChannelMeasurements {
     pub samples: u64,
     pub peak: f64,
     pub rms: f64,
+    /// Sample peak / uncentered RMS, including DC; silence is inconclusive.
+    pub crest_factor_status: DetectorStatus,
+    pub crest_factor_linear: Option<f64>,
+    pub crest_factor_db: Option<f64>,
     pub dc_offset: f64,
     pub zero_samples: u64,
     pub full_scale_samples: u64,
@@ -121,6 +126,20 @@ pub struct SpectralMeasurements {
     pub entropy_bits: Option<f64>,
     /// Unnormalized FFT magnitude reference; not calibrated dBFS.
     pub noise_above_cutoff_db: Option<f64>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct StereoCorrelationAnalysis {
+    pub status: DetectorStatus,
+    pub channel_indices: Vec<usize>,
+    pub interval: Option<AnalysisInterval>,
+    pub pair_count: u64,
+    pub mean: [Option<f64>; 2],
+    /// Population standard deviation of centered PCM, in full-scale amplitude.
+    pub std: [Option<f64>; 2],
+    pub variation_eligible: [bool; 2],
+    pub coefficient: Option<f64>,
+    pub caveats: Vec<String>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -391,6 +410,43 @@ pub struct TransientEvent {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PrecedingEnergyEvent {
+    pub frame: u64,
+    pub status: DetectorStatus,
+    pub interval: Option<AnalysisInterval>,
+    pub mean_square: Option<f64>,
+    pub above_baseline: Option<bool>,
+    pub unavailable_reason: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PrecedingEnergyAnalysis {
+    pub channel_index: usize,
+    pub status: DetectorStatus,
+    pub interval: AnalysisInterval,
+    pub baseline_interval: Option<AnalysisInterval>,
+    pub baseline_samples: u64,
+    pub baseline_median_lower_power: Option<f64>,
+    pub baseline_median_upper_power: Option<f64>,
+    pub threshold_power: Option<f64>,
+    pub requested_lower_hz: f64,
+    pub requested_upper_hz: f64,
+    pub filter_order: u8,
+    pub warmup_frames: u64,
+    pub lookback_start_frames: u64,
+    pub lookback_end_frames: u64,
+    pub history_frames: u64,
+    pub selected_peak_count: Option<u64>,
+    pub eligible_event_count: u64,
+    pub startup_ineligible_count: u64,
+    pub history_expired_count: u64,
+    pub above_baseline_count: Option<u64>,
+    pub above_baseline_fraction: Option<f64>,
+    pub events_truncated: bool,
+    pub events: Vec<PrecedingEnergyEvent>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct TransientAnalysis {
     pub channel_index: usize,
     pub status: DetectorStatus,
@@ -413,6 +469,47 @@ pub struct TransientAnalysis {
     pub events_truncated: bool,
     /// First 128 accepted peaks; the total count includes all accepted peaks.
     pub events: Vec<TransientEvent>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SpectralLag {
+    pub lag_bins: usize,
+    pub lag_hz: f64,
+    pub pair_count: usize,
+    pub status: DetectorStatus,
+    /// Centered lag product / full-band squared norm; not Pearson correlation.
+    pub coefficient: Option<f64>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SpectralLagProbe {
+    pub multiple: usize,
+    pub requested_lag_hz: f64,
+    pub target: SpectralLag,
+    /// Signed products at target minus/plus three bins, each with its own status.
+    pub neighbours: Vec<SpectralLag>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct SpectralLagAnalysis {
+    pub channel_index: usize,
+    pub status: DetectorStatus,
+    /// Envelope of all STFT windows; active_frames exposes the contributing subset.
+    pub interval: Option<AnalysisInterval>,
+    pub stft_frames: u64,
+    pub active_frames: u64,
+    pub requested_lower_hz: f64,
+    pub requested_upper_hz_exclusive: f64,
+    pub lower_bin_hz: Option<f64>,
+    pub upper_bin_hz: Option<f64>,
+    pub bin_count: usize,
+    pub eligible_bins: usize,
+    /// 2 * mean FFT magnitude / sum(Hann), not integrated band RMS.
+    pub reference_peak_amplitude: Option<f64>,
+    pub minimum_bin_amplitude: Option<f64>,
+    /// Only evaluated when frame, geometry and every-bin energy gates pass.
+    pub log_magnitude_std_db: Option<f64>,
+    pub lags: Vec<SpectralLagProbe>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -499,6 +596,111 @@ pub struct SparsityAnalysis {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct QuietBlock {
+    /// Original zero-based block index, including preceding all-zero blocks.
+    pub block_index: usize,
+    pub rms: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct QuietColorBand {
+    /// Both requested frequency edges are exclusive.
+    pub requested_lower_hz: f64,
+    pub requested_upper_hz: f64,
+    pub lower_bin_hz: Option<f64>,
+    pub upper_bin_hz: Option<f64>,
+    pub bin_count: usize,
+    /// One-sided Hann-energy-normalized power, averaged over bins and blocks.
+    pub mean_bin_power: Option<f64>,
+    pub energy_eligible: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct NoiseFloorAnalysis {
+    pub channel_index: usize,
+    pub status: DetectorStatus,
+    /// Complete blocks only; excludes a discarded partial trailing block.
+    pub interval: Option<AnalysisInterval>,
+    pub block_frames: usize,
+    pub inspected_frames: u64,
+    pub trailing_frames: u64,
+    pub coverage_capped: bool,
+    pub complete_blocks: usize,
+    pub zero_blocks: usize,
+    /// Nonzero float blocks whose RMS is below the f64 representable range.
+    pub rms_underflow_blocks: usize,
+    pub nonzero_blocks: usize,
+    /// Linear percentiles of nonzero block RMS, not estimated source precision.
+    pub nonzero_rms_p015: Option<f64>,
+    pub nonzero_rms_p99: Option<f64>,
+    pub nonzero_rms_p015_dbfs: Option<f64>,
+    pub nonzero_rms_p99_dbfs: Option<f64>,
+    /// Chronological list of the quietest nonzero blocks; at most thirty.
+    pub selected_blocks: Vec<QuietBlock>,
+    pub color_status: DetectorStatus,
+    pub low_band: QuietColorBand,
+    pub high_band: QuietColorBand,
+    pub high_minus_low_db: Option<f64>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LoudnessAnalysis {
+    /// Integrated-loudness applicability; maxima have independent window counts.
+    pub status: DetectorStatus,
+    pub channel_weights: Vec<f64>,
+    pub analyzed_frames: u64,
+    /// Union of complete 400 ms windows; excludes the partial trailing hop.
+    pub interval: Option<AnalysisInterval>,
+    pub hop_frames: Option<u64>,
+    pub block_frames: Option<u64>,
+    /// All frames outside complete windows, including the whole input if short/unsupported.
+    pub trailing_frames: u64,
+    pub complete_blocks: u64,
+    pub absolute_gated_blocks: u64,
+    pub relative_gated_blocks: u64,
+    pub relative_gate_lufs: Option<f64>,
+    pub integrated_lufs: Option<f64>,
+    pub momentary_max_lufs: Option<f64>,
+    pub short_term_max_lufs: Option<f64>,
+    pub short_term_windows: u64,
+    pub range: LoudnessRangeAnalysis,
+    pub caveats: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct LoudnessRangeAnalysis {
+    pub status: DetectorStatus,
+    pub interval: Option<AnalysisInterval>,
+    pub absolute_gated_windows: u64,
+    pub relative_gated_windows: u64,
+    pub relative_gate_lufs: Option<f64>,
+    pub histogram_bin_width_lu: f64,
+    pub histogram_overflow_windows: u64,
+    pub p10_lufs: Option<f64>,
+    pub p95_lufs: Option<f64>,
+    pub range_lu: Option<f64>,
+    pub range_lower_lu: Option<f64>,
+    pub range_upper_lu: Option<f64>,
+    pub caveats: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct TruePeakAnalysis {
+    pub channel_index: usize,
+    pub status: DetectorStatus,
+    pub interval: AnalysisInterval,
+    pub oversampling_factor: u32,
+    pub oversampled_rate_hz: u32,
+    pub filter_taps: usize,
+    pub zero_padding_frames: usize,
+    pub sample_peak: f64,
+    pub interpolated_peak: f64,
+    pub estimated_peak: f64,
+    pub estimated_peak_dbtp: Option<f64>,
+    pub caveats: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AnalysisReport {
     pub schema_version: String,
     pub engine_version: String,
@@ -517,9 +719,15 @@ pub struct AnalysisReport {
     pub spectral_structure: Vec<SpectralStructureAnalysis>,
     pub noise: Vec<NoiseAnalysis>,
     pub transients: Vec<TransientAnalysis>,
+    pub preceding_energy: Vec<PrecedingEnergyAnalysis>,
     pub rolloff: Vec<RolloffAnalysis>,
+    pub spectral_lags: Vec<SpectralLagAnalysis>,
     pub envelope: Vec<EnvelopeAnalysis>,
     pub sparsity: Vec<SparsityAnalysis>,
+    pub noise_floor: Vec<NoiseFloorAnalysis>,
+    pub loudness: Option<LoudnessAnalysis>,
+    pub true_peak: Vec<TruePeakAnalysis>,
+    pub stereo_correlation: Option<StereoCorrelationAnalysis>,
     pub unimplemented_detectors: Vec<String>,
     pub ancestry_verdict: String,
     pub evidence_index: Option<f64>,
@@ -528,21 +736,32 @@ pub struct AnalysisReport {
 }
 
 impl AnalysisReport {
+    /// Structured input failure for callers that cannot open or enumerate an
+    /// input. Keeps the current report versions, null measurements and policy.
+    pub fn input_failure(source: impl Into<String>, message: impl Into<String>) -> Self {
+        let mut report = Self::new(source.into());
+        report.diagnostics.push(Diagnostic {
+            code: "invalid_input".into(),
+            message: message.into(),
+        });
+        report
+    }
+
     pub(crate) fn new(source: String) -> Self {
         Self {
             schema_version: SCHEMA_VERSION.into(), engine_version: env!("CARGO_PKG_VERSION").into(),
             policy_version: POLICY_VERSION.into(), source, status: FileStatus::Failed,
             stream: None, coverage: None, channels: vec![], detectors: vec![], segments: vec![], mqa: None,
-            resampling: vec![], vorbis: vec![], aac: vec![], spectral_structure: vec![], noise: vec![], transients: vec![], rolloff: vec![], envelope: vec![], sparsity: vec![],
+            resampling: vec![], vorbis: vec![], aac: vec![], spectral_structure: vec![], noise: vec![], transients: vec![], preceding_energy: vec![], rolloff: vec![], spectral_lags: vec![], envelope: vec![], sparsity: vec![], noise_floor: vec![], loudness: None, true_peak: vec![], stereo_correlation: None,
             unimplemented_detectors: [
                 "analog_source", "mqa_confirmation",
-                "bit_depth_noise_floor", "loudness", "psychoacoustic_artifacts"]
+                "source_bit_depth_inference", "validated_frequency_mirroring"]
                 .into_iter().map(str::to_owned).collect(),
             ancestry_verdict: "INCONCLUSIVE".into(), evidence_index: None, diagnostics: vec![],
             limitations: vec![
                 "Measurements and provisional observations only: the complete forensic detector suite and scoring are not implemented.".into(),
                 "Source history is unverified. Neither low bandwidth nor exercised bits proves provenance.".into(),
-                "Native channels are measured independently. AAC additionally declares a mono or mid/side analysis basis.".into(),
+                "Native channels are preserved. AAC declares a mono or mid/side basis; programme loudness sums independently filtered channel powers.".into(),
             ],
         }
     }

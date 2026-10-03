@@ -6,6 +6,89 @@ spend time manually making dozens of differently encoded copies.
 
 ## First delivery
 
+### Named first batch requested on 2026-10-02
+
+The broad coverage table below is a longer-term target. For the next batch, use
+this concrete list instead. No hardware purchase or vinyl collection is needed.
+
+**User follow-up (2026-10-02):** the three requested tracks, three album rip logs
+and `sources.txt` are now in `reference/test_files`. The user states many existing
+files are vinyl rips, without mapping that claim to individual filenames. Proceed
+with the supplied music. Voice/microphone recordings are optional and deferred
+at the user's preference; no additional hardware details or provenance form is
+required before engineering intake. Minimum useful source information, when
+known, is CD/web/vinyl/unknown plus any known conversion. Edition and equipment
+details are optional context for later medium/capture comparisons. Preserve all
+unknowns rather than assigning authenticity labels from tags or logs.
+
+The earlier request below is retained for reference; the follow-up above removes
+extra documentation/capture prerequisites. Source notes were originally requested
+for these five existing files; unknown history is acceptable for challenge use.
+Do not acquire or copy them again:
+
+- Porcupine Tree — Anesthetize (`03 - Porcupine Tree - Anesthetize.flac`);
+  confirm the album and whether this is the studio or a live recording.
+- Tool — Pneuma (`02. Pneuma.flac`).
+- ABBA — Dancing Queen (`01 - Dancing Queen.flac`).
+- Sleep Token — Take Me Back To Eden (`Take Me Back To Eden - Sleep Token.flac`).
+- Papon — Dinae Dinae (`Papon - Dinae Dinae.flac`).
+
+The three requested additions, now received, are full tracks rather than albums:
+
+| Artist / track | Album / version | Preferred acquisition |
+| --- | --- | --- |
+| Miles Davis — So What | Kind of Blue, original album performance | Physical stereo CD rip; an original official WAV/FLAC download is also suitable |
+| Keith Jarrett — Köln, January 24, 1975, Part I | The Köln Concert, original concert recording | Physical CD rip; an original official WAV/FLAC download is also suitable |
+| Daft Punk — Giorgio by Moroder | Random Access Memories, standard 2013 album version with drums | Physical CD rip; an original official WAV/FLAC download is also suitable |
+
+Track identities were checked against the [Miles Davis catalogue](https://www.milesdavis.com/albums/kind-of-blue/),
+[ECM catalogue](https://ecmrecords.com/product/the-koln-concert-keith-jarrett/)
+and [Daft Punk catalogue](https://www.daftpunk.com/randomaccessmemories/).
+These are catalogue references, not verified free download links. Prefer editions
+already owned or available without buying equipment; identify unavailable titles
+so named replacements can be chosen. Any stereo CD edition is acceptable if its
+edition is recorded. This batch is chosen to add exposed instruments, piano
+decays, speech and changing arrangements to the existing collection; the titles
+do not establish lossless ancestry.
+
+Rip CDs to unprocessed stereo 16-bit/44.1 kHz WAV or FLAC. Keep an existing rip
+log if available. For official web downloads, keep the original WAV/FLAC and its
+native bit depth and sample rate, with the download URL and date. Do not resample,
+normalize, remove noise or convert a streaming/MP3 download into a proposed clean
+control. Unknown-history files remain useful challenge material.
+
+Optional future capture controls, deferred at the user's preference, would use
+two raw microphone recordings if existing equipment supports PCM recording:
+
+- `voice.wav`: about 60 seconds, with five seconds of room sound at each end and
+  normal reading/speech between them.
+- `taps-keys.wav`: about 60 seconds of separated handclaps, table taps and keys
+  jingling, leaving quiet gaps and avoiding clipping.
+
+Record directly to mono PCM WAV, preferably 16-bit/48 kHz; native 44.1 kHz is
+also acceptable. Record and export at the same rate, and note the microphone,
+application and any automatic gain/noise processing. Keep the original export.
+These related captures stay in the same session group and are reviewed before
+assigning an ancestry control label. They are not independent commercial music
+sources. A phone recording is suitable only if it genuinely supports direct PCM
+WAV capture; renaming or converting AAC/M4A does not make that history lossless.
+
+Vinyl is optional for a later medium/capture challenge. If the existing
+`A1 Immigrant Song (1).flac` is an actual capture from the user's record, request
+its Led Zeppelin III pressing and turntable/cartridge/phono-stage/ADC/application
+notes. A filename containing a side/track label does not establish vinyl origin.
+For a new raw capture, native stereo 24-bit/96 kHz WAV is useful if supported;
+native 48 kHz is acceptable. Keep it before EQ, click removal or normalization.
+Do not buy a record or turntable for this first batch.
+
+A single `sources.txt` can cover the batch. For each file record: filename;
+CD/web/vinyl/self-recorded/unknown; edition or URL; rip/recording application and
+hardware where relevant; known processing/conversions, or "unknown". Put new
+originals and notes under `corpus/local/sources`; source-unknown additions belong
+under `corpus/local/challenges`. Tooling will create hashes/manifests and codec
+variants. This batch enables initial corpus work; it does not complete accuracy
+validation or Android work.
+
 Start with 10-15 diverse source recordings; aim for roughly 30-50 independent
 source recordings as an initial engineering corpus. These are practical starting
 sizes, not sufficient evidence for a particular accuracy claim. Several hundred
@@ -124,6 +207,54 @@ corpus/local/results/       manifests, reports and measurements
 The `corpus/local/` tree is ignored by the root Git configuration. These are
 collection folders, not evaluation splits; do not manually distribute related
 copies between them as if they were independent examples.
+
+## Local intake manifest
+
+Once originals and provenance notes are ready, create a JSON manifest locally.
+Paths in each entry are relative to `root`, which is resolved from the manifest's
+directory. Assign group/split IDs explicitly before running analysis:
+
+```json
+{
+  "version": 1,
+  "root": ".",
+  "entries": [
+    {
+      "id": "capture-001",
+      "group_id": "session-001",
+      "split": "development",
+      "file": "sources/capture-001.wav",
+      "history": "documented",
+      "notes": "sources/capture-001-provenance.txt"
+    }
+  ]
+}
+```
+
+Save this example structure as `corpus/local/manifest.json`, replacing its paths,
+IDs and declarations with actual collection information. IDs use letters,
+numbers, underscores/hyphens (1–64 characters). Splits are `development`,
+`validation`, `locked_test` or `challenge`. History is `documented`, `claimed`
+or `unknown`; the last two belong in `challenge`. "Documented" means notes were
+supplied for review, not that this tool verified a lossless history.
+
+For a controlled descendant, keep the parent's group/split, add `parent_id`
+pointing to its manifest ID and a nonempty `recipe` list. Each recipe step records
+`tool`, `version` and the exact `arguments` array. Originals omit both fields.
+Never upgrade an uncertain original's history after encoding it to lossless.
+
+```text
+python scripts/ingest_corpus.py corpus/local/manifest.json --output corpus/local/results/intake-001
+```
+
+This optional stdlib tool fingerprints originals/notes and the release binary,
+runs full-file Rust measurements for non-locked entries, preserves explicit
+failures, and checks declared/file/decoded-PCM duplicates across groups. Locked
+entries are hashed and reserved without analysis. Every run requires a new output
+directory; receipts remain ignored/local. See
+[CORPUS_INTAKE_VALIDATION.md](CORPUS_INTAKE_VALIDATION.md) for coverage, checks and
+limits. Independent FFmpeg decoding remains a separate validation step; intake
+does not verify source labels, generate transformations or evaluate accuracy.
 
 ## Evaluation discipline
 

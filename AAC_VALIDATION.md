@@ -2,6 +2,8 @@
 
 This historical v0.4 record is preserved. The subsequent spectral-structure
 milestone is recorded in [STRUCTURE_VALIDATION.md](STRUCTURE_VALIDATION.md).
+The later private music coverage audit and matched-window Python comparisons
+are recorded in [AAC_MUSIC_VALIDATION.md](AAC_MUSIC_VALIDATION.md).
 
 AAC observations are now implemented for native mono and explicitly declared
 stereo mid/side signals at 44.1/48 kHz. They are provisional measurements, not

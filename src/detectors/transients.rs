@@ -7,7 +7,7 @@ pub(crate) const ABSOLUTE_THRESHOLD: f64 = 1e-4;
 pub(crate) const MEDIAN_MULTIPLIER: f64 = 3.0;
 const HISTOGRAM_STEPS: usize = 880; // -180..40 dB, in 0.25 dB steps.
 
-struct Biquad {
+pub(crate) struct Biquad {
     b0: f64,
     b1: f64,
     a1: f64,
@@ -18,7 +18,11 @@ struct Biquad {
 
 impl Biquad {
     fn highpass(rate: u32, q: f64) -> Self {
-        let omega = std::f64::consts::TAU * 1000.0 / f64::from(rate);
+        Self::highpass_at(rate, 1000.0, q)
+    }
+
+    pub(crate) fn highpass_at(rate: u32, cutoff: f64, q: f64) -> Self {
+        let omega = std::f64::consts::TAU * cutoff / f64::from(rate);
         let alpha = omega.sin() / (2.0 * q);
         let norm = 1.0 + alpha;
         let b0 = (1.0 + omega.cos()) / (2.0 * norm);
@@ -32,7 +36,22 @@ impl Biquad {
         }
     }
 
-    fn push(&mut self, x: f64) -> f64 {
+    pub(crate) fn lowpass_at(rate: u32, cutoff: f64, q: f64) -> Self {
+        let omega = std::f64::consts::TAU * cutoff / f64::from(rate);
+        let alpha = omega.sin() / (2.0 * q);
+        let norm = 1.0 + alpha;
+        let b0 = (1.0 - omega.cos()) / (2.0 * norm);
+        Self {
+            b0,
+            b1: 2.0 * b0,
+            a1: -2.0 * omega.cos() / norm,
+            a2: (1.0 - alpha) / norm,
+            z1: 0.0,
+            z2: 0.0,
+        }
+    }
+
+    pub(crate) fn push(&mut self, x: f64) -> f64 {
         let y = self.b0 * x + self.z1;
         self.z1 = self.b1 * x - self.a1 * y + self.z2;
         self.z2 = self.b0 * x - self.a2 * y;
@@ -259,22 +278,20 @@ pub(crate) struct TransientDetector {
 }
 
 impl TransientDetector {
-    pub fn push(&mut self, sample: f64) {
-        let Some(threshold) = self.report.envelope_threshold else {
-            return;
-        };
-        let Some((frame, value)) = self.envelope.push(sample) else {
-            return;
-        };
-        let Some((frame, level)) = self.picker.push(frame, value) else {
-            return;
-        };
+    pub fn selection_available(&self) -> bool {
+        self.report.envelope_threshold.is_some()
+    }
+
+    pub fn push(&mut self, sample: f64) -> Option<TransientEvent> {
+        let threshold = self.report.envelope_threshold?;
+        let (frame, value) = self.envelope.push(sample)?;
+        let (frame, level) = self.picker.push(frame, value)?;
         if level <= threshold
             || self.last_accepted.is_some_and(|last| {
                 frame - last < u64::from(self.report.minimum_peak_distance_frames)
             })
         {
-            return;
+            return None;
         }
         self.last_accepted = Some(frame);
         *self.report.peak_count.as_mut().unwrap() += 1;
@@ -286,6 +303,10 @@ impl TransientDetector {
         } else {
             self.report.events_truncated = true;
         }
+        Some(TransientEvent {
+            frame,
+            envelope_peak: level,
+        })
     }
 
     pub fn finish(mut self) -> TransientAnalysis {
