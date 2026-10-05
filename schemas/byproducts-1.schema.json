@@ -1,0 +1,868 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:audio-forensic:byproducts:1",
+  "$ref": "#/$defs/ByproductReport",
+  "$defs": {
+    "ByproductReport": {
+      "type": "object",
+      "properties": {
+        "byproduct_version": {
+          "const": 1
+        },
+        "contract_version": {
+          "const": 1
+        },
+        "method_id": {
+          "const": "python-reference-c6ecce2-byproducts-v1"
+        },
+        "engine_version": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/FileStatus"
+        },
+        "stream": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StreamInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "coverage": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Coverage"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reference": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ReferenceByproducts"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "native_levels": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/NativeLevelDisplay"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Diagnostic"
+          }
+        },
+        "caveats": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "byproduct_version",
+        "contract_version",
+        "method_id",
+        "engine_version",
+        "source",
+        "status",
+        "stream",
+        "coverage",
+        "reference",
+        "native_levels",
+        "diagnostics",
+        "caveats"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "analyzed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "stream": {
+                "$ref": "#/$defs/StreamInfo"
+              },
+              "coverage": {
+                "$ref": "#/$defs/Coverage"
+              },
+              "reference": {
+                "$ref": "#/$defs/ReferenceByproducts"
+              },
+              "native_levels": {
+                "$ref": "#/$defs/NativeLevelDisplay"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "coverage": {
+                "type": "null"
+              },
+              "reference": {
+                "type": "null"
+              },
+              "native_levels": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "FileStatus": {
+      "type": "string",
+      "enum": [
+        "analyzed",
+        "failed",
+        "unsupported",
+        "cancelled",
+        "timed_out"
+      ]
+    },
+    "StreamInfo": {
+      "type": "object",
+      "properties": {
+        "track_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "codec": {
+          "type": "string"
+        },
+        "sample_rate": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "channels": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "bits_per_sample": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4294967295
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "declared_frames": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 18446744073709551615
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "integer_pcm": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "track_id",
+        "codec",
+        "sample_rate",
+        "channels",
+        "bits_per_sample",
+        "declared_frames",
+        "integer_pcm"
+      ],
+      "additionalProperties": false
+    },
+    "Coverage": {
+      "type": "object",
+      "properties": {
+        "start_seconds": {
+          "type": "number",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308
+        },
+        "end_seconds": {
+          "type": "number",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308
+        },
+        "analyzed_frames": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "reached_end": {
+          "type": "boolean"
+        },
+        "requested_max_seconds": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": -1.7976931348623157e+308,
+              "maximum": 1.7976931348623157e+308
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "length_matches_header": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "decoder_verification": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "analysis_passes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "decoded_pcm_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "hash_sample_encoding": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "start_seconds",
+        "end_seconds",
+        "analyzed_frames",
+        "reached_end",
+        "requested_max_seconds",
+        "length_matches_header",
+        "decoder_verification",
+        "analysis_passes",
+        "decoded_pcm_sha256",
+        "hash_sample_encoding"
+      ],
+      "additionalProperties": false
+    },
+    "ReferenceByproducts": {
+      "type": "object",
+      "properties": {
+        "basis": {
+          "type": "string"
+        },
+        "interval": {
+          "$ref": "#/$defs/AnalysisInterval"
+        },
+        "mid_peak": {
+          "type": "number",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308
+        },
+        "side_peak": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": -1.7976931348623157e+308,
+              "maximum": 1.7976931348623157e+308
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "native_signal_present": {
+          "type": "boolean"
+        },
+        "mid_cancelled_with_native_signal": {
+          "type": "boolean"
+        },
+        "phase": {
+          "$ref": "#/$defs/ReferencePhase"
+        },
+        "ceiling_count": {
+          "$ref": "#/$defs/ReferenceCeilingCount"
+        },
+        "silence": {
+          "$ref": "#/$defs/ReferenceSilence"
+        },
+        "noise_floor_fallback": {
+          "$ref": "#/$defs/ReferenceNoiseFloor"
+        }
+      },
+      "required": [
+        "basis",
+        "interval",
+        "mid_peak",
+        "side_peak",
+        "native_signal_present",
+        "mid_cancelled_with_native_signal",
+        "phase",
+        "ceiling_count",
+        "silence",
+        "noise_floor_fallback"
+      ],
+      "additionalProperties": false
+    },
+    "AnalysisInterval": {
+      "type": "object",
+      "properties": {
+        "start_frame": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "end_frame": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        }
+      },
+      "required": [
+        "start_frame",
+        "end_frame"
+      ],
+      "additionalProperties": false
+    },
+    "ReferencePhase": {
+      "type": "object",
+      "properties": {
+        "availability": {
+          "$ref": "#/$defs/ByproductAvailability"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "block_frames": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "complete_blocks": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "valid_blocks": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "trailing_frames": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "denominator_strict_minimum": {
+          "type": "number",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308
+        },
+        "mean_correlation": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": -1.7976931348623157e+308,
+              "maximum": 1.7976931348623157e+308
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "display": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "legacy_verdict": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Pinned wording for audit only; it is not a validated diagnosis."
+        },
+        "summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "availability",
+        "reason",
+        "block_frames",
+        "complete_blocks",
+        "valid_blocks",
+        "trailing_frames",
+        "denominator_strict_minimum",
+        "mean_correlation",
+        "display",
+        "legacy_verdict",
+        "summary"
+      ],
+      "additionalProperties": false
+    },
+    "ByproductAvailability": {
+      "type": "string",
+      "enum": [
+        "available",
+        "unavailable",
+        "inapplicable",
+        "resource_limit"
+      ]
+    },
+    "ReferenceCeilingCount": {
+      "type": "object",
+      "properties": {
+        "threshold_amplitude": {
+          "type": "number",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308
+        },
+        "examined_channel_samples": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "samples_at_or_above_threshold": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "display": {
+          "type": "string"
+        },
+        "legacy_verdict": {
+          "type": "string",
+          "description": "Pinned clipping wording for audit only, not proof of audible distortion."
+        },
+        "summary": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "threshold_amplitude",
+        "examined_channel_samples",
+        "samples_at_or_above_threshold",
+        "display",
+        "legacy_verdict",
+        "summary"
+      ],
+      "additionalProperties": false
+    },
+    "ReferenceSilence": {
+      "type": "object",
+      "properties": {
+        "threshold_amplitude": {
+          "type": "number",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308
+        },
+        "minimum_run_frames": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "total_runs": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "total_silent_frames": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "total_percent": {
+          "$ref": "#/$defs/DisplayValue"
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/SilenceSection"
+          },
+          "maxItems": 1024
+        },
+        "omitted_sections": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        }
+      },
+      "required": [
+        "threshold_amplitude",
+        "minimum_run_frames",
+        "total_runs",
+        "total_silent_frames",
+        "total_percent",
+        "sections",
+        "omitted_sections"
+      ],
+      "additionalProperties": false
+    },
+    "DisplayValue": {
+      "type": "object",
+      "properties": {
+        "availability": {
+          "$ref": "#/$defs/ByproductAvailability"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": -1.7976931348623157e+308,
+              "maximum": 1.7976931348623157e+308
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unit": {
+          "type": "string"
+        },
+        "display": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "availability",
+        "value",
+        "unit",
+        "display",
+        "reason"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "availability": {
+                "const": "available"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "number"
+              },
+              "display": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "value": {
+                "type": "null"
+              },
+              "display": {
+                "type": "null"
+              },
+              "reason": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "SilenceSection": {
+      "type": "object",
+      "properties": {
+        "interval": {
+          "$ref": "#/$defs/AnalysisInterval"
+        },
+        "duration_seconds": {
+          "type": "number",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308
+        },
+        "ends_near_analyzed_end": {
+          "type": "boolean"
+        },
+        "display": {
+          "type": "string"
+        },
+        "legacy_display": {
+          "type": "string",
+          "description": "The reference's EOF marker is retained only in this audit field."
+        }
+      },
+      "required": [
+        "interval",
+        "duration_seconds",
+        "ends_near_analyzed_end",
+        "display",
+        "legacy_display"
+      ],
+      "additionalProperties": false
+    },
+    "ReferenceNoiseFloor": {
+      "type": "object",
+      "properties": {
+        "block_frames": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "complete_blocks": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "positive_blocks": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "trailing_frames": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "percentile": {
+          "type": "number",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308
+        },
+        "retained_block_limit": {
+          "const": 864000
+        },
+        "percentile_rms": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": -1.7976931348623157e+308,
+              "maximum": 1.7976931348623157e+308
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Linear interpolation on strictly positive complete-block RMS amplitudes."
+        },
+        "level_dbfs": {
+          "$ref": "#/$defs/DisplayValue"
+        }
+      },
+      "required": [
+        "block_frames",
+        "complete_blocks",
+        "positive_blocks",
+        "trailing_frames",
+        "percentile",
+        "retained_block_limit",
+        "percentile_rms",
+        "level_dbfs"
+      ],
+      "additionalProperties": false
+    },
+    "NativeLevelDisplay": {
+      "type": "object",
+      "properties": {
+        "method_id": {
+          "type": "string"
+        },
+        "analyzed_interval": {
+          "$ref": "#/$defs/AnalysisInterval"
+        },
+        "loudness_interval": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AnalysisInterval"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "loudness_range_interval": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AnalysisInterval"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "channels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/NativeChannelDisplay"
+          },
+          "minItems": 1,
+          "maxItems": 2
+        },
+        "integrated_lufs": {
+          "$ref": "#/$defs/DisplayValue"
+        },
+        "range_lu": {
+          "$ref": "#/$defs/DisplayValue"
+        },
+        "momentary_max_lufs": {
+          "$ref": "#/$defs/DisplayValue"
+        },
+        "short_term_max_lufs": {
+          "$ref": "#/$defs/DisplayValue"
+        },
+        "fixed_minus16_delta_db": {
+          "$ref": "#/$defs/DisplayValue"
+        },
+        "fixed_minus14_delta_db": {
+          "$ref": "#/$defs/DisplayValue"
+        }
+      },
+      "required": [
+        "method_id",
+        "analyzed_interval",
+        "loudness_interval",
+        "loudness_range_interval",
+        "channels",
+        "integrated_lufs",
+        "range_lu",
+        "momentary_max_lufs",
+        "short_term_max_lufs",
+        "fixed_minus16_delta_db",
+        "fixed_minus14_delta_db"
+      ],
+      "additionalProperties": false
+    },
+    "NativeChannelDisplay": {
+      "type": "object",
+      "properties": {
+        "channel_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "sample_peak_dbfs": {
+          "$ref": "#/$defs/DisplayValue"
+        },
+        "rms_dbfs": {
+          "$ref": "#/$defs/DisplayValue"
+        },
+        "dc_offset_amplitude": {
+          "$ref": "#/$defs/DisplayValue"
+        },
+        "sample_crest_linear": {
+          "$ref": "#/$defs/DisplayValue"
+        },
+        "sample_crest_db": {
+          "$ref": "#/$defs/DisplayValue"
+        },
+        "estimated_true_peak_dbtp": {
+          "$ref": "#/$defs/DisplayValue"
+        }
+      },
+      "required": [
+        "channel_index",
+        "sample_peak_dbfs",
+        "rms_dbfs",
+        "dc_offset_amplitude",
+        "sample_crest_linear",
+        "sample_crest_db",
+        "estimated_true_peak_dbtp"
+      ],
+      "additionalProperties": false
+    },
+    "Diagnostic": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

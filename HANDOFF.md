@@ -1,10 +1,461 @@
 # Start here: Audio Forensic Rust
 
-Last updated: **2026-10-03**. This file is the portable continuation point for
+Last updated: **2026-10-05**. This file is the portable continuation point for
 another session, coding tool or human. Keep it current using `AGENTS.md`.
 
 ## Current state and next action
 
+- **Source-history publication in progress (2026-10-05).** The owner requested
+  committing/pushing the saved work histories. Remote `origin` is
+  `https://github.com/spideyonmoon/audio-forensic-rust.git`; its `main` matches
+  local base `5ebe87d0c26b79236144a38a0c4ab67efbd3f066`. Selected checkpoint:
+  88 public source/test/schema/helper/roadmap/validation/history files covering
+  completed work through engine 0.26.0/P04c. Private `reference/`, local reports
+  `corpus/local/`, receipts/builds `target/` and toolchains `.tools/` are excluded.
+  Public pending-path/credential-pattern audit and whitespace check passed;
+  48 private recording/note files are fingerprinted for preservation. No DSP
+  implementation/test result changed. Next: commit selected files, push main
+  without rewriting history, verify remote SHA and record publication outcome.
+  Local packaging receipts: ignored `target/history-push-20261005/`.
+
+- **P04c complete: separate reference spectral/transform inputs (2026-10-05).**
+  Engine **0.26.0**. Read `REFERENCE_INPUTS_VALIDATION.md`, `task-results/P04c.md`
+  and `schemas/reference-inputs-1.schema.json`. New source/path APIs
+  `analyze_*_with_reference_inputs` return unchanged native measurement plus
+  reference inputs version 1/method `python-c6ecce2-p04c-f32-v1`, owning
+  G08/G11/G13/G14/G15. Shared pinned f32 mono/mid/side, explicit native peak /
+  mid cancellation, strict Hann4096/hop2048 base inputs, source scatter stride /
+  twenty-bin mode, legacy compacted-phase audit and separate physically gated
+  adjacent phase are preserved. D03 suppresses insufficient/flat numerics.
+  Segments use duration-adaptive 9–36 / CPython Random(42) offsets, retained
+  duplicates, one two-second ring and widened f64 clip FFT. Qualified vote and
+  source silent-only vote are distinct. Nearest wall preserves source order;
+  adaptive wall takes explicit P04a resampling / P04b time-domain void inputs,
+  currently unavailable where required; STFT noise is never a substitute.
+  AAC f32 M/S winner uses native stronger gates and documented anchor ties.
+  Actual pinned Vorbis widens f32 M/S before reconstructing L/R, searches L/R
+  (mono M), and exposes winner/support/tested; card/map/contract wording corrected.
+  Opt-in third pass holds the same worker/source/prefix/control context, verifies
+  exact PCM hash/count/kind, full-EOF checksums and FLAC byte/frame accounting.
+  Native coverage/APIs remain two-pass; failed inputs stay null. No new dependency,
+  duration-sized PCM/spectrogram, runtime tool, score or endgame change.
+  Segment arrays at 384 kHz: **46,080,016 payload bytes**, including 12,288,000
+  scratch; PCM ring/clip are 9,216,000 bytes. Fixed FFT plans/allocator/report /
+  existing native buffers are separate; no total RSS/phone bound is claimed.
+  Optimized MSRV/no-CLI compatibility run passed **79 tests** before final version
+  / u64 ring-index update; final 0.26.0 lib/API run passed **50 tests**. Frozen
+  eight transform layouts and three serialized generated streaming controls
+  passed exact hashes/counts/intervals and unchanged numerical tolerances. Long
+  control: 2,532 active rows, stride 2 / 1,266 samples; physical phase preserves
+  the gap (2,530 pairs vs legacy 2,531). Eighteen schema mutation checks rejected.
+  All-target Clippy with/without CLI and warnings denied, optimized no-CLI reader,
+  formatting/whitespace, six schemas, frozen oracle reproduction, helper syntax
+  and parity inventory passed. Early test literal/prefix-expectation and helper
+  encoding/path/row-split errors were repaired; frozen expectations/tolerances
+  were not widened/regenerated. Detailed receipts are ignored
+  `target/p04c-reference-inputs/`, not source history or an external backup.
+  No full core/CLI integration regression, Android compile/link/device work,
+  private recording analysis, calibration, format work, commit/push/upload or
+  backup. Existing unrelated dirty/untracked work is retained. **No jobs running.**
+  **Next delivery task: P04a (Astra)**, then P04b; read cards and shared reference
+  domain/version contracts. P05 owns scores/interpretation. Final preservation
+  receipt: 263 prior files, 249 unchanged, 14 intentional edits, zero unexpected
+  changes; all 48 private recording/note files, owner checklist, index and clean
+  pinned reference are preserved. Dependencies differ only in the root version.
+
+- **P03a complete: bounded astats/SoX and distinct DR (2026-10-05).**
+  Engine **0.25.0**. Read `TOOL_STATISTICS_VALIDATION.md`, `task-results/P03a.md`
+  and `schemas/tool-statistics-1.schema.json`. New source/path APIs
+  `analyze_*_with_tool_statistics` return unchanged measurement and P03 byproducts
+  plus separate statistics version/contract 1, method
+  `ffmpeg-7.1.1-sox-14.4.2-v1`, inside the same worker/source/prefix/two PCM
+  passes/hash/progress/control contract. Astats uses native lanes, signed-maximum
+  integer normalization, 50 ms EWMA/circular noise queue, entropy, range, exact
+  extrema/absolute-peak/crossing/window counts and distinct overall aggregates.
+  SoX exposes all 15 canonical interleaved signed32 stat keys with precision,
+  saturation/conversion clips and exact sample count. DR independently uses
+  f32 three-second block histograms, second peak/top-20% whole-bin/tail quirks;
+  exact multiples/zero selection/silence stay unavailable. Channel/overall DR
+  and overall integer/legacy first-positive-channel labels remain distinct;
+  unequal stereo gives legacy DR6 versus overall DR0. No crest/LRA substitute,
+  runtime subprocess, new dependency, extra pass or duration-sized PCM.
+  Correct linear/dB crest is separate from raw mislabeled audit. The pinned
+  Python AST verifies all 12 astats audit selections plus DR, including its
+  unanchored Peak count regex selecting later Abs Peak count, omitted trough
+  and print rounding. Undefined upstream sentinels have explicit null reasons;
+  one-sample SoX Windows text/encoding guesses stay audit/diagnostics. Native
+  schema 0.18.0/policy, INCONCLUSIVE ancestry/null index remain unchanged.
+  Scratch ceiling is **1,794,080 payload bytes** at 384 kHz stereo, plus fixed
+  scalar/report overhead; excludes existing native/P03 buffers. Arrays never
+  grow with duration/block count; reductions check cancellation/deadline.
+  Pinned primary source hashes/versions and 28 actual generated tool controls
+  were frozen before Rust; seven combined-asplit precision/DR probes confirmed
+  agreement with Python's graph. Optimized MSRV no-CLI compatibility run passed
+  **66 tests**; targeted 0.25.0 statistics unit/API runs passed **5 + 3 tests**.
+  Final API run verifies unchanged native/byproduct prefix values, exact
+  extrema/absolute-peak audit distinction and failure/cancellation suppression.
+  All-target Rust 1.85 Clippy passed with/without CLI features and warnings
+  denied. Existing/new schemas (47/16/9/3/13), parity inventory, helper syntax,
+  formatting and whitespace passed. Initial tool wrapper/argument/checker/lint
+  errors and real circular-queue/audit-regex mismatches were repaired, without
+  editing the frozen oracle or widening tolerances. Final generated-reader and
+  preservation receipts appear in the packet result: 28 final decoded controls
+  pass exact PCM/counts/nulls and pinned AST audit; six schema mutations rejected.
+  Max level/linear/DR error: 4.99635e-7 dB / 5.00001e-7 / 4.98215e-6 dB; SoX
+  volume follows its three-place print precision. Preservation: 253 prior files,
+  242 unchanged, 11 intentional edits, zero unexpected changes; all 48 original
+  recording/note files, owner checklist and Git index intact, reference pinned
+  and clean, dependencies unchanged except root version. **No jobs remain running.**
+  Local artifacts live
+  under ignored `target/p03a-tool-stats/`, not Git history/external backup.
+  No full core/CLI integration regression, Android compile/link/device work,
+  private recording analysis, calibration, new format work, commit/push/upload
+  or external backup. Existing dirty/untracked work is retained. No P03b/P03c
+  cards exist. **Next delivery task: P04c (Astra), reference basis/segment/
+  scatter/transform adapters**, then P04a/P04b; read their contracts. P07 owns
+  CLI/product workflows. Do not rerun P03/P03a without a concrete change/failure.
+- **P03 complete: reference byproducts and native level display (2026-10-05).**
+  Engine **0.24.0**. Read `BYPRODUCT_VALIDATION.md` and `task-results/P03.md`.
+  New `analyze_path_with_byproducts` / `analyze_source_with_byproducts` return
+  the unchanged native measurement shape plus separate version-1 byproducts,
+  collected optionally inside the existing two passes/worker/progress/control
+  contract and bound to the same PCM hash/coverage. Reference f32 mono/mid/side
+  and reconstructed f32 L/R supply mean valid complete 100 ms Pearson, the fixed
+  16-bit-ceiling sample counter, strict mid quiet runs >=floor(sr/2), and exact
+  positive-block RMS p5 fallback. Counts, tails, sample intervals, units/null
+  reasons and antiphase mid/native-signal cancellation are explicit. Native
+  precision counts, whole-stream correlation, channels/meters/crest remain
+  separate. Native-level display preserves linear/dB crest and actual meter
+  intervals; fixed -16/-14 deltas subtract unrounded native LUFS. Legacy
+  phase/clipping/EOF wording is audit-only, not validated diagnosis/audibility.
+  Silence percentage uses analyzed frames (D02); prefix text says analyzed end.
+  RMS keeps at most 864000 f64 positive scalars (6,912,000 payload bytes), then
+  returns ResourceLimit/null fallback rather than a truncated percentile. Quiet
+  sections keep 1024 intervals with exact all-run totals/omissions. No retained
+  PCM, runtime tool/dependency, extra decode or FFT; ordinary APIs allocate no
+  collector. Failed/unsupported/cancelled/timed-out product fields stay null.
+  Measurement schema `0.18.0`, policy, INCONCLUSIVE ancestry/null index unchanged.
+  Focused optimized Rust 1.85/no-CLI run passed **27 tests**: 4 collector tests
+  (31 pinned vectors/caps) and 23 integrations (5 new API, 18 native/serialization).
+  MSRV all-target Clippy with warnings denied, no-CLI optimized example build,
+  formatting, schemas (16 new / unchanged 47 measurement, 9/3 metadata/audit),
+  frozen 31-vector check, parity inventory, helper syntax and whitespace passed.
+  The final example passed **31 decoded generated WAV cases**, exact independent
+  FFmpeg PCM hashes/frames, all pinned byproduct text/counts/nulls/numerics and
+  both schemas; four invalid schema mutations rejected. Read-only saved checks
+  verified raw/native display mappings. Max phase/RMS-p5/floor error: 1.11e-15
+  absolute / 1.07e-14 relative / 9.95e-14 dB. The 24-bit ceiling control proves
+  reference counts can be nonzero while native full-scale counts remain zero.
+  Initial shorthand-float formatting and sandbox linker failures were repaired;
+  authorized retry passed. Its global filter ran zero integration tests; the
+  unfiltered final integrations passed. Existing schema environment reused after
+  missing-jsonschema probe; no install. Local logs/frozen inputs/reports/hashes
+  live under ignored `target/p03-byproducts/`, not Git history/external backup.
+  Preservation passed for 243 prior files: 232 unchanged, 11 intentional edits,
+  zero unexpected changes; all 48 original recording/note files, owner checklist
+  and Git index are intact. Pinned reference remains clean at its baseline.
+  **No jobs remain running.** No full regression, private audio analysis,
+  endgame/Android compile/link/device work, commit/push/upload or external backup.
+  Existing dirty/untracked work is retained. **Next delivery task: P03a (Sol),
+  bounded astats/SoX statistics and distinct DR**, using its G04/G06 contract;
+  wider reference spectral/transform adapters remain P04c. Do not rerun P03
+  without a relevant change or failure, or substitute endgame detector work.
+- **P02 complete: bounded metadata, encoder traces and ReplayGain (2026-10-05).**
+  Engine **0.23.0**. Read `METADATA_VALIDATION.md` and `task-results/P02.md`.
+  New `metadata::read_metadata_path` / `read_metadata_source` return separate
+  version-1 metadata without decoding PCM, using the same guarded source,
+  worker/cancellation/deadline contract. Native FLAC vendor/comments and picture
+  descriptors; WAV INFO before/after data, raw XML and BEXT text are exposed.
+  Original keys/order/duplicates, named entry references, unknown text, UTF-8
+  truncation/invalid/malformed markers and exact known omission accounting stay
+  explicit. Limits are 1024 entries, 256-byte keys, 16 KiB values and 1 MiB
+  retained text, inside unchanged larger preflight limits. Opaque ancillary
+  structures (including WAV ID3/non-INFO LIST) retain descriptors/unavailability;
+  do not describe this as all binary metadata parsers. F01/F02 have frozen
+  collector/technical hooks but their formats remain pending.
+  Editable encoder/MQA claims are unscored, separate from unchanged MQA bit
+  candidates. ReplayGain preserves pinned finite arithmetic/strict 1/3 dB gates
+  and audit-only legacy tuple; the normal text leaves discrepancy cause unknown.
+  Integrated audit uses actual native LUFS interval/frames/hash/method, rejects
+  failed/unequal/unusable inputs and requires callers to retain the same source
+  snapshot (metadata itself does not hash audio). MediaInfo 24.01's ReplayGain
+  and RIFF IART/Director projection losses are explicitly recorded under D12;
+  Rust keeps the raw gains/artist instead of discarding them.
+  Measurement schema `0.18.0`, policy, ancestry INCONCLUSIVE and null index are
+  unchanged. Separate metadata/audit schemas have 9/3 definitions. Final Rust
+  1.85 optimized focused run passed **38 tests** (10 metadata, 7 container,
+  10 FLAC, 10 source, 1 serialization). Initial 10-test metadata debug run also
+  passed; the broader debug run was stopped during source tests and is incomplete.
+  Final all-target MSRV Clippy with warnings denied, no-CLI example build,
+  formatting, schemas, 21 pinned ReplayGain vectors, parity inventory, Python
+  syntax and whitespace passed. Three generated-only MediaInfo/pinned-extractor
+  controls plus one 0.5-second native audit and four schema rejection mutations
+  passed on the final frozen example. Initial lint/projection/tooling failures
+  and final receipts are retained under ignored `target/p02-metadata/`.
+  Preservation checked 232 prior files: 220 unrelated files unchanged, 12
+  intentional packet edits, no unexpected changes; all 48 user-recording files,
+  owner checklist and Git index are intact; pinned reference clean at baseline.
+  **No jobs remain running.** No full regression, new private audio analysis,
+  Android/link/device checks, detector campaign, commit/push/upload or external
+  backup occurred. Existing dirty/untracked work remains. **Next delivery task:
+  P03 (Sol), byproduct measurements/display mapping**, then P03a; read the card
+  and G03/G05/G07 rather than starting an endgame audit. P02 CLI/product workflow
+  still belongs to P07; do not change existing `--json` to include metadata.
+- **P01 complete: frozen fidelity/release contract (2026-10-05).** Read
+  `PYTHON_PARITY.md`, `RELEASE_CONTRACT.md` v1 and `task-results/P01.md`.
+  Mapped all 155 Python dataclass fields / 139 methods into 30 groups with
+  current Rust/tests, differences/missing work, task owners and acceptance
+  oracles; recorded 34 score/veto entries. New required packets P03a cover
+  tool statistics/DR and P04c cover reference basis/segment/transform adapters.
+  Required DSD scope is mono/stereo DSF/uncompressed DFF DSD64/128/256 to declared
+  88.2 kHz converted PCM. ALAC/M4A and all other implementation remain pending.
+  Product reference assessment is separately versioned/uncalibrated; existing
+  measurement ancestry/index remain INCONCLUSIVE/null. Twelve deviations include
+  no header-ancestry penalties, invalid aliasing or MQA certainty override,
+  shared prefix and corrected block indices/crest units. Engine stays 0.22.0.
+  **Next delivery task: P02 (Sol), metadata/encoder traces/ReplayGain.**
+  The owner supplied independent MQA work during P01 at
+  `C:\Users\Bishal\Documents\antigravity-dev\mqa`. Read
+  `task-results/P01-MQA.md`: existing Rust prototype and saved 57-file survey;
+  55 sync-positive / 2 zero-hit records, 23,552 saved matches. E09 is now READY
+  for a named existing-candidate review, not waiting for any code/recordings and
+  not a beta gate. Source-inspection issues/evidence limits are listed there;
+  no MQA integration/test rerun/new audio scan occurred. Do not rebuild it from
+  scratch or blindly replace the production scanner from its integration note.
+  P01 inventory/task/link/dependency checks, helper syntax, whitespace and all
+  140 preservation hashes passed. Pinned reference stayed clean. Two one-second
+  generated tool probes resolved astats crest units and the SoX key list; local
+  receipts live under ignored `target/p01-contract/`. No Rust regression,
+  Android checks or private audio analysis was needed/run. Existing production,
+  fixtures, owner checklist and index are unchanged. No running jobs, commits,
+  pushes, uploads or new backups. Proposed checkpoint policy awaits owner
+  approval before use; it does not block P02. Historical deferral/next-P01 entries
+  below are superseded by this completed packet and the supplied MQA work.
+- **Delivery roadmap established (2026-10-05).** Read `ROADMAP.md`,
+  `ROADMAP_TASKS.md` and the owner-edited `OWNER_CHECKLIST.md`. User changed the
+  priority: finish a faithful Python-to-Rust product and ship the offline Android
+  app before completing endgame research. This supersedes older Android-deferral
+  and default-next-AAC-research entries below. MQA confirmation stays deferred.
+  App: Alfred; initial distribution GitHub Releases. Owner requires FLAC/WAV,
+  ALAC in M4A and DSD, detailed reference verdict, full metadata and deep results.
+  Test phone Redmi 13 4G/Android 16, APK and ADB available; consider Android 14/15
+  compatibility and roughly 600–700 MB files. Owner selects fresh final-evaluation
+  groups on demand after freezing candidates; no permanent reserved corpus is
+  required. Preserve existing exposure records and private evidence.
+  **Next task: P01 (GPT-6 Astra), fidelity map and frozen release contract.**
+  Sol handles subsequent bounded implementation/UI/build packets; model assignments
+  and dependencies are in the roadmap. Plain “resume” means delivery; a named
+  task means finish that packet and update files. No implementation task has been
+  marked complete by writing this plan. Reference interpretation is a separate
+  explicitly uncalibrated layer; measurement ancestry/index remain unchanged.
+  This session changed documentation only, preserved the owner file, and checked
+  task/link consistency and whitespace. No tests/builds/audio jobs were started.
+  No running jobs, commits, pushes, uploads or new backups. Keep usage modest.
+- **Characterized grouped controls assembled and evaluated (2026-10-04).**
+  User explicitly requested the next control-assembly step. Engine remains
+  0.22.0; no production Rust, threshold, policy, schema or dependency changed.
+  Read `GROUPED_CONTROLS_VALIDATION.md` and `EVALUATION_VALIDATION.md`.
+  New `scripts/build_grouped_controls.py` generates six procedural source
+  families, eight variants each: native/low-pass, AAC 256 at 24/16 bits plus
+  exact 137-frame trim, Vorbis q5 at 24/16 bits, and MP3 192 cross-codec controls.
+  Two groups each belong to development, validation and locked_test. These are
+  known synthetic chains, not independent real-world recordings or a calibrated
+  accuracy corpus. All descendants and both target labels stay in their group.
+  The 48 files passed independent FFmpeg PCM characterization, six exact source
+  integer-PCM checks and six exact trim checks. Eighteen intermediate codec
+  identities/geometries were confirmed separately. Recipes, intermediate audio,
+  tool versions/hashes, source snapshot, frozen analyzer/runner, 96-case manifest,
+  evaluation plan and inventory are retained under ignored local
+  `corpus/local/results/grouped-controls-v1-20261004/bundle/`.
+  Plan/executable freeze preceded detector analysis. Development and validation
+  each passed 16 full-file analyses / exact PCM+frame comparisons and 32 schema-
+  valid associated reports. Both frozen evaluator runs passed. All 16 locked
+  audio files / 32 cases remain without Rust detector reports. No tuning occurred.
+  AAC untrimmed hits: broadband/chirps; harmonic/attacks miss at both precisions.
+  All four AAC trims miss, including two parents that hit. Vorbis hits all four
+  24-bit positives; the 16-bit attacks export misses, the other three hit.
+  Target-negative hits: AAC 0/10 and Vorbis 0/12 in each split; no abstentions.
+  These are dependent synthetic variant counts, not population accuracy.
+  Four generator tests, Python syntax and whitespace passed. Release build
+  passed after the retained sandbox linker failure/authorized retry. Preservation
+  matched 217 unrelated prior files and the Git index; pinned reference is clean.
+  **No jobs remain running.** No Rust regression, private recording analysis,
+  Android/locked evaluation, commit, push, upload or external backup occurred.
+  This assembly/evaluation milestone is complete. Next concrete implementation
+  candidate: address the reproducible AAC trim miss with exhaustive integer-phase
+  search, preserving the threshold and checking resource/cancellation/false hits.
+  Read `AAC_MUSIC_VALIDATION.md` for prior phase diagnostics. Both evaluated
+  splits are now exposed; any follow-up policy informed by them needs a fresh
+  freeze before reserved evaluation. Keep locked groups untouched during tuning.
+  Real-source accuracy, source medium/depth and MQA remain independently gated;
+  Android and MQA remain deferred.
+- **Frozen grouped evaluation implemented (2026-10-04), engine 0.22.0.**
+  Continued the next non-MQA milestone with Android/MQA still deferred.
+  New `src/evaluation.rs` defines codec-stage labels, reviewed/generated/added-stage
+  provenance, source groups, splits and independent PCM expectations. It freezes
+  the manifest and versions, accepts one saved report at a time, and separates
+  AAC/Vorbis hit/no-hit/abstain outcomes by processing/label/provenance. Rates
+  weight each declared source group equally, with abstentions in denominators;
+  unknown histories stay challenge-only and outside labeled rates. The CLI-free
+  `examples/evaluate_reports.rs` provides freeze/run commands, binds the runner
+  executable hash, reads only the selected split, and refuses output overwrite.
+  Missing/duplicate/wrong-split cases and changed contracts/hashes fail explicitly.
+  Read `EVALUATION_VALIDATION.md` before using or extending this API.
+  Rust 1.85 no-CLI focused checks passed **10 tests**; all-target Clippy with
+  warnings denied, no-CLI example build, stable formatting, whitespace, Python
+  helper syntax and unchanged 47-definition schema checks passed. The initial
+  sandbox linker denial and passing authorized retry are retained. Seven final
+  process smoke checks passed on five unchanged generated-only saved reports,
+  including two independent PCM oracle matches. Initial smoke expectation was
+  corrected after source inspection: two noise reports are valid no hits, not
+  abstentions. No Rust policy or source report/oracle was changed for that repair.
+  Logs/receipts are ignored local files in
+  `corpus/local/results/evaluation-v22-20261004/`. **No jobs remain running.**
+  Preservation matched 209 prior unrelated files, including the recordings;
+  the pinned Python reference remains clean. Earlier uncommitted work is retained.
+  Measurement schema/policy/dependencies and detector arithmetic are unchanged;
+  ancestry remains INCONCLUSIVE, evidence index null. No full regression, new
+  private audio analysis, codec campaign, locked accuracy evaluation, commit,
+  push or upload occurred. This milestone supplies the label contract and runner,
+  not a reviewed corpus or validated classifier. Next: assemble independently
+  characterized grouped controls and retained recipes/PCM receipts, freeze a
+  plan/executable, then evaluate separate development/validation groups before
+  opening locked groups. Existing challenge music cannot establish negative
+  ancestry ground truth. AAC/Vorbis coverage research, frequency mirroring,
+  calibrated ancestry/source-medium/original-depth inference remain outstanding.
+- **Non-MQA evidence interpretation implemented (2026-10-04), engine 0.21.0.**
+  The user requested finishing the non-Android work, then explicitly deferred
+  MQA until recordings become available. Both Android and MQA confirmation stay
+  aside. Do not describe the remaining forensic research as one trivial task.
+  New `src/evidence.rs` provides `assess_evidence`, deterministic related-evidence
+  domains, original detector references, all five status counts, deduplicated
+  named method patterns and explicit ancestry/medium/original-depth boundaries.
+  Cross-channel/AAC-basis hits are not treated as independent votes; spectral
+  and sample-rate overlap is explicit. Failed/unsupported/cancelled/timed-out
+  files and unsupported report contracts cannot produce interpreted groups.
+  Unknown detector versions/families are retained uninterpreted. Existing MQA
+  records remain deferred, with no changes to their scanner or confirmation.
+  CLI `--summary` exposes the grouped interpretation; `examples/explain_report.rs`
+  applies it to saved reports without decoding audio. Original report JSON,
+  detector arithmetic, policy, dependencies and inference labels are unchanged.
+  Read `EVIDENCE_INTERPRETATION.md` for the exact scope and remaining gaps.
+  Rust 1.85 focused checks passed **10 tests** (6 interpretation, 4 CLI), all-target
+  Clippy passed with warnings denied, and the saved-report example built without
+  CLI features. Formatting, whitespace and unchanged 47-definition schema checks
+  passed. Applied the new Rust layer to all **44 existing private reports**:
+  37 available interpretations, 7 explicit input-unavailable outcomes. Every
+  detector record remained referenced once, counts/scope stayed exact, and
+  all report/binary fingerprints were preserved. This reuses 0.18.0 observations;
+  it is not a new audio analysis or accuracy evaluation. **No jobs remain running.**
+  Logs/receipts are ignored local files in
+  `corpus/local/results/evidence-v21-20261004/`. No full regression rerun, audio
+  modification, private upload, commit or push occurred.
+  The grouping/presentation milestone is complete. Calibrated ancestry,
+  source-medium and original-depth inference remain incomplete, as do the
+  documented AAC/Vorbis coverage limitations and general frequency-mirroring
+  research. The available claimed-history music cannot establish negative
+  ancestry ground truth. Next non-MQA classifier milestone: define a scoped
+  label contract and assemble independently characterized grouped controls,
+  then evaluate a frozen candidate policy. Do not invent weights or repeatedly
+  rerun these same challenge files to claim that prerequisite is satisfied.
+- **Background job API implemented (2026-10-04), engine 0.20.0.**
+  Continued implementation toward host integration with Android still deferred.
+  New `src/job.rs` exports `AnalysisJob`, `StartJobError`, `AnalysisJobError`.
+  Path opening/source analysis runs on a worker, progress occupies one latest
+  value, result polling consumes completion once, and handle drop cancels without
+  waiting. One unfinished background job per process is admitted; Busy rejects
+  additional jobs without queuing. Admission survives handle teardown until the
+  source is released, including blocked I/O and panic unwinding. The runnable
+  background example now uses this API. No dependencies, detector arithmetic,
+  report schema or ancestry policy changed. Read `JOB_VALIDATION.md` and
+  `CORE_INTEGRATION.md` before continuing this interface.
+  Focused no-CLI Rust 1.85 checks passed **9 tests** (4 job lifecycle, 4 progress,
+  1 worker budget). The first sandbox build failed because the linker was denied;
+  its authorized retry passed. Schema drift passed (47 definitions).
+  MSRV all-target Clippy (warnings denied), no-CLI example build, stable formatting
+  and whitespace checks passed. The updated consumer passed all five generated
+  report/exit/schema cases, including two exact independent WAV/FLAC PCM hashes;
+  binary/input preservation passed. **No task jobs remain running.** Logs live in
+  ignored `corpus/local/results/jobs-v20-20261004/`. No full regression is claimed.
+  This scoped implementation milestone is complete; do not rerun its checks on
+  resume unless a relevant change or failure warrants it.
+  The portable Rust host lifecycle implementation is now present; Android
+  bindings/NDK linking/device behavior remain the next concrete application
+  milestone when resumed: adapt an app-owned seekable source to this job API,
+  then link and exercise cancellation/teardown on device. Calibrated ancestry,
+  source profiles and MQA confirmation retain
+  their independent-data gates; they must not be presented as finished. Avoid
+  starting another speculative parser audit as a substitute for implementation.
+  No private audio analysis, commit, push or upload.
+- **Live progress feature implemented (2026-10-04), engine 0.19.0.** The user
+  explicitly objected to repeated validation-only continuations. Resume requests
+  must advance concrete implementation, with checks scoped to that change.
+  The prior "baseline completed" entry does not mean the entire forensic rewrite
+  is complete. Do not use it to dismiss the remaining implementation scope.
+  New `src/progress.rs`, `analyze_source_with_progress` and
+  `analyze_path_with_progress` provide typed waiting/metadata/decode/detector/
+  completion events. Frame updates are throttled; pass endpoints are explicit.
+  The CLI now accepts `--progress` on stderr and preserves stdout JSON; the host
+  example uses callbacks. Existing APIs remain compatible. No new dependencies,
+  schema change, detector arithmetic or ancestry policy change.
+  Final focused Rust 1.85 tests passed **28 tests** (4 progress, 3 CLI, 10 FLAC,
+  10 source, 1 worker). Initial CLI test incorrectly inspected a stdout-returning
+  helper as stderr; its failed log is retained, and corrected checks passed.
+  Formatting and 47-type schema drift passed; initial no-CLI library/progress/
+  example Clippy passed. Final MSRV all-target Clippy passed with warnings denied.
+  **No task jobs remain running.** Logs are ignored in
+  `corpus/local/results/progress-v19-20261004/`. See `SOURCE_API_VALIDATION.md`.
+  Full regression was not rerun; prior 164-test evidence is for 0.18.3 only.
+  Next implementation work should use this progress interface in the app job/
+  lifecycle bridge when Android resumes; do not substitute speculative parser
+  audits for implementation. Expanded app planning remains deferred. No private
+  audio analysis, commit, push or upload in this continuation.
+- **Initial measurement-core integration baseline completed (2026-10-03).**
+  The user requested finishing the rewrite without further small speculative
+  audits; expanded audiophile-app scope is deferred to a later discussion.
+  `CORE_INTEGRATION.md` defines a finite observations-only WAV/FLAC baseline,
+  separating app engineering from still-unvalidated ancestry research.
+  `examples/background_analysis.rs` demonstrates the public API on a worker
+  with source ownership, cancellation, one report, and explicit host failures.
+  Its offline Rust 1.85 no-default-features build passed. No production API,
+  detector, schema, dependency or version changed. All-target MSRV Clippy,
+  formatting, schema drift and the frozen five-report consumer smoke passed
+  (two exact independent PCM matches). The slow MSRV debug regression was
+  intentionally stopped, not passed. The final Rust 1.98.1 release regression
+  passed **164 tests across 27 suites/doc-tests, zero failures/ignored**, exit 0.
+  All 125 frozen source/test/example/helper/schema files still match. The first
+  consumer smoke failed its binary hash guard because Cargo rebuilt that file;
+  the corrected frozen-executable smoke passed. Both attempts are retained.
+  Logs are ignored/local in
+  `corpus/local/results/core-integration-20261003/`. The preceding speculative
+  block/predictor audit is follow-up hardening, not the next mandatory gate.
+  **No task jobs remain running.** The supported desktop measurement baseline
+  is closed; no further speculative core audit is a mandatory next step.
+  Next engineering milestone, when Android is resumed: bind this API to an
+  application-owned seekable source, verify NDK linking, then lifecycle,
+  cancellation and resource behavior on a device. Expanded app features and
+  calibrated ancestry/source claims remain separate scope. Android implementation
+  remains deferred; no private recording analysis, commit, push or upload.
+- **FLAC header-equivalence audit completed (2026-10-03).** The checkout was
+  clean at local `main` commit `5ebe87d` when this continuation began; this
+  supersedes the older entry's pending-commit statement. Remote state was not
+  checked. Engine remains 0.18.3. Three new generated-only integration tests
+  cover equivalent fixed/inherited/explicit sample rates, inherited precision,
+  mixed equivalent frame headers and contradictory/reserved/zero sample rates.
+  All ten FLAC integration tests passed on Rust 1.85; the new tests exercise
+  48 exact-PCM successful full/prefix reports and 138 rejected reports with no
+  successful measurements. No production defect was found or implementation
+  changed. See `FLAC_INTEGRITY_VALIDATION.md` for checks and retained linker
+  failure/retry logs in ignored `corpus/local/results/flac-header-v18-4-20261003/`
+  (the directory name is an experiment label, not an engine version).
+  Focused MSRV Clippy with warnings denied and stable formatting passed;
+  production files remain unchanged and the pinned reference is clean.
+  The full regression and external matrices were not rerun for this test-only
+  change. **No task jobs remain running.**
+  Next: characterize generated minimum/maximum block lengths and predictor/
+  residual partition boundaries against independent PCM before extending FLAC
+  support. Android remains deferred; ancestry remains inconclusive. No private
+  recording analysis, commit, push or upload in this continuation.
 - **FLAC continuity/rewind audit completed (2026-10-03).** Engine 0.18.3,
   schema/policy/dependencies unchanged; Android deferred. Read
   `FLAC_INTEGRITY_VALIDATION.md`. The initial generated 204-case matrix retained
@@ -1024,8 +1475,10 @@ with all 147 final MSRV debug tests and production-only snapshot checks passing.
 Engine v0.18.2 now closes generated WAV/PCM applicability with 153 release tests,
 23 focused MSRV tests, independent format/precision matrices, mutation regression
 and a production-only source build. Read `WAV_FORMAT_VALIDATION.md`. The next
-engineering job is FLAC unknown totals/checksum absence and damaged-frame
-continuity; Android work remains deferred by the user.
+engineering job recorded there was FLAC unknown totals/checksum absence and
+damaged-frame continuity; that audit and the subsequent header-equivalence
+controls are now complete. Follow the current-state section for the next action;
+Android work remains deferred by the user.
 Read the current state above before choosing further scope. This is core work;
 Android UI, aggregation and source claims remain gated on validation.
 Do not import the reference's source or injected-noise claims. Existing cutoff

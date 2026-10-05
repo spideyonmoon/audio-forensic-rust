@@ -309,6 +309,103 @@ fn valid_crc_does_not_allow_hidden_frames_or_zero_byte_padding() {
     }
 }
 
+#[test]
+fn frame_rate_must_match_streaminfo_even_when_all_frame_headers_agree() {
+    let (header, mut frames, _) = generated(1, true, false);
+    for frame in &mut frames {
+        frame[2] = 0x65; // 16 kHz frames contradict the 8 kHz STREAMINFO.
+        frame[6] = crc(&frame[..6], 8, 7) as u8;
+        let footer = frame.len() - 2;
+        let checksum = (crc(&frame[..footer], 16, 0x8005) as u16).to_be_bytes();
+        frame[footer..].copy_from_slice(&checksum);
+    }
+    failed(joined(&header, &frames), false);
+    failed(joined(&header, &frames), true);
+}
+
+fn rate_header(frame: &[u8], code: u8, extra: &[u8], inherit_precision: bool) -> Vec<u8> {
+    let mut out = frame[..6].to_vec();
+    out[2] = 0x60 | code;
+    if inherit_precision {
+        out[3] &= 0xf0;
+    }
+    out.extend(extra);
+    out.push(crc(&out, 8, 7) as u8);
+    out.extend(&frame[7..frame.len() - 2]);
+    out.extend((crc(&out, 16, 0x8005) as u16).to_be_bytes());
+    out
+}
+
+#[test]
+fn equivalent_rate_and_precision_headers_preserve_pcm() {
+    let encodings: &[(u8, &[u8])] = &[
+        (0, &[]),            // STREAMINFO rate.
+        (4, &[]),            // Fixed 8 kHz code.
+        (12, &[8]),          // Explicit kHz.
+        (13, &[0x1f, 0x40]), // Explicit Hz.
+        (14, &[3, 0x20]),    // Explicit tens of Hz.
+    ];
+    for channels in [1, 2] {
+        for inherit_precision in [false, true] {
+            let (mut header, frames, pcm) = generated(channels, true, false);
+            // Frame byte sizes are optional; extended headers change them.
+            header[12..18].fill(0);
+            for &(code, extra) in encodings {
+                let changed: Vec<_> = frames
+                    .iter()
+                    .map(|f| rate_header(f, code, extra, inherit_precision))
+                    .collect();
+                exact(joined(&header, &changed), &pcm, 1097, channels, false);
+                exact(joined(&header, &changed), &pcm, 400, channels, true);
+            }
+            let mixed: Vec<_> = frames
+                .iter()
+                .zip(encodings)
+                .map(|(f, &(code, extra))| rate_header(f, code, extra, inherit_precision))
+                .collect();
+            exact(joined(&header, &mixed), &pcm, 1097, channels, false);
+            exact(joined(&header, &mixed), &pcm, 400, channels, true);
+        }
+    }
+}
+
+#[test]
+fn contradictory_and_reserved_rates_never_produce_measurements() {
+    let encodings: &[(u8, &[u8])] = &[
+        (1, &[]),
+        (2, &[]),
+        (3, &[]),
+        (5, &[]),
+        (6, &[]),
+        (7, &[]),
+        (8, &[]),
+        (9, &[]),
+        (10, &[]),
+        (11, &[]),
+        (12, &[16]),
+        (13, &[0x3e, 0x80]),
+        (14, &[6, 0x40]),
+        (12, &[0]),
+        (13, &[0, 0]),
+        (14, &[0, 0]),
+        (15, &[]),
+    ];
+    for channels in [1, 2] {
+        for unknown in [false, true] {
+            let (mut header, frames, _) = generated(channels, unknown, false);
+            header[12..18].fill(0);
+            for &(code, extra) in encodings {
+                let changed: Vec<_> = frames
+                    .iter()
+                    .map(|f| rate_header(f, code, extra, false))
+                    .collect();
+                failed(joined(&header, &changed), false);
+                failed(joined(&header, &changed), true);
+            }
+        }
+    }
+}
+
 #[derive(Clone, Copy)]
 enum OnRewind {
     SeekError,

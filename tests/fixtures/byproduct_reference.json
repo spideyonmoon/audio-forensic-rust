@@ -1,0 +1,1518 @@
+{
+  "reference_commit": "c6ecce2296256b516709d87088896d1be913908c",
+  "oracle": "pinned pure functions + independent dense NumPy counts/numerics on f32 mono/mid/side; D02 analyzed denominator",
+  "cases": [
+    {
+      "name": "silence",
+      "channels": 2,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0,
+              0
+            ]
+          ],
+          "repeat": 8000
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "",
+          ""
+        ],
+        "correlation": null,
+        "valid_blocks": 0,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "",
+        "percentile_rms": null,
+        "positive_blocks": 0,
+        "silence_pct": "100.0%",
+        "sections": [
+          "00:00 → 00:01 (1.0s) → EOF"
+        ],
+        "runs": [
+          [
+            0,
+            8000
+          ]
+        ]
+      }
+    },
+    {
+      "name": "dc",
+      "channels": 2,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0.25,
+              -0.125
+            ]
+          ],
+          "repeat": 8000
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "",
+          ""
+        ],
+        "correlation": null,
+        "valid_blocks": 0,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "-24.08",
+        "percentile_rms": 0.0625,
+        "positive_blocks": 10,
+        "silence_pct": "0.0%",
+        "sections": [],
+        "runs": []
+      }
+    },
+    {
+      "name": "mono_sine_equivalent",
+      "channels": 1,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0.5
+            ],
+            [
+              -0.5
+            ]
+          ],
+          "repeat": 4000
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "",
+          ""
+        ],
+        "correlation": null,
+        "valid_blocks": 0,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "-6.02",
+        "percentile_rms": 0.5,
+        "positive_blocks": 10,
+        "silence_pct": "0.0%",
+        "sections": [],
+        "runs": []
+      }
+    },
+    {
+      "name": "dual_mono",
+      "channels": 2,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0.5,
+              0.5
+            ],
+            [
+              -0.5,
+              -0.5
+            ]
+          ],
+          "repeat": 4000
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "1.000",
+          "Mono-compatible"
+        ],
+        "correlation": 1.0,
+        "valid_blocks": 10,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "-6.02",
+        "percentile_rms": 0.5,
+        "positive_blocks": 10,
+        "silence_pct": "0.0%",
+        "sections": [],
+        "runs": []
+      }
+    },
+    {
+      "name": "antiphase",
+      "channels": 2,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0.5,
+              -0.5
+            ],
+            [
+              -0.5,
+              0.5
+            ]
+          ],
+          "repeat": 4000
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "-1.000",
+          "⚠ Phase cancellation — check mono fold-down"
+        ],
+        "correlation": -1.0,
+        "valid_blocks": 10,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "",
+        "percentile_rms": null,
+        "positive_blocks": 0,
+        "silence_pct": "100.0%",
+        "sections": [
+          "00:00 → 00:01 (1.0s) → EOF"
+        ],
+        "runs": [
+          [
+            0,
+            8000
+          ]
+        ]
+      }
+    },
+    {
+      "name": "unequal_gain_dc",
+      "channels": 2,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0.75,
+              0.125
+            ],
+            [
+              -0.25,
+              -0.375
+            ]
+          ],
+          "repeat": 4000
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "1.000",
+          "Mono-compatible"
+        ],
+        "correlation": 1.0,
+        "valid_blocks": 10,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "-8.40",
+        "percentile_rms": 0.3801726581436387,
+        "positive_blocks": 10,
+        "silence_pct": "0.0%",
+        "sections": [],
+        "runs": []
+      }
+    },
+    {
+      "name": "uncorrelated",
+      "channels": 2,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0.5,
+              0.5
+            ],
+            [
+              0.5,
+              -0.5
+            ],
+            [
+              -0.5,
+              0.5
+            ],
+            [
+              -0.5,
+              -0.5
+            ]
+          ],
+          "repeat": 2000
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "0.000",
+          "Wide stereo"
+        ],
+        "correlation": 0.0,
+        "valid_blocks": 10,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "-9.03",
+        "percentile_rms": 0.3535533905932738,
+        "positive_blocks": 10,
+        "silence_pct": "0.0%",
+        "sections": [],
+        "runs": []
+      }
+    },
+    {
+      "name": "mean_blocks_not_whole",
+      "channels": 2,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0.5,
+              0.5
+            ],
+            [
+              -0.5,
+              -0.5
+            ]
+          ],
+          "repeat": 400
+        },
+        {
+          "pattern": [
+            [
+              0.03125,
+              -0.03125
+            ],
+            [
+              -0.03125,
+              0.03125
+            ]
+          ],
+          "repeat": 400
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 1600,
+        "phase": [
+          "0.000",
+          "Wide stereo"
+        ],
+        "correlation": 0.0,
+        "valid_blocks": 2,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "",
+        "percentile_rms": null,
+        "positive_blocks": 1,
+        "silence_pct": "0.0%",
+        "sections": [],
+        "runs": []
+      }
+    },
+    {
+      "name": "silent_window_and_tail",
+      "channels": 2,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0,
+              0
+            ]
+          ],
+          "repeat": 800
+        },
+        {
+          "pattern": [
+            [
+              0.25,
+              0.25
+            ],
+            [
+              -0.25,
+              -0.25
+            ]
+          ],
+          "repeat": 400
+        },
+        {
+          "pattern": [
+            [
+              0.5,
+              -0.5
+            ]
+          ],
+          "repeat": 799
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 2399,
+        "phase": [
+          "1.000",
+          "Mono-compatible"
+        ],
+        "correlation": 1.0,
+        "valid_blocks": 1,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "",
+        "percentile_rms": null,
+        "positive_blocks": 1,
+        "silence_pct": "0.0%",
+        "sections": [],
+        "runs": []
+      }
+    },
+    {
+      "name": "ceiling_0",
+      "channels": 2,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0,
+              0
+            ]
+          ],
+          "repeat": 8000
+        },
+        {
+          "pattern": [
+            [
+              0.999969482421875,
+              0
+            ]
+          ],
+          "repeat": 0
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "",
+          ""
+        ],
+        "correlation": null,
+        "valid_blocks": 0,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "",
+        "percentile_rms": null,
+        "positive_blocks": 0,
+        "silence_pct": "100.0%",
+        "sections": [
+          "00:00 → 00:01 (1.0s) → EOF"
+        ],
+        "runs": [
+          [
+            0,
+            8000
+          ]
+        ]
+      }
+    },
+    {
+      "name": "ceiling_9",
+      "channels": 2,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0,
+              0
+            ]
+          ],
+          "repeat": 7991
+        },
+        {
+          "pattern": [
+            [
+              0.999969482421875,
+              0
+            ]
+          ],
+          "repeat": 9
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "",
+          ""
+        ],
+        "correlation": null,
+        "valid_blocks": 0,
+        "clipping": [
+          "9",
+          "~ 9 clipped sample(s) — minor"
+        ],
+        "floor": "",
+        "percentile_rms": null,
+        "positive_blocks": 1,
+        "silence_pct": "99.9%",
+        "sections": [
+          "00:00 → 00:00 (1.0s)"
+        ],
+        "runs": [
+          [
+            0,
+            7991
+          ]
+        ]
+      }
+    },
+    {
+      "name": "ceiling_10",
+      "channels": 2,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0,
+              0
+            ]
+          ],
+          "repeat": 7990
+        },
+        {
+          "pattern": [
+            [
+              0.999969482421875,
+              0
+            ]
+          ],
+          "repeat": 10
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "",
+          ""
+        ],
+        "correlation": null,
+        "valid_blocks": 0,
+        "clipping": [
+          "10",
+          "⚠ 10 clipped samples — audible distortion likely"
+        ],
+        "floor": "",
+        "percentile_rms": null,
+        "positive_blocks": 1,
+        "silence_pct": "99.9%",
+        "sections": [
+          "00:00 → 00:00 (1.0s)"
+        ],
+        "runs": [
+          [
+            0,
+            7990
+          ]
+        ]
+      }
+    },
+    {
+      "name": "ceiling_1000",
+      "channels": 2,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0,
+              0
+            ]
+          ],
+          "repeat": 7000
+        },
+        {
+          "pattern": [
+            [
+              0.999969482421875,
+              0
+            ]
+          ],
+          "repeat": 1000
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "",
+          ""
+        ],
+        "correlation": null,
+        "valid_blocks": 0,
+        "clipping": [
+          "1000",
+          "⚠ 1,000 clipped samples — audible distortion likely"
+        ],
+        "floor": "",
+        "percentile_rms": null,
+        "positive_blocks": 2,
+        "silence_pct": "87.5%",
+        "sections": [
+          "00:00 → 00:00 (0.9s)"
+        ],
+        "runs": [
+          [
+            0,
+            7000
+          ]
+        ]
+      }
+    },
+    {
+      "name": "plateau_below_ceiling",
+      "channels": 2,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0.9,
+              -0.9
+            ]
+          ],
+          "repeat": 8000
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "",
+          ""
+        ],
+        "correlation": null,
+        "valid_blocks": 0,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "",
+        "percentile_rms": null,
+        "positive_blocks": 0,
+        "silence_pct": "100.0%",
+        "sections": [
+          "00:00 → 00:01 (1.0s) → EOF"
+        ],
+        "runs": [
+          [
+            0,
+            8000
+          ]
+        ]
+      }
+    },
+    {
+      "name": "overrange_float",
+      "channels": 2,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              1.25,
+              -1.5
+            ],
+            [
+              -1.25,
+              1.5
+            ]
+          ],
+          "repeat": 4000
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "-1.000",
+          "⚠ Phase cancellation — check mono fold-down"
+        ],
+        "correlation": -1.0,
+        "valid_blocks": 10,
+        "clipping": [
+          "16000",
+          "⚠ 16,000 clipped samples — audible distortion likely"
+        ],
+        "floor": "-18.06",
+        "percentile_rms": 0.125,
+        "positive_blocks": 10,
+        "silence_pct": "0.0%",
+        "sections": [],
+        "runs": []
+      }
+    },
+    {
+      "name": "precision24_fixed_ceiling",
+      "channels": 2,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0.999969482421875,
+              -0.999969482421875
+            ]
+          ],
+          "repeat": 8000
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "",
+          ""
+        ],
+        "correlation": null,
+        "valid_blocks": 0,
+        "clipping": [
+          "16000",
+          "⚠ 16,000 clipped samples — audible distortion likely"
+        ],
+        "floor": "",
+        "percentile_rms": null,
+        "positive_blocks": 0,
+        "silence_pct": "100.0%",
+        "sections": [
+          "00:00 → 00:01 (1.0s) → EOF"
+        ],
+        "runs": [
+          [
+            0,
+            8000
+          ]
+        ]
+      }
+    },
+    {
+      "name": "quiet_just_short",
+      "channels": 1,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0
+            ]
+          ],
+          "repeat": 3999
+        },
+        {
+          "pattern": [
+            [
+              0.25
+            ]
+          ],
+          "repeat": 4001
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "",
+          ""
+        ],
+        "correlation": null,
+        "valid_blocks": 0,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "-23.21",
+        "percentile_rms": 0.06912912607362388,
+        "positive_blocks": 6,
+        "silence_pct": "0.0%",
+        "sections": [],
+        "runs": []
+      }
+    },
+    {
+      "name": "quiet_half_second",
+      "channels": 1,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0
+            ]
+          ],
+          "repeat": 4000
+        },
+        {
+          "pattern": [
+            [
+              0.25
+            ]
+          ],
+          "repeat": 4000
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "",
+          ""
+        ],
+        "correlation": null,
+        "valid_blocks": 0,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "-12.04",
+        "percentile_rms": 0.25,
+        "positive_blocks": 5,
+        "silence_pct": "50.0%",
+        "sections": [
+          "00:00 → 00:00 (0.5s)"
+        ],
+        "runs": [
+          [
+            0,
+            4000
+          ]
+        ]
+      }
+    },
+    {
+      "name": "quiet_trailing_equality",
+      "channels": 1,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0.25
+            ]
+          ],
+          "repeat": 4000
+        },
+        {
+          "pattern": [
+            [
+              0
+            ]
+          ],
+          "repeat": 4000
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "",
+          ""
+        ],
+        "correlation": null,
+        "valid_blocks": 0,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "-12.04",
+        "percentile_rms": 0.25,
+        "positive_blocks": 5,
+        "silence_pct": "50.0%",
+        "sections": [
+          "00:00 → 00:01 (0.5s) → EOF"
+        ],
+        "runs": [
+          [
+            4000,
+            8000
+          ]
+        ]
+      }
+    },
+    {
+      "name": "silence_strict_equality",
+      "channels": 1,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0.0010000000474974513
+            ]
+          ],
+          "repeat": 8000
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "",
+          ""
+        ],
+        "correlation": null,
+        "valid_blocks": 0,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "-60.00",
+        "percentile_rms": 0.0010000000474974513,
+        "positive_blocks": 10,
+        "silence_pct": "0.0%",
+        "sections": [],
+        "runs": []
+      }
+    },
+    {
+      "name": "silence_below_threshold",
+      "channels": 1,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0.0009999999310821295
+            ]
+          ],
+          "repeat": 8000
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "",
+          ""
+        ],
+        "correlation": null,
+        "valid_blocks": 0,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "-60.00",
+        "percentile_rms": 0.0009999999310821295,
+        "positive_blocks": 10,
+        "silence_pct": "100.0%",
+        "sections": [
+          "00:00 → 00:01 (1.0s) → EOF"
+        ],
+        "runs": [
+          [
+            0,
+            8000
+          ]
+        ]
+      }
+    },
+    {
+      "name": "fade",
+      "channels": 1,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0.25
+            ]
+          ],
+          "repeat": 2000
+        },
+        {
+          "pattern": [
+            [
+              0.005
+            ]
+          ],
+          "repeat": 2000
+        },
+        {
+          "pattern": [
+            [
+              0.0005
+            ]
+          ],
+          "repeat": 2000
+        },
+        {
+          "pattern": [
+            [
+              0
+            ]
+          ],
+          "repeat": 2000
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "",
+          ""
+        ],
+        "correlation": null,
+        "valid_blocks": 0,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "-67.85",
+        "percentile_rms": 0.0004048097231130571,
+        "positive_blocks": 8,
+        "silence_pct": "50.0%",
+        "sections": [
+          "00:00 → 00:01 (0.5s) → EOF"
+        ],
+        "runs": [
+          [
+            4000,
+            8000
+          ]
+        ]
+      }
+    },
+    {
+      "name": "noise_positive_p5",
+      "channels": 1,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0
+            ]
+          ],
+          "repeat": 800
+        },
+        {
+          "pattern": [
+            [
+              0.5
+            ],
+            [
+              -0.5
+            ]
+          ],
+          "repeat": 400
+        },
+        {
+          "pattern": [
+            [
+              0.25
+            ],
+            [
+              -0.25
+            ]
+          ],
+          "repeat": 400
+        },
+        {
+          "pattern": [
+            [
+              0.125
+            ],
+            [
+              -0.125
+            ]
+          ],
+          "repeat": 400
+        },
+        {
+          "pattern": [
+            [
+              0.0625
+            ],
+            [
+              -0.0625
+            ]
+          ],
+          "repeat": 400
+        },
+        {
+          "pattern": [
+            [
+              0.03125
+            ],
+            [
+              -0.03125
+            ]
+          ],
+          "repeat": 400
+        },
+        {
+          "pattern": [
+            [
+              0.015625
+            ],
+            [
+              -0.015625
+            ]
+          ],
+          "repeat": 400
+        },
+        {
+          "pattern": [
+            [
+              0.0078125
+            ],
+            [
+              -0.0078125
+            ]
+          ],
+          "repeat": 400
+        },
+        {
+          "pattern": [
+            [
+              0.00390625
+            ],
+            [
+              -0.00390625
+            ]
+          ],
+          "repeat": 400
+        },
+        {
+          "pattern": [
+            [
+              0.001953125
+            ],
+            [
+              -0.001953125
+            ]
+          ],
+          "repeat": 400
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "",
+          ""
+        ],
+        "correlation": null,
+        "valid_blocks": 0,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "-51.26",
+        "percentile_rms": 0.002734375,
+        "positive_blocks": 9,
+        "silence_pct": "0.0%",
+        "sections": [],
+        "runs": []
+      }
+    },
+    {
+      "name": "noise_four_positive",
+      "channels": 1,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0
+            ]
+          ],
+          "repeat": 4800
+        },
+        {
+          "pattern": [
+            [
+              0.125
+            ]
+          ],
+          "repeat": 3200
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "",
+          ""
+        ],
+        "correlation": null,
+        "valid_blocks": 0,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "",
+        "percentile_rms": null,
+        "positive_blocks": 4,
+        "silence_pct": "60.0%",
+        "sections": [
+          "00:00 → 00:00 (0.6s)"
+        ],
+        "runs": [
+          [
+            0,
+            4800
+          ]
+        ]
+      }
+    },
+    {
+      "name": "noise_short",
+      "channels": 1,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0.125
+            ]
+          ],
+          "repeat": 7999
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 7999,
+        "phase": [
+          "",
+          ""
+        ],
+        "correlation": null,
+        "valid_blocks": 0,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "",
+        "percentile_rms": null,
+        "positive_blocks": 9,
+        "silence_pct": "0.0%",
+        "sections": [],
+        "runs": []
+      }
+    },
+    {
+      "name": "phase_short",
+      "channels": 2,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0.125,
+              0.125
+            ]
+          ],
+          "repeat": 799
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 799,
+        "phase": [
+          "",
+          ""
+        ],
+        "correlation": null,
+        "valid_blocks": 0,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "",
+        "percentile_rms": null,
+        "positive_blocks": 0,
+        "silence_pct": "0.0%",
+        "sections": [],
+        "runs": []
+      }
+    },
+    {
+      "name": "phase_variance_below_gate",
+      "channels": 2,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              1e-08,
+              1e-08
+            ],
+            [
+              -1e-08,
+              -1e-08
+            ]
+          ],
+          "repeat": 4000
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "",
+          ""
+        ],
+        "correlation": null,
+        "valid_blocks": 0,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "-160.00",
+        "percentile_rms": 9.99999993922529e-09,
+        "positive_blocks": 10,
+        "silence_pct": "100.0%",
+        "sections": [
+          "00:00 → 00:01 (1.0s) → EOF"
+        ],
+        "runs": [
+          [
+            0,
+            8000
+          ]
+        ]
+      }
+    },
+    {
+      "name": "phase_variance_above_gate",
+      "channels": 2,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              1e-07,
+              1e-07
+            ],
+            [
+              -1e-07,
+              -1e-07
+            ]
+          ],
+          "repeat": 4000
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "1.000",
+          "Mono-compatible"
+        ],
+        "correlation": 1.0,
+        "valid_blocks": 10,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "-140.00",
+        "percentile_rms": 1.0000000116860974e-07,
+        "positive_blocks": 10,
+        "silence_pct": "100.0%",
+        "sections": [
+          "00:00 → 00:01 (1.0s) → EOF"
+        ],
+        "runs": [
+          [
+            0,
+            8000
+          ]
+        ]
+      }
+    },
+    {
+      "name": "prefix_percent",
+      "channels": 1,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0
+            ]
+          ],
+          "repeat": 4000
+        },
+        {
+          "pattern": [
+            [
+              0.25
+            ]
+          ],
+          "repeat": 12000
+        }
+      ],
+      "prefix_frames": 8000,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "",
+          ""
+        ],
+        "correlation": null,
+        "valid_blocks": 0,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "-12.04",
+        "percentile_rms": 0.25,
+        "positive_blocks": 5,
+        "silence_pct": "50.0%",
+        "sections": [
+          "00:00 → 00:00 (0.5s)"
+        ],
+        "runs": [
+          [
+            0,
+            4000
+          ]
+        ]
+      }
+    },
+    {
+      "name": "odd_rate_half_second",
+      "channels": 1,
+      "rate": 11025,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0
+            ]
+          ],
+          "repeat": 5512
+        },
+        {
+          "pattern": [
+            [
+              0.25
+            ]
+          ],
+          "repeat": 5513
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 11025,
+        "phase": [
+          "",
+          ""
+        ],
+        "correlation": null,
+        "valid_blocks": 0,
+        "clipping": [
+          "0",
+          "✓ No clipped samples"
+        ],
+        "floor": "-12.05",
+        "percentile_rms": 0.24981842937700538,
+        "positive_blocks": 5,
+        "silence_pct": "50.0%",
+        "sections": [
+          "00:00 → 00:00 (0.5s)"
+        ],
+        "runs": [
+          [
+            0,
+            5512
+          ]
+        ]
+      }
+    },
+    {
+      "name": "reconstruction_rounding",
+      "channels": 2,
+      "rate": 8000,
+      "segments": [
+        {
+          "pattern": [
+            [
+              0.99999994,
+              0.33333334
+            ],
+            [
+              -0.12500001,
+              0.5
+            ]
+          ],
+          "repeat": 4000
+        }
+      ],
+      "prefix_frames": null,
+      "expected": {
+        "frames": 8000,
+        "phase": [
+          "-1.000",
+          "⚠ Phase cancellation — check mono fold-down"
+        ],
+        "correlation": -1.0,
+        "valid_blocks": 10,
+        "clipping": [
+          "4000",
+          "⚠ 4,000 clipped samples — audible distortion likely"
+        ],
+        "floor": "-6.20",
+        "percentile_rms": 0.48969410934916274,
+        "positive_blocks": 10,
+        "silence_pct": "0.0%",
+        "sections": [],
+        "runs": []
+      }
+    }
+  ]
+}

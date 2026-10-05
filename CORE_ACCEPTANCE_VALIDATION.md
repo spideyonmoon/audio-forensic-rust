@@ -3,6 +3,54 @@
 Schema `0.18.0`, policy `observations-only-v18`. This audits engineering gates;
 it does not establish detector accuracy, stable API or Android phone readiness.
 
+## Measurement integration closure — 2026-10-03
+
+The finite initial application component is the current offline observations-only
+WAV/FLAC core, defined in `CORE_INTEGRATION.md`. Unvalidated ancestry/source
+claims remain separate research and must not be exposed as established results.
+New speculative parser controls are follow-up hardening, unless a concrete bug
+blocks the supported scope. This supersedes interpreting every remaining
+research item in the historical acceptance matrix as a prerequisite to any app.
+
+`examples/background_analysis.rs` exercises public API source ownership on a
+background thread, cloned cancellation, a bounded single-result channel and
+explicit host-worker errors. It needs no new dependencies or production API
+changes. The host must schedule UI completion asynchronously; cancellation
+cannot interrupt blocked I/O. A runnable example is not an Android binding.
+
+Current closure evidence is local/ignored under
+`corpus/local/results/core-integration-20261003/`:
+
+- Rust 1.85 offline no-default-features example build passed. The normal
+  dependency tree excludes `clap` and `ctrlc`.
+- Frozen-executable consumer smoke passed five reports: generated WAV/FLAC,
+  missing file, unsupported bytes and cancellation. All five passed the existing
+  offline schema/consistency validator; both successful reports matched the
+  previously recorded independent PCM oracle. All input/binary hashes stayed
+  unchanged. The immediate-cancellation smoke is scheduling-dependent, not a
+  replacement for the deterministic worker-budget integration tests.
+- Rust 1.85 all-target Clippy with warnings denied, stable formatting, Python
+  helper syntax, 47-type schema drift check and scoped whitespace checks passed.
+- Source preservation matched all 125 frozen source/test/example/helper/schema
+  files. Production Rust, manifests, lockfile and schema are unchanged from HEAD;
+  the pinned reference remains clean. The previous turn's three new FLAC tests
+  remain part of this working tree.
+- Final Rust 1.98.1 optimized regression passed **164 tests**, zero failures or
+  ignored, across 27 suite/doc-test results, exit 0. Final preservation again
+  matched all 125 frozen files. The debug attempt was stopped and is incomplete;
+  the earlier consumer attempt failed its binary-identity
+  guard when Cargo replaced the example. `INITIAL_ATTEMPTS.md` preserves both
+  explanations and their separate receipts. Neither is reported as a pass.
+
+The initial desktop measurement integration baseline is complete within this
+scope. No jobs remain running. The next app engineering milestone is Android
+binding/link and actual device/lifecycle validation when that work is resumed.
+
+No private recordings were analyzed. No commit, push, upload, external backup,
+remote CI or Android link/device test occurred. Any future source-only publication
+must include the example and integration guide if it links to them; this local
+work does not update an external publication.
+
 ## Process budget and cooperative control
 
 `src/worker.rs` permits one active core analysis per process. Acquisition happens

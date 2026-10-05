@@ -1,0 +1,489 @@
+{
+  "reference_commit": "c6ecce2296256b516709d87088896d1be913908c",
+  "numpy": "2.3.5",
+  "scipy": "1.17.1",
+  "reference_source_sha256": "b60959955ed5ed8317cd9c43f7619ca1917c81a41e0d93fa9b2b4185367c1e30",
+  "cases": [
+    {
+      "file": "noise16.wav",
+      "rate": 44100,
+      "pcm_sha256": "1981c82a788cf0be394f6c6326e6e7576a788076b51e7f7834286cada2b0f0e4",
+      "features": {
+        "frames": 11,
+        "active_frames": 11,
+        "cutoff_p95_hz": 22050.0,
+        "cutoff_variance_hz2": 0.0,
+        "sharpness_db_per_bin": 4.475496292114258,
+        "cliff_depth_db": 1.5136024951934814,
+        "hf_magnitude_ratio": 0.31971469409827696,
+        "entropy_bits": 10.982200622558594,
+        "noise_above_cutoff_db": 20.592938090980937,
+        "scatter": {
+          "average_bound_hz": 22042.16974431818,
+          "histogram_mode_hz": 22048.92333984375,
+          "legacy_phase_entropy_bits": 5.1668197520581165,
+          "stride": 1,
+          "sampled_frames": 11
+        }
+      }
+    },
+    {
+      "file": "wall24.wav",
+      "rate": 44100,
+      "pcm_sha256": "e8d235fdda32a5cb4ead626ccce2b9e253f8deba86d3cf9faf644324158d22e1",
+      "features": {
+        "frames": 11,
+        "active_frames": 0
+      }
+    },
+    {
+      "file": "activity16.wav",
+      "rate": 44100,
+      "pcm_sha256": "785c7aee9f3aa0200b79c16dd9ed001bd7dea676a6bd3e078bb44c75ddead2f9",
+      "features": {
+        "frames": 11,
+        "active_frames": 5,
+        "cutoff_p95_hz": 22050.0,
+        "cutoff_variance_hz2": 0.0,
+        "sharpness_db_per_bin": 6.96238899230957,
+        "cliff_depth_db": 4.137181282043457,
+        "hf_magnitude_ratio": 0.3175111456511665,
+        "entropy_bits": 10.956802368164062,
+        "noise_above_cutoff_db": 20.109970245960284,
+        "scatter": {
+          "average_bound_hz": 22037.080078125,
+          "histogram_mode_hz": 22048.385009765625,
+          "legacy_phase_entropy_bits": 5.163675199741711,
+          "stride": 1,
+          "sampled_frames": 5
+        }
+      }
+    },
+    {
+      "file": "rate_full96.flac",
+      "rate": 96000,
+      "pcm_sha256": "1c772c85a7e6527743cd550524ea0572a9b240d10c301ac0bdee25936bb07086",
+      "features": {
+        "frames": 45,
+        "active_frames": 45,
+        "cutoff_p95_hz": 48000.0,
+        "cutoff_variance_hz2": 0.0,
+        "sharpness_db_per_bin": 1.7753760814666748,
+        "cliff_depth_db": -0.3938065767288208,
+        "hf_magnitude_ratio": 0.6895539719011176,
+        "entropy_bits": 10.995916366577148,
+        "noise_above_cutoff_db": 16.83367600634884,
+        "scatter": {
+          "average_bound_hz": 47984.895833333336,
+          "histogram_mode_hz": 47994.7265625,
+          "legacy_phase_entropy_bits": 5.169207504790689,
+          "stride": 1,
+          "sampled_frames": 45
+        }
+      }
+    }
+  ],
+  "offsets": [
+    {
+      "frames": 816000,
+      "rate": 48000,
+      "count": 9,
+      "offsets": []
+    },
+    {
+      "frames": 864000,
+      "rate": 48000,
+      "count": 9,
+      "offsets": [
+        0,
+        96000,
+        192000,
+        288000,
+        384000,
+        480000,
+        576000,
+        670487,
+        768000
+      ]
+    },
+    {
+      "frames": 6432000,
+      "rate": 48000,
+      "count": 9,
+      "offsets": [
+        0,
+        792000,
+        1584000,
+        2376000,
+        3168000,
+        3960000,
+        4752000,
+        5363900,
+        6336000
+      ]
+    },
+    {
+      "frames": 6480000,
+      "rate": 48000,
+      "count": 9,
+      "offsets": [
+        0,
+        798000,
+        1596000,
+        2394000,
+        3192000,
+        3990000,
+        4788000,
+        5363900,
+        6384000
+      ]
+    },
+    {
+      "frames": 7152000,
+      "rate": 48000,
+      "count": 9,
+      "offsets": [
+        0,
+        882000,
+        1764000,
+        2646000,
+        3528000,
+        4410000,
+        5292000,
+        5363900,
+        7056000
+      ]
+    },
+    {
+      "frames": 7200000,
+      "rate": 48000,
+      "count": 10,
+      "offsets": [
+        0,
+        789333,
+        1578666,
+        2367999,
+        3157332,
+        3946665,
+        4735998,
+        5363900,
+        5525331,
+        7104000
+      ]
+    },
+    {
+      "frames": 25872000,
+      "rate": 48000,
+      "count": 35,
+      "offsets": [
+        0,
+        758117,
+        1516234,
+        2274351,
+        3032468,
+        3790585,
+        4548702,
+        5306819,
+        6064936,
+        6823053,
+        7581170,
+        8339287,
+        9097404,
+        9855521,
+        10613638,
+        11371755,
+        12129872,
+        12887989,
+        13646106,
+        14404223,
+        15162340,
+        15920457,
+        16678574,
+        17436691,
+        18194808,
+        18952925,
+        19711042,
+        20469159,
+        21227276,
+        21455603,
+        21985393,
+        22743510,
+        23501627,
+        24259744,
+        25776000
+      ]
+    },
+    {
+      "frames": 25920000,
+      "rate": 48000,
+      "count": 36,
+      "offsets": [
+        0,
+        737828,
+        1475656,
+        2213484,
+        2951312,
+        3689140,
+        4426968,
+        5164796,
+        5902624,
+        6640452,
+        7378280,
+        8116108,
+        8853936,
+        9591764,
+        10329592,
+        11067420,
+        11805248,
+        12543076,
+        13280904,
+        14018732,
+        14756560,
+        15494388,
+        16232216,
+        16970044,
+        17707872,
+        18445700,
+        19183528,
+        19921356,
+        20659184,
+        21397012,
+        21455603,
+        22134840,
+        22872668,
+        23610496,
+        24348324,
+        25824000
+      ]
+    },
+    {
+      "frames": 28800000,
+      "rate": 48000,
+      "count": 36,
+      "offsets": [
+        0,
+        820114,
+        1640228,
+        2460342,
+        3280456,
+        4100570,
+        4920684,
+        5740798,
+        6560912,
+        7381026,
+        8201140,
+        9021254,
+        9841368,
+        10661482,
+        11481596,
+        12301710,
+        13121824,
+        13941938,
+        14762052,
+        15582166,
+        16402280,
+        17222394,
+        18042508,
+        18862622,
+        19682736,
+        20502850,
+        21322964,
+        21455603,
+        22143078,
+        22963192,
+        23783306,
+        24603420,
+        25423534,
+        26243648,
+        27063762,
+        28704000
+      ]
+    },
+    {
+      "frames": 4800000000,
+      "rate": 48000,
+      "count": 36,
+      "offsets": [
+        0,
+        137140114,
+        274280228,
+        411420342,
+        548560456,
+        685700570,
+        822840684,
+        959980798,
+        1097120912,
+        1234261026,
+        1371401140,
+        1508541254,
+        1645681368,
+        1782821482,
+        1919961596,
+        2057101710,
+        2194241824,
+        2331381938,
+        2468522052,
+        2605662166,
+        2742802280,
+        2746317213,
+        2879942394,
+        3017082508,
+        3154222622,
+        3291362736,
+        3428502850,
+        3565642964,
+        3702783078,
+        3839923192,
+        3977063306,
+        4114203420,
+        4251343534,
+        4388483648,
+        4525623762,
+        4799904000
+      ]
+    }
+  ],
+  "basis_vectors": [
+    {
+      "left": 0.123456789,
+      "right": -0.123456788,
+      "mid": 0.0,
+      "side": 0.12345679104328156,
+      "reconstructed_left": 0.12345679104328156,
+      "reconstructed_right": -0.12345679104328156
+    },
+    {
+      "left": 0.75,
+      "right": -0.75,
+      "mid": 0.0,
+      "side": 0.75,
+      "reconstructed_left": 0.75,
+      "reconstructed_right": -0.75
+    },
+    {
+      "left": 1.00000007,
+      "right": 6e-08,
+      "mid": 0.5000001192092896,
+      "side": 0.5,
+      "reconstructed_left": 1.0000001192092896,
+      "reconstructed_right": 1.1920928955078125e-07
+    },
+    {
+      "left": 0.5,
+      "right": 0.5,
+      "mid": 0.5,
+      "side": 0.0,
+      "reconstructed_left": 0.5,
+      "reconstructed_right": 0.5
+    },
+    {
+      "left": 0,
+      "right": 0.7,
+      "mid": 0.3499999940395355,
+      "side": -0.3499999940395355,
+      "reconstructed_left": 0.0,
+      "reconstructed_right": 0.699999988079071
+    }
+  ],
+  "transforms": [
+    {
+      "file": "aac_256_44100.flac",
+      "rate": 44100,
+      "method": "aac",
+      "layout": "mono",
+      "pcm_sha256": "f5ab57f33e9c78eaad6e3fa980f545eace9d840ee125cec6c283596a4551d8f2",
+      "scores": [
+        0.13903061224489793
+      ],
+      "winner": "M"
+    },
+    {
+      "file": "aac_256_44100.flac",
+      "rate": 44100,
+      "method": "aac",
+      "layout": "dual_mono",
+      "pcm_sha256": "f5ab57f33e9c78eaad6e3fa980f545eace9d840ee125cec6c283596a4551d8f2",
+      "scores": [
+        0.13903061224489793,
+        -1.0
+      ],
+      "winner": "M"
+    },
+    {
+      "file": "aac_256_44100.flac",
+      "rate": 44100,
+      "method": "aac",
+      "layout": "antiphase",
+      "pcm_sha256": "f5ab57f33e9c78eaad6e3fa980f545eace9d840ee125cec6c283596a4551d8f2",
+      "scores": [
+        -1.0,
+        0.13903061224489793
+      ],
+      "winner": "S"
+    },
+    {
+      "file": "aac_256_44100.flac",
+      "rate": 44100,
+      "method": "aac",
+      "layout": "right_only",
+      "pcm_sha256": "f5ab57f33e9c78eaad6e3fa980f545eace9d840ee125cec6c283596a4551d8f2",
+      "scores": [
+        0.11734693877551017,
+        0.11734693877551017
+      ],
+      "winner": "M"
+    },
+    {
+      "file": "grid_q6_44100.flac",
+      "rate": 44100,
+      "method": "vorbis",
+      "layout": "mono",
+      "pcm_sha256": "237d4644ffacb7310d5b1af81b65a6c97098b58d9bdee3405a629b5c8de9e620",
+      "score": 0.44786682615629986,
+      "support": 12,
+      "tested": 12,
+      "winner": "M"
+    },
+    {
+      "file": "grid_q6_44100.flac",
+      "rate": 44100,
+      "method": "vorbis",
+      "layout": "dual_mono",
+      "pcm_sha256": "237d4644ffacb7310d5b1af81b65a6c97098b58d9bdee3405a629b5c8de9e620",
+      "score": 0.44786682615629986,
+      "support": 12,
+      "tested": 12,
+      "winner": "L"
+    },
+    {
+      "file": "grid_q6_44100.flac",
+      "rate": 44100,
+      "method": "vorbis",
+      "layout": "antiphase",
+      "pcm_sha256": "237d4644ffacb7310d5b1af81b65a6c97098b58d9bdee3405a629b5c8de9e620",
+      "score": 0.44786682615629986,
+      "support": 12,
+      "tested": 12,
+      "winner": "L"
+    },
+    {
+      "file": "grid_q6_44100.flac",
+      "rate": 44100,
+      "method": "vorbis",
+      "layout": "right_only",
+      "pcm_sha256": "237d4644ffacb7310d5b1af81b65a6c97098b58d9bdee3405a629b5c8de9e620",
+      "score": 0.44786682615629986,
+      "support": 12,
+      "tested": 12,
+      "winner": "R"
+    }
+  ],
+  "long_scatter": {
+    "active_frames": 5003,
+    "stride": 3,
+    "sampled_frames": 1668,
+    "average_bound_hz": 13153.650517086331,
+    "histogram_mode_hz": 7388.37890625,
+    "legacy_phase_entropy_bits": -0.0
+  }
+}

@@ -5,9 +5,16 @@
 - Read `HANDOFF.md` before continuing work. Then read `PORTING_PLAN.md` and the
   validation document relevant to the change. Inspect the actual files before
   assuming that a recorded status is still current.
-- The goal is an entirely offline Rust analysis core, followed by an Android app
-  after core validation. Core development can continue while the user collects
-  independently characterized recordings.
+- Read `ROADMAP.md`, the requested card in `ROADMAP_TASKS.md`, and current
+  `OWNER_CHECKLIST.md`. A plain resume prioritizes the active/next eligible
+  delivery task. Finish a named packet and update its status and handoff.
+- Current priority: faithful Rust rewrite and the offline Alfred Android app,
+  while endgame detector research proceeds separately. Android is authorized;
+  endgame accuracy/calibration and MQA confirmation do not block the first app.
+  Required formats include FLAC, WAV, ALAC/M4A and DSD; follow the task contracts.
+- Conserve usage: targeted inspection/checks, concise updates, Sol for bounded
+  implementation and Astra for difficult DSP/policy/native-boundary work. Do not
+  rerun completed audits without a concrete reason or silently expand scope.
 - Keep changes focused on the current milestone. Preserve unrelated user work.
 
 ## Analysis and validation contracts
@@ -17,6 +24,10 @@
 - Reports currently keep ancestry `INCONCLUSIVE` and evidence index `null`.
   Detector hits are provisional observations, not calibrated probabilities or
   proof of authenticity. Do not add confident scoring without corpus validation.
+- The roadmap authorizes a separate versioned Python-reference assessment with
+  traceable uncalibrated scores/verdicts and explicit deviations. Do not confuse
+  that faithful product behavior with the unchanged measurement report or with
+  validated endgame conclusions. Follow P01/P05 rather than inventing weights.
 - Keep native channels, exact integer PCM, applicability, analysis intervals,
   bounded buffers, cancellation and structured failures explicit.
 - Compare decoding with exact PCM hashes and DSP with documented tolerances.

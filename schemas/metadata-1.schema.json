@@ -1,0 +1,630 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:audio-forensic:metadata:1",
+  "$ref": "#/$defs/MetadataReport",
+  "$defs": {
+    "MetadataReport": {
+      "type": "object",
+      "properties": {
+        "metadata_version": {
+          "const": 1
+        },
+        "contract_version": {
+          "const": 1
+        },
+        "engine_version": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/MetadataStatus"
+        },
+        "technical": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TechnicalMetadata"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "entries": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TagEntry"
+          },
+          "maxItems": 1024
+        },
+        "named_tags": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 18446744073709551615
+            }
+          },
+          "description": "Named Python fields refer to entries; duplicate text is never copied."
+        },
+        "artwork": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ArtworkDescriptor"
+          }
+        },
+        "opaque_metadata": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/OpaqueMetadata"
+          }
+        },
+        "text_limits": {
+          "$ref": "#/$defs/TextLimits"
+        },
+        "observations": {
+          "$ref": "#/$defs/MetadataObservations"
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Diagnostic"
+          }
+        },
+        "caveats": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "metadata_version",
+        "contract_version",
+        "engine_version",
+        "source",
+        "status",
+        "technical",
+        "entries",
+        "named_tags",
+        "artwork",
+        "opaque_metadata",
+        "text_limits",
+        "observations",
+        "diagnostics",
+        "caveats"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "available"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "technical": {
+                "$ref": "#/$defs/TechnicalMetadata"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "MetadataStatus": {
+      "type": "string",
+      "enum": [
+        "available",
+        "failed",
+        "unsupported",
+        "cancelled",
+        "timed_out"
+      ]
+    },
+    "TechnicalMetadata": {
+      "type": "object",
+      "properties": {
+        "container": {
+          "type": "string"
+        },
+        "codec": {
+          "type": "string"
+        },
+        "selected_track_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "file_size_bytes": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 18446744073709551615
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "declared_sample_rate_hz": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4294967295
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "declared_channels": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4294967295
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "declared_precision_bits": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4294967295
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "storage_bits_per_sample": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4294967295
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sample_encoding": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "declared_frames": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 18446744073709551615
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "declared_duration_seconds": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": -1.7976931348623157e+308,
+              "maximum": 1.7976931348623157e+308
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "declared_bit_rate_bps": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 18446744073709551615
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "derived_pcm_bit_rate_bps": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 18446744073709551615
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "compression_mode": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unavailable_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "container",
+        "codec",
+        "selected_track_id",
+        "file_size_bytes",
+        "declared_sample_rate_hz",
+        "declared_channels",
+        "declared_precision_bits",
+        "storage_bits_per_sample",
+        "sample_encoding",
+        "declared_frames",
+        "declared_duration_seconds",
+        "declared_bit_rate_bps",
+        "derived_pcm_bit_rate_bps",
+        "compression_mode",
+        "unavailable_fields"
+      ],
+      "additionalProperties": false
+    },
+    "TagEntry": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string",
+          "description": "Source block/chunk, absolute offset and local order preserve provenance."
+        },
+        "source_offset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "source_order": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "None for artwork; its bytes are deliberately not exposed as base64."
+        },
+        "artwork_index": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 18446744073709551615
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "original_key_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "original_value_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "key_truncated": {
+          "type": "boolean"
+        },
+        "value_truncated": {
+          "type": "boolean"
+        },
+        "invalid_utf8": {
+          "type": "boolean"
+        },
+        "malformed": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "source_offset",
+        "source_order",
+        "key",
+        "value",
+        "artwork_index",
+        "original_key_bytes",
+        "original_value_bytes",
+        "key_truncated",
+        "value_truncated",
+        "invalid_utf8",
+        "malformed"
+      ],
+      "additionalProperties": false
+    },
+    "ArtworkDescriptor": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "source_offset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "picture_type": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4294967295
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "width": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4294967295
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "height": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4294967295
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "depth_bits": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4294967295
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        }
+      },
+      "required": [
+        "source",
+        "source_offset",
+        "picture_type",
+        "width",
+        "height",
+        "depth_bits",
+        "byte_length"
+      ],
+      "additionalProperties": false
+    },
+    "OpaqueMetadata": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "source_offset": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "byte_length": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "source",
+        "source_offset",
+        "byte_length",
+        "reason"
+      ],
+      "additionalProperties": false
+    },
+    "TextLimits": {
+      "type": "object",
+      "properties": {
+        "total_entries": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "omitted_entries": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "truncated_entries": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "invalid_utf8_entries": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "malformed_entries": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "total_text_utf8_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615,
+          "description": "Counts decoded UTF-8 tag text, including replacements for invalid bytes. Artwork's binary/base64 value is excluded and described separately."
+        },
+        "retained_text_utf8_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "omitted_text_utf8_bytes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "complete": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "total_entries",
+        "omitted_entries",
+        "truncated_entries",
+        "invalid_utf8_entries",
+        "malformed_entries",
+        "total_text_utf8_bytes",
+        "retained_text_utf8_bytes",
+        "omitted_text_utf8_bytes",
+        "complete"
+      ],
+      "additionalProperties": false
+    },
+    "MetadataObservations": {
+      "type": "object",
+      "properties": {
+        "encoder_signatures": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "encoder_tag_indices": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 18446744073709551615
+          }
+        },
+        "legacy_extension_eligible": {
+          "type": "boolean"
+        },
+        "legacy_encoder_trace": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "encoder_summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "mqa_metadata_claimed": {
+          "type": "boolean"
+        },
+        "mqa_tag_indices": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 18446744073709551615
+          }
+        },
+        "text_scan_complete": {
+          "type": "boolean",
+          "description": "A negative text search is incomplete if text was omitted or undecodable."
+        }
+      },
+      "required": [
+        "encoder_signatures",
+        "encoder_tag_indices",
+        "legacy_extension_eligible",
+        "legacy_encoder_trace",
+        "encoder_summary",
+        "mqa_metadata_claimed",
+        "mqa_tag_indices",
+        "text_scan_complete"
+      ],
+      "additionalProperties": false
+    },
+    "Diagnostic": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

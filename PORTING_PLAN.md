@@ -1,10 +1,63 @@
 # Rust port decisions
 
+## Current delivery priority — 2026-10-05
+
+Follow `ROADMAP.md` and `ROADMAP_TASKS.md`: faithful rewrite and offline Alfred
+Android app first, endgame improvements separately. Android is now authorized;
+older deferral entries are historical. Required formats are FLAC/WAV, ALAC/M4A
+and DSD. P01 freezes numerical/output fidelity and deviations; P05 implements a
+separate uncalibrated reference assessment, keeping measurement ancestry/index
+unchanged. P01 is complete: `PYTHON_PARITY.md` maps 155 fields/139 methods and
+`RELEASE_CONTRACT.md` v1 freezes domains, tolerances, deviations and format scope.
+Required child packets P03a/P04c close missing tool statistics/DR and reference
+input adapters. Consult the owner-edited `OWNER_CHECKLIST.md` for actual priorities,
+device and fresh-on-demand evaluation policy. P02 implements separate bounded
+FLAC/WAV metadata, encoder/MQA text claims and the pinned ReplayGain comparison;
+see `METADATA_VALIDATION.md` and `task-results/P02.md`. Raw keys/duplicates and
+truncation remain explicit; no tag changes measurement ancestry or score.
+Native tag mapping preserves ReplayGain/IART that MediaInfo 24.01's Python
+projection misses. Metadata/audit version 1 freezes collector hooks for F01/F02;
+opaque ancillary structures and absent header fields remain explicit. Engine
+0.23.0 retains measurement schema/policy unchanged. P03 in engine 0.24.0 adds
+separate reference byproducts and native-level display, collected optionally
+inside the existing two-pass source/worker contract. See BYPRODUCT_VALIDATION.md:
+mean valid 100 ms reconstructed L/R correlation, fixed 16-bit-ceiling sample
+counts, strict mid quiet runs and exact positive-block RMS p5. Native channels,
+precision full-scale counts, meters and measurement schema/policy are unchanged.
+Silence percentage uses analyzed frames (D02), native methods and separate
+linear/dB crest remain explicit (D04); -16/-14 deltas are fixed method targets
+(D11). Bounded RMS scalars/quiet-section output have explicit resource-limit/
+omission states; no duration-sized PCM, external tools or new decode pass.
+P03a in engine 0.25.0 adds optional native-lane astats, all canonical SoX stat
+keys and a distinct f32 drmeter implementation in the same two passes/worker.
+Separate version-1 tool statistics carry methods, input domains, exact counts,
+coverage/hash, finite/null applicability, corrected crest units and legacy audit
+selections. Default APIs/measurement JSON are unchanged. Histograms and 50 ms
+arrays have fixed stereo payload ceiling 1,794,080 bytes, excluding native/P03
+buffers. No duration-sized PCM or runtime tool. Pinned FFmpeg 7.1.1/SoX 14.4.2
+source/controls precede Rust implementation; undefined tails/windows and upstream
+queue quirks are explicit. Overall DR labels differ from Python's first channel
+label; retain both with attribution for P05/P07. See TOOL_STATISTICS_VALIDATION.md.
+P03/P03a acceptance is complete; see task-results/P03.md and task-results/P03a.md.
+P04c is complete in engine 0.26.0; next delivery task: P04a, then P04b.
+The owner supplied independent MQA work during P01; see `task-results/P01-MQA.md`.
+E09 reviews that existing prototype/evidence and does not block the app.
+
 Agreed direction: Rust analysis core, entirely offline, with an Android UI after
 the core is validated. The initial Rust decoding/measurement library and desktop
 CLI are now implemented; see `README.md` for coverage and `VALIDATION.md` for
 recorded checks. The full forensic engine remains in progress. Corpus collection
 and core development can proceed independently.
+
+P04c in engine 0.26.0 adds separate reference inputs version 1, method
+`python-c6ecce2-p04c-f32-v1`, and source/path APIs. The shared f32 basis, base
+STFT, source sampled scatter/20-bin mode, qualified phase, Random(42) segment
+probes and transform winner/support adapters preserve native report/API values.
+Actual pinned Vorbis reconstructs L/R after widening f32 M/S. The opt-in third
+pass verifies the same PCM/prefix/source; ordinary APIs remain two-pass. Segment
+PCM uses a two-second ring rather than a full track or all requested clips.
+Adaptive-wall dependencies await P04a/P04b; no STFT noise substitute or ancestry
+score is added. Read REFERENCE_INPUTS_VALIDATION.md and task-results/P04c.md.
 
 ## Python reference
 
@@ -256,6 +309,37 @@ implemented detectors must not be presented as complete analysis.
 
 ### 4. Evaluate and stabilize the core
 
+Version 0.22.0 adds a scoped codec-stage label contract and offline Rust
+evaluation infrastructure. `FrozenEvaluation` binds declarations, groups, splits,
+independent PCM hashes and versions; `EvaluationSession` processes saved reports
+one at a time. The CLI-free example freezes a plan and runs only one requested
+split. AAC/Vorbis pattern hits/no-hits/abstentions are counted once per file and
+weighted equally by declared source group within processing/provenance strata.
+Unknown histories remain challenge-only and outside labeled rates. This
+implements evaluation accounting, not independently reviewed labels, a corpus,
+population uncertainty estimates or calibrated ancestry classification. See
+`EVALUATION_VALIDATION.md`. Do not treat the intake's `documented` declaration as
+verified negative history or tune against exposed locked results.
+
+The subsequent control-assembly milestone supplies six procedural families,
+48 generated known-chain inputs and 96 codec-specific cases across development,
+validation and reserved locked splits. Commands, lossy intermediates, recipe
+hashes, exact independent PCM and copied binaries are retained locally, with the
+evaluation plan frozen before detector reports. See
+`GROUPED_CONTROLS_VALIDATION.md` for actual coverage results and limitations.
+These controls support scoped engineering sensitivity/false-hit observations;
+they do not provide a representative independently reviewed recording corpus.
+
+The user explicitly deferred both Android and MQA confirmation on 2026-10-04.
+Version 0.21.0 adds the non-MQA evidence grouping layer through `assess_evidence`
+and CLI `--summary`. It groups related spectral/noise observations, deduplicates
+named method matches across channels/bases, retains every record's status and
+scope via source indices, and keeps sample-rate/bit-depth/source-profile findings
+separate from ancestry. Existing measurement JSON and detector arithmetic remain
+unchanged. See `EVIDENCE_INTERPRETATION.md` for the finite implementation boundary
+and exact outstanding inference/data requirements. This does not close calibrated
+classification, known detector misses or source-medium/depth validation.
+
 Use development source groups for algorithm work and grouped validation for
 threshold selection. Freeze policy before evaluating the locked test groups.
 Report performance per codec/processing family with independent source counts,
@@ -340,11 +424,39 @@ Unknown source length, unknown total samples and absent MD5 remain supported
 availability conditions. Prefixes do not validate later frames or whole-stream
 checksums, and a byte-complete shorter stream without total/MD5 cannot establish
 missing final frames. The 270-case integrity matrix and 96 compressed controls
-passed with exact independent PCM and 732 schema-valid reports; MSRV regression
-and production-only validation are in progress. Read `FLAC_INTEGRITY_VALIDATION.md`.
+passed with exact independent PCM and 732 schema-valid reports. The final MSRV
+regression passed all 161 tests; production-only validation also passed. A later
+generated header-equivalence audit passed all ten FLAC integration tests,
+including 48 new exact-PCM successful reports and 138 rejected header controls.
+Read `FLAC_INTEGRITY_VALIDATION.md`.
 Schema, dependencies and detector policy are unchanged; Android stays deferred.
 
 ### 5. Build the Android application
+
+Version 0.20.0 implements a portable background-job lifecycle around the core:
+`AnalysisJob` accepts sources or paths, retains one latest progress value and
+one result, supports polling/cancellation, and requests cancellation on drop.
+Process-wide admission rejects additional unfinished background jobs as Busy;
+dropping a handle cannot admit new work while the old source remains blocked.
+Worker panics remain host errors. The background example now uses this API.
+This completes the reusable Rust worker wrapper, not Android bindings or
+device lifecycle validation. See `JOB_VALIDATION.md` for actual checks.
+
+The 0.19.0 continuation implements the planned core progress interface:
+`analyze_source_with_progress` emits typed stages and bounded-frequency per-pass
+frame updates, supports cancellation from callbacks, and reports terminal status
+after releasing the source/worker. Existing entry points remain available and
+report schema/policy are unchanged. Android bindings remain a separate step.
+
+The first integration target is the 0.18.3 observations-only measurement core
+defined in `CORE_INTEGRATION.md`, with a no-CLI background consumer example.
+Its desktop closure passed 164 release tests, MSRV all-target Clippy and the
+CLI-free consumer's build/report/PCM checks on 2026-10-03. This is the completed
+initial measurement baseline, not a completed classifier or Android release.
+Do not extend this milestone indefinitely with speculative audits or require
+calibrated ancestry/source profiles before displaying supported measurements.
+Those claims retain their separate corpus gates. Further hardening is follow-up
+work unless a concrete defect blocks the documented measurement scope.
 
 After the core gates pass, add Kotlin bindings and the UI: file selection,
 background analysis, progress/cancellation, findings and local report storage.

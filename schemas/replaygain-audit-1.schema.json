@@ -1,0 +1,234 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:audio-forensic:replaygain-audit:1",
+  "$ref": "#/$defs/ReplayGainAudit",
+  "$defs": {
+    "ReplayGainAudit": {
+      "type": "object",
+      "properties": {
+        "audit_version": {
+          "const": 1
+        },
+        "method_id": {
+          "const": "python-reference-c6ecce2-replaygain-v1"
+        },
+        "status": {
+          "$ref": "#/$defs/ReplayGainStatus"
+        },
+        "stored_raw": {
+          "type": "string"
+        },
+        "stored_gain_db": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": -1.7976931348623157e+308,
+              "maximum": 1.7976931348623157e+308
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "measured_lufs": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": -1.7976931348623157e+308,
+              "maximum": 1.7976931348623157e+308
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "implied_legacy_level_lufs": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": -1.7976931348623157e+308,
+              "maximum": 1.7976931348623157e+308
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "absolute_delta_db": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": -1.7976931348623157e+308,
+              "maximum": 1.7976931348623157e+308
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "comparison": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "display_summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "legacy_outputs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 4,
+          "maxItems": 4,
+          "description": "Exact pinned tuple on finite valid inputs. Raw wording is audit-only."
+        },
+        "measurement_method": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "measurement_schema_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "measurement_policy_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "decoded_pcm_sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "sample_rate_hz": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4294967295
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "analyzed_frames": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 18446744073709551615
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "loudness_interval": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AnalysisInterval"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "caveats": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "audit_version",
+        "method_id",
+        "status",
+        "stored_raw",
+        "stored_gain_db",
+        "measured_lufs",
+        "implied_legacy_level_lufs",
+        "absolute_delta_db",
+        "comparison",
+        "display_summary",
+        "legacy_outputs",
+        "measurement_method",
+        "measurement_schema_version",
+        "measurement_policy_version",
+        "decoded_pcm_sha256",
+        "sample_rate_hz",
+        "analyzed_frames",
+        "loudness_interval",
+        "caveats"
+      ],
+      "additionalProperties": false
+    },
+    "ReplayGainStatus": {
+      "type": "string",
+      "enum": [
+        "available",
+        "missing_tag",
+        "missing_loudness",
+        "invalid_tag",
+        "invalid_loudness",
+        "unavailable_input"
+      ]
+    },
+    "AnalysisInterval": {
+      "type": "object",
+      "properties": {
+        "start_frame": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "end_frame": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        }
+      },
+      "required": [
+        "start_frame",
+        "end_frame"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

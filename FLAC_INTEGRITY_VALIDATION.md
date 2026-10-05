@@ -151,3 +151,42 @@ and do not establish a hard RSS cap, Android linking or phone behavior.
 No report schema, decoder dependency, detector thresholds or ancestry policy
 changed. The release test suite was not rerun for 0.18.3; Android/device/remote
 CI checks remain deferred. No private recordings were analyzed.
+
+## Header equivalence and contradiction audit — 2026-10-03
+
+Engine remains 0.18.3. Inspection of the locked decoder showed that its output
+buffer uses STREAMINFO's rate, so the output-buffer rate check alone would not
+establish frame-header agreement. Generated controls confirm that the existing
+reader/core path rejects contradictory frame rates, including when every frame
+agrees with every other frame. No production change was necessary.
+
+Three new tests in `tests/flac_integrity.rs` cover:
+
+- 48 successful full/prefix reports: mono/stereo, explicit/inherited 16-bit
+  precision, all five encodings of 8 kHz (inherited, fixed code, explicit kHz,
+  Hz and tens of Hz), plus a stream mixing those equivalent encodings. Every
+  decoded PCM SHA-256 matches the independently generated integer samples.
+  Optional encoded-frame byte sizes are cleared because extended headers
+  change those sizes; frame/header CRCs are recalculated, not disabled.
+- 136 rejected full/prefix reports: mono/stereo, known/unknown sample totals,
+  ten other fixed rate codes, three explicit contradictory rates, three zero
+  explicit rates and the reserved rate code. Rejected reports have no coverage,
+  channel measurements or detectors. An additional two-report regression
+  specifically covers uniform 16 kHz frames contradicting 8 kHz STREAMINFO.
+- Existing seven FLAC integration tests, including rewind/cancellation and
+  hidden-frame/padding controls, still pass.
+
+All ten integration tests passed with Rust 1.85, zero failures/ignored. The
+focused Rust 1.85 Clippy check with warnings denied and stable formatting check
+also passed. Production files are unchanged in the working-tree diff. The
+first focused attempt was blocked by sandbox linker `Permission denied`, before
+test execution; an authorized offline retry passed. Logs remain separately in
+ignored `corpus/local/results/flac-header-v18-4-20261003/`; the directory's v18-4
+label does not indicate a released or implemented engine version. This audit
+does not re-run the external FFmpeg matrix, JSON Schema export/validation, full
+Rust regression, release tests, resource measurements or Android checks.
+The test signals derive from the earlier independently checked packing; these
+new header variants were not independently decoded by FFmpeg in this audit.
+No production code, schema, dependencies or policy changed. The pinned reference
+is clean at `c6ecce2296256b516709d87088896d1be913908c`. No private recordings
+were analyzed and no files were published.

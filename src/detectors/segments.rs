@@ -14,7 +14,7 @@ pub(crate) const MIN_OCCUPANCY: f64 = 0.30;
 pub(crate) const MAX_PROBES: usize = 36;
 
 // Values retained from the pinned Python CODEC_WALLS, not specification claims.
-const WALLS: &[(&str, &str, f64, f64)] = &[
+pub(crate) const WALLS: &[(&str, &str, f64, f64)] = &[
     ("MP3 (LAME)", "320 kbps", 20220.0, 150.0),
     ("MP3 (LAME)", "320 kbps @48k", 20510.0, 150.0),
     ("MP3 (LAME)", "256 kbps", 19530.0, 150.0),
@@ -79,7 +79,7 @@ pub(crate) fn offsets(frames: u64, rate: u32) -> Vec<u64> {
         .collect()
 }
 
-struct ClipAnalyzer {
+pub(crate) struct ClipAnalyzer {
     rate: u32,
     window: Vec<f64>,
     fft: Arc<dyn Fft<f64>>,
@@ -90,7 +90,12 @@ struct ClipAnalyzer {
 }
 
 impl ClipAnalyzer {
-    fn new(rate: u32) -> Self {
+    #[cfg(test)]
+    pub(crate) fn payload_bytes(&self) -> usize {
+        (self.window.capacity() + self.mag.capacity() + self.db.capacity()) * 8
+            + (self.buffer.capacity() + self.scratch.capacity()) * 16
+    }
+    pub(crate) fn new(rate: u32) -> Self {
         let n = rate as usize * 2;
         let fft = FftPlanner::new().plan_fft_forward(n);
         let scratch = vec![Complex64::default(); fft.get_inplace_scratch_len()];
@@ -107,7 +112,7 @@ impl ClipAnalyzer {
         }
     }
 
-    fn measure(&mut self, samples: &[f64], start: u64) -> SegmentProbe {
+    pub(crate) fn measure(&mut self, samples: &[f64], start: u64) -> SegmentProbe {
         let peak = samples.iter().map(|x| x.abs()).fold(0.0, f64::max);
         let peak_db = (peak > 0.0).then(|| 20.0 * peak.log10());
         let active = peak_db.is_some_and(|p| p >= SILENT_PEAK_DB);

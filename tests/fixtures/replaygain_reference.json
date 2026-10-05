@@ -1,0 +1,216 @@
+{
+  "reference_commit": "c6ecce2296256b516709d87088896d1be913908c",
+  "oracle": "pinned pure audit_replaygain AST; no file/extractor execution",
+  "cases": [
+    {
+      "stored": "",
+      "lufs": "",
+      "expected": [
+        "",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "stored": "",
+      "lufs": "-18",
+      "expected": [
+        "",
+        "-18",
+        "",
+        ""
+      ]
+    },
+    {
+      "stored": "0 dB",
+      "lufs": "",
+      "expected": [
+        "0 dB",
+        "",
+        "",
+        ""
+      ]
+    },
+    {
+      "stored": "+2.00 dB",
+      "lufs": "-16",
+      "expected": [
+        "+2.00 dB",
+        "-16.00 LUFS",
+        "0.0 dB",
+        "✓ RG tag matches measured loudness"
+      ]
+    },
+    {
+      "stored": "-2.00 dB",
+      "lufs": "-20",
+      "expected": [
+        "-2.00 dB",
+        "-20.00 LUFS",
+        "0.0 dB",
+        "✓ RG tag matches measured loudness"
+      ]
+    },
+    {
+      "stored": "0 dB",
+      "lufs": "-18.999",
+      "expected": [
+        "0 dB",
+        "-19.00 LUFS",
+        "1.0 dB",
+        "✓ RG tag matches measured loudness"
+      ]
+    },
+    {
+      "stored": "0 dB",
+      "lufs": "-19",
+      "expected": [
+        "0 dB",
+        "-19.00 LUFS",
+        "1.0 dB",
+        "~ 1.0 dB mismatch — minor discrepancy"
+      ]
+    },
+    {
+      "stored": "0 dB",
+      "lufs": "-20.999",
+      "expected": [
+        "0 dB",
+        "-21.00 LUFS",
+        "3.0 dB",
+        "~ 3.0 dB mismatch — minor discrepancy"
+      ]
+    },
+    {
+      "stored": "0 dB",
+      "lufs": "-21",
+      "expected": [
+        "0 dB",
+        "-21.00 LUFS",
+        "3.0 dB",
+        "⚠ 3.0 dB mismatch — file may have been re-encoded after tagging"
+      ]
+    },
+    {
+      "stored": "1e2 dB",
+      "lufs": "-6",
+      "expected": [
+        "1e2 dB",
+        "-6.00 LUFS",
+        "0.0 dB",
+        "✓ RG tag matches measured loudness"
+      ]
+    },
+    {
+      "stored": "++2dB",
+      "lufs": "-16",
+      "expected": [
+        "++2dB",
+        "-16.00 LUFS",
+        "0.0 dB",
+        "✓ RG tag matches measured loudness"
+      ]
+    },
+    {
+      "stored": "-1.25",
+      "lufs": "-18",
+      "expected": [
+        "-1.25",
+        "-18.00 LUFS",
+        "1.2 dB",
+        "~ 1.2 dB mismatch — minor discrepancy"
+      ]
+    },
+    {
+      "stored": "-1.35",
+      "lufs": "-18",
+      "expected": [
+        "-1.35",
+        "-18.00 LUFS",
+        "1.4 dB",
+        "~ 1.4 dB mismatch — minor discrepancy"
+      ]
+    },
+    {
+      "stored": "broken",
+      "lufs": "-18",
+      "expected": [
+        "broken",
+        "-18",
+        "",
+        ""
+      ]
+    },
+    {
+      "stored": ".--",
+      "lufs": "-18",
+      "expected": [
+        ".--",
+        "-18",
+        "",
+        ""
+      ]
+    },
+    {
+      "stored": "+4 dB",
+      "lufs": "broken",
+      "expected": [
+        "+4 dB",
+        "broken",
+        "",
+        ""
+      ]
+    },
+    {
+      "stored": "  +2 dB  ",
+      "lufs": "-16",
+      "expected": [
+        "+2 dB",
+        "-16.00 LUFS",
+        "0.0 dB",
+        "✓ RG tag matches measured loudness"
+      ]
+    },
+    {
+      "stored": "٢ dB",
+      "lufs": "-16",
+      "expected": [
+        "٢ dB",
+        "-16.00 LUFS",
+        "0.0 dB",
+        "✓ RG tag matches measured loudness"
+      ]
+    },
+    {
+      "stored": "２ dB",
+      "lufs": "-16",
+      "expected": [
+        "２ dB",
+        "-16.00 LUFS",
+        "0.0 dB",
+        "✓ RG tag matches measured loudness"
+      ]
+    },
+    {
+      "stored": "0",
+      "lufs": "-18.125",
+      "expected": [
+        "0",
+        "-18.12 LUFS",
+        "0.1 dB",
+        "✓ RG tag matches measured loudness"
+      ]
+    },
+    {
+      "stored": "0",
+      "lufs": "-18.375",
+      "expected": [
+        "0",
+        "-18.38 LUFS",
+        "0.4 dB",
+        "✓ RG tag matches measured loudness"
+      ]
+    }
+  ]
+}

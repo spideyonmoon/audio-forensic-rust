@@ -1,5 +1,6 @@
 use audio_forensic::{
-    AnalysisOptions, AnalysisReport, CancellationToken, FileStatus, analyze_path,
+    AnalysisOptions, AnalysisProgress, AnalysisReport, CancellationToken, FileStatus, analyze_path,
+    analyze_path_with_progress, assess_evidence,
 };
 use clap::Parser;
 use std::{
@@ -20,6 +21,12 @@ struct Args {
     /// Emit a versioned JSON array, including per-file failures.
     #[arg(long)]
     json: bool,
+    /// Show grouped non-MQA evidence and inference limits instead of detailed measurements.
+    #[arg(long, conflicts_with = "json")]
+    summary: bool,
+    /// Show live stages and per-pass frame counts on stderr (JSON stays on stdout).
+    #[arg(long)]
+    progress: bool,
     /// Analyze the first 60 seconds in every pass.
     #[arg(long, conflicts_with = "max_seconds")]
     fast: bool,
@@ -107,6 +114,29 @@ fn directory_inputs(
     inputs
 }
 
+fn print_progress(event: AnalysisProgress) {
+    match event {
+        AnalysisProgress::WaitingForWorker => eprintln!("  waiting for analysis slot"),
+        AnalysisProgress::ReadingMetadata => eprintln!("  reading metadata"),
+        AnalysisProgress::Decoding {
+            pass,
+            processed_frames,
+            expected_frames,
+        } => {
+            if let Some(expected) = expected_frames {
+                eprintln!(
+                    "  decode pass {pass}/2: {processed_frames} frames (expected {expected})"
+                );
+            } else {
+                eprintln!("  decode pass {pass}/2: {processed_frames} frames (length unknown)");
+            }
+        }
+        AnalysisProgress::AnalyzingDetectors => eprintln!("  analyzing detector observations"),
+        AnalysisProgress::Finished { status } => eprintln!("  finished: {status:?}"),
+        _ => {}
+    }
+}
+
 fn run(args: Args) -> Result<i32, Box<dyn std::error::Error>> {
     let options = AnalysisOptions {
         track_id: args.track_id,
@@ -138,13 +168,34 @@ fn run(args: Args) -> Result<i32, Box<dyn std::error::Error>> {
     for (i, input) in inputs.iter().enumerate() {
         let path = input.path();
         eprintln!("[{}/{}] {}", i + 1, inputs.len(), path.display());
-        let report = input.analyze(&options, &cancel);
+        let report = if args.progress {
+            match input {
+                BatchInput::Audio(path) => {
+                    analyze_path_with_progress(path, &options, &cancel, print_progress)
+                }
+                BatchInput::Failed(_, _) => {
+                    let report = input.analyze(&options, &cancel);
+                    print_progress(AnalysisProgress::Finished {
+                        status: report.status.clone(),
+                    });
+                    report
+                }
+            }
+        } else {
+            input.analyze(&options, &cancel)
+        };
         failed |= report.status != FileStatus::Analyzed;
         if args.json {
             if i > 0 {
                 write!(out, ",")?;
             }
             serde_json::to_writer_pretty(&mut out, &report)?;
+        } else if args.summary {
+            writeln!(out, "{}: {:?}", path.display(), report.status)?;
+            write!(out, "{}", assess_evidence(&report))?;
+            for d in &report.diagnostics {
+                writeln!(out, "  {}: {}", d.code, d.message)?;
+            }
         } else {
             writeln!(
                 out,

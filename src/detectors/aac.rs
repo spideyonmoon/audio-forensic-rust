@@ -66,17 +66,30 @@ fn kbd_window() -> Vec<f64> {
 struct BasisFrame {
     channels: usize,
     left: f64,
+    reference_f32: bool,
 }
 
 impl BasisFrame {
     fn push(&mut self, channel: usize, sample: f64) -> Option<[f64; 2]> {
+        let sample = if self.reference_f32 {
+            f64::from(sample as f32)
+        } else {
+            sample
+        };
         if self.channels == 1 {
             Some([sample, 0.0])
         } else if channel == 0 {
             self.left = sample;
             None
         } else {
-            Some([(self.left + sample) * 0.5, (self.left - sample) * 0.5])
+            Some(if self.reference_f32 {
+                [
+                    f64::from((self.left as f32 + sample as f32) * 0.5),
+                    f64::from((self.left as f32 - sample as f32) * 0.5),
+                ]
+            } else {
+                [(self.left + sample) * 0.5, (self.left - sample) * 0.5]
+            })
         }
     }
 }
@@ -102,10 +115,18 @@ impl AacSelector {
             frame: BasisFrame {
                 channels,
                 left: 0.0,
+                reference_f32: false,
             },
             position: 0,
             energies: (0..channels).map(|_| Energy::default()).collect(),
         }
+    }
+
+    /// Pinned Python rounding is opt-in; native selection remains f64.
+    pub(crate) fn new_reference(rate: u32, channels: usize) -> Self {
+        let mut selector = Self::new(rate, channels);
+        selector.frame.reference_f32 = true;
+        selector
     }
 
     pub fn push(&mut self, channel: usize, sample: f64) {

@@ -1,4 +1,5 @@
 use crate::{
+    byproducts::{ByproductAnalysis, ByproductCollector, ReferenceByproducts},
     detectors::{
         self, aac::AacSelector, envelope::EnvelopeStats, mqa::MqaScanner, noise::NoiseStats,
         noise_floor::FloorSurvey, preceding_energy::EnergySurvey, resampling::ResamplingStats,
@@ -8,7 +9,10 @@ use crate::{
     dsp::{PcmStats, SpectralStats, StreamingStft},
     loudness::LoudnessMeter,
     model::*,
+    progress::{AnalysisProgress, Progress},
+    reference_inputs::{ReferenceAnalysis, ReferenceInputs, ReferenceSurvey},
     stereo::StereoStats,
+    tool_statistics::{ToolAnalysis, ToolCollector, ToolMeasurements},
     true_peak::TruePeakMeter,
 };
 use sha2::{Digest, Sha256};
@@ -75,10 +79,34 @@ pub fn analyze_path(
     options: &AnalysisOptions,
     cancel: &CancellationToken,
 ) -> AnalysisReport {
+    analyze_path_with_progress(path, options, cancel, |_| {})
+}
+
+/// Path-opening convenience wrapper for [`analyze_source_with_progress`].
+/// A path-open failure emits only Finished(Failed). Opening a path itself is
+/// synchronous and is outside the core's cooperative decode deadline.
+pub fn analyze_path_with_progress(
+    path: impl AsRef<Path>,
+    options: &AnalysisOptions,
+    cancel: &CancellationToken,
+    mut callback: impl FnMut(AnalysisProgress),
+) -> AnalysisReport {
     let path = path.as_ref();
     match File::open(path) {
-        Ok(file) => analyze_source(Box::new(file), &path.to_string_lossy(), options, cancel),
-        Err(error) => AnalysisReport::input_failure(path.to_string_lossy(), error.to_string()),
+        Ok(file) => analyze_source_with_progress(
+            Box::new(file),
+            &path.to_string_lossy(),
+            options,
+            cancel,
+            callback,
+        ),
+        Err(error) => {
+            let report = AnalysisReport::input_failure(path.to_string_lossy(), error.to_string());
+            callback(AnalysisProgress::Finished {
+                status: report.status.clone(),
+            });
+            report
+        }
     }
 }
 
@@ -91,11 +119,224 @@ pub fn analyze_source(
     options: &AnalysisOptions,
     cancel: &CancellationToken,
 ) -> AnalysisReport {
+    analyze_source_with_progress(source, name, options, cancel, |_| {})
+}
+
+/// Analyze with synchronous host notifications on the calling thread. Keep the
+/// callback short and nonblocking; processing callback time counts toward the deadline. It may
+/// request cancellation through a cloned token. Do not reenter analysis from a
+/// callback: one worker is held throughout processing. Callback panics unwind
+/// normally and no Finished event is promised in that case.
+///
+/// Decode updates are throttled to at most one per 100 ms, except pass start/end.
+/// No overall percentage or detector-time estimate is implied. Finished is sent
+/// once for every normal return, after the source and worker permit are released.
+/// Cancellation requested in Finished is too late to change the returned report.
+pub fn analyze_source_with_progress(
+    source: Box<dyn MediaSource>,
+    name: &str,
+    options: &AnalysisOptions,
+    cancel: &CancellationToken,
+    mut callback: impl FnMut(AnalysisProgress),
+) -> AnalysisReport {
     let mut report = AnalysisReport::new(name.into());
-    if let Err(error) = analyze(source, options, cancel, &mut report) {
+    let mut progress = Progress::new(&mut callback);
+    if let Err(error) = analyze(
+        source,
+        options,
+        cancel,
+        &mut report,
+        &mut progress,
+        ProductOutputs::default(),
+    ) {
         failure(&mut report, error);
     }
+    progress.emit(AnalysisProgress::Finished {
+        status: report.status.clone(),
+    });
     report
+}
+
+/// Collect the separate reference byproducts while preserving native analysis.
+/// The worker, cancellation, deadline, PCM hashes and progress match the ordinary
+/// source API. No extra decode pass or runtime external tool is required.
+pub fn analyze_source_with_byproducts(
+    source: Box<dyn MediaSource>,
+    name: &str,
+    options: &AnalysisOptions,
+    cancel: &CancellationToken,
+    mut callback: impl FnMut(AnalysisProgress),
+) -> ByproductAnalysis {
+    let mut report = AnalysisReport::new(name.into());
+    let mut reference = None;
+    let mut progress = Progress::new(&mut callback);
+    if let Err(error) = analyze(
+        source,
+        options,
+        cancel,
+        &mut report,
+        &mut progress,
+        ProductOutputs {
+            byproducts: Some(&mut reference),
+            ..Default::default()
+        },
+    ) {
+        failure(&mut report, error);
+    }
+    progress.emit(AnalysisProgress::Finished {
+        status: report.status.clone(),
+    });
+    ByproductAnalysis::new(report, reference)
+}
+
+/// Path-opening convenience wrapper for [`analyze_source_with_byproducts`].
+pub fn analyze_path_with_byproducts(
+    path: impl AsRef<Path>,
+    options: &AnalysisOptions,
+    cancel: &CancellationToken,
+    mut callback: impl FnMut(AnalysisProgress),
+) -> ByproductAnalysis {
+    let path = path.as_ref();
+    match File::open(path) {
+        Ok(file) => analyze_source_with_byproducts(
+            Box::new(file),
+            &path.to_string_lossy(),
+            options,
+            cancel,
+            callback,
+        ),
+        Err(error) => {
+            let report = AnalysisReport::input_failure(path.to_string_lossy(), error.to_string());
+            callback(AnalysisProgress::Finished {
+                status: report.status.clone(),
+            });
+            ByproductAnalysis::new(report, None)
+        }
+    }
+}
+
+/// Collect pinned tool statistics and P03 byproducts in the same worker and
+/// source snapshot as native analysis. No additional decode pass or subprocess.
+pub fn analyze_source_with_tool_statistics(
+    source: Box<dyn MediaSource>,
+    name: &str,
+    options: &AnalysisOptions,
+    cancel: &CancellationToken,
+    mut callback: impl FnMut(AnalysisProgress),
+) -> ToolAnalysis {
+    let mut report = AnalysisReport::new(name.into());
+    let mut reference = None;
+    let mut tools = None;
+    let mut progress = Progress::new(&mut callback);
+    if let Err(error) = analyze(
+        source,
+        options,
+        cancel,
+        &mut report,
+        &mut progress,
+        ProductOutputs {
+            byproducts: Some(&mut reference),
+            tools: Some(&mut tools),
+            ..Default::default()
+        },
+    ) {
+        failure(&mut report, error);
+    }
+    progress.emit(AnalysisProgress::Finished {
+        status: report.status.clone(),
+    });
+    ToolAnalysis::new(report, reference, tools)
+}
+
+/// Path-opening convenience wrapper; failures suppress all product measurements.
+pub fn analyze_path_with_tool_statistics(
+    path: impl AsRef<Path>,
+    options: &AnalysisOptions,
+    cancel: &CancellationToken,
+    mut callback: impl FnMut(AnalysisProgress),
+) -> ToolAnalysis {
+    let path = path.as_ref();
+    match File::open(path) {
+        Ok(file) => analyze_source_with_tool_statistics(
+            Box::new(file),
+            &path.to_string_lossy(),
+            options,
+            cancel,
+            callback,
+        ),
+        Err(error) => {
+            let report = AnalysisReport::input_failure(path.to_string_lossy(), error.to_string());
+            callback(AnalysisProgress::Finished {
+                status: report.status.clone(),
+            });
+            ToolAnalysis::new(report, None, None)
+        }
+    }
+}
+
+/// Collect separate P04c reference inputs with three PCM-verified passes.
+/// One worker/source snapshot; ordinary native APIs remain two-pass. Missing
+/// P04a/P04b adaptive-wall dependencies stay explicitly unavailable.
+pub fn analyze_source_with_reference_inputs(
+    source: Box<dyn MediaSource>,
+    name: &str,
+    options: &AnalysisOptions,
+    cancel: &CancellationToken,
+    mut callback: impl FnMut(AnalysisProgress),
+) -> ReferenceAnalysis {
+    let mut report = AnalysisReport::new(name.into());
+    let mut inputs = None;
+    let mut progress = Progress::new(&mut callback);
+    if let Err(error) = analyze(
+        source,
+        options,
+        cancel,
+        &mut report,
+        &mut progress,
+        ProductOutputs {
+            inputs: Some(&mut inputs),
+            ..Default::default()
+        },
+    ) {
+        failure(&mut report, error);
+    }
+    progress.emit(AnalysisProgress::Finished {
+        status: report.status.clone(),
+    });
+    ReferenceAnalysis::new(report, inputs)
+}
+
+/// Opens the path once. All subsequent passes reuse the same guarded source.
+pub fn analyze_path_with_reference_inputs(
+    path: impl AsRef<Path>,
+    options: &AnalysisOptions,
+    cancel: &CancellationToken,
+    mut callback: impl FnMut(AnalysisProgress),
+) -> ReferenceAnalysis {
+    let path = path.as_ref();
+    match File::open(path) {
+        Ok(file) => analyze_source_with_reference_inputs(
+            Box::new(file),
+            &path.to_string_lossy(),
+            options,
+            cancel,
+            callback,
+        ),
+        Err(error) => {
+            let report = AnalysisReport::input_failure(path.to_string_lossy(), error.to_string());
+            callback(AnalysisProgress::Finished {
+                status: report.status.clone(),
+            });
+            ReferenceAnalysis::new(report, None)
+        }
+    }
+}
+
+#[derive(Default)]
+struct ProductOutputs<'a> {
+    byproducts: Option<&'a mut Option<ReferenceByproducts>>,
+    tools: Option<&'a mut Option<ToolMeasurements>>,
+    inputs: Option<&'a mut Option<ReferenceInputs>>,
 }
 
 fn check_control(
@@ -133,6 +374,7 @@ fn scan(
     format: &mut dyn FormatReader,
     decoder: &mut dyn Decoder,
     context: &ScanContext<'_>,
+    mut progress: impl FnMut(u64, bool),
     mut visit: impl FnMut(usize, f64, Option<i32>),
 ) -> Result<ScanOutcome, Failure> {
     let mut outcome = ScanOutcome {
@@ -143,6 +385,7 @@ fn scan(
         pcm_hash: String::new(),
     };
     let mut hash = Sha256::new();
+    progress(0, true);
     let info = context.info;
     let padding_mask = info
         .bits_per_sample
@@ -246,6 +489,7 @@ fn scan(
             }
         }
         outcome.frames += take as u64;
+        progress(outcome.frames, false);
     }
     if outcome.frames == 0 {
         return Err(Failure::Invalid("No audio samples decoded".into()));
@@ -258,6 +502,8 @@ fn scan(
         )));
     }
     outcome.pcm_hash = format!("{:x}", hash.finalize());
+    progress(outcome.frames, true);
+    check_control(context.options, context.cancel, context.start)?;
     Ok(outcome)
 }
 
@@ -305,7 +551,14 @@ fn analyze(
     options: &AnalysisOptions,
     cancel: &CancellationToken,
     report: &mut AnalysisReport,
+    progress: &mut Progress<'_>,
+    outputs: ProductOutputs<'_>,
 ) -> Result<(), Failure> {
+    let ProductOutputs {
+        byproducts: reference,
+        tools,
+        inputs,
+    } = outputs;
     let start = Instant::now();
     check_control(options, cancel, start)?;
     if options
@@ -323,8 +576,10 @@ fn analyze(
     }
     // Acquire before probing or allocating decoder/DSP state. Deadline includes
     // time queued behind another call; cancellation is checked while waiting.
+    progress.emit(AnalysisProgress::WaitingForWorker);
     let _worker =
         crate::worker::ANALYSIS_WORKER.acquire(|| check_control(options, cancel, start))?;
+    progress.emit(AnalysisProgress::ReadingMetadata);
     let (mut source, source_fault) =
         crate::source::GuardedSource::new(source, cancel.clone(), options.deadline, start);
     let flac = source_fault.check(validate_container(&mut source, options, cancel, start))?;
@@ -418,6 +673,13 @@ fn analyze(
     let mut left_word = None;
     let mut left_sample = 0.0;
     let mut stereo = StereoStats::default();
+    let mut byproducts = reference
+        .as_ref()
+        .map(|_| ByproductCollector::new(rate, channels));
+    let mut tool_collector = tools.as_ref().map(|_| ToolCollector::new(&info));
+    let mut input_survey = inputs
+        .as_ref()
+        .map(|_| ReferenceSurvey::new(rate, channels));
     let context = ScanContext {
         info: &info,
         flac,
@@ -430,7 +692,25 @@ fn analyze(
         &mut *format,
         &mut *decoder,
         &context,
+        |frames, force| {
+            progress.frames(
+                1,
+                frames,
+                match (info.declared_frames, limit) {
+                    (Some(total), Some(limit)) => Some(total.min(limit)),
+                    (total, None) => total,
+                    (None, Some(limit)) => Some(limit),
+                },
+                force,
+            )
+        },
         |ch, x, word| {
+            if let Some(r) = &mut input_survey {
+                r.push(ch, x);
+            }
+            if let Some(t) = &mut tool_collector {
+                t.push(ch, x, word);
+            }
             loudness_survey.push(ch, x);
             true_peak[ch].push(x);
             aac_selector.push(ch, x);
@@ -440,9 +720,17 @@ fn analyze(
             if ch == 0 {
                 left_word = word;
                 left_sample = x;
+                if channels == 1 {
+                    if let Some(b) = &mut byproducts {
+                        b.push(x, None);
+                    }
+                }
             } else {
                 mqa.push(left_word, word);
                 stereo.push(left_sample, x);
+                if let Some(b) = &mut byproducts {
+                    b.push(left_sample, Some(x));
+                }
             }
             pcm[ch].push(
                 x,
@@ -519,6 +807,7 @@ fn analyze(
     // reset() does not reset every decoder's running verification checksum.
     // A fresh decoder makes the second pass an independent verification run.
     decoder = symphonia::default::get_codecs().make(&params, &DecoderOptions { verify: true })?;
+    let mut input_second = input_survey.map(|r| r.into_second(first.frames));
     let mut spectral: Vec<_> = peaks
         .into_iter()
         .map(|p| SpectralStats::new(rate, p))
@@ -554,29 +843,38 @@ fn analyze(
         .enumerate()
         .map(|(ch, s)| s.into_collector(ch, transients[ch].selection_available()))
         .collect();
-    let second = source_fault.check(scan(&mut *format, &mut *decoder, &context, |ch, x, _| {
-        loudness.push(ch, x);
-        stfts[ch].push_spectrum(x as f32, |mags, spectrum| {
-            noise[ch].push_spectrum(spectrum);
-            let active = spectral[ch].push(mags);
-            rolloff[ch].push(mags, active);
-            envelope[ch].push(mags, active);
-            sparsity[ch].push(mags, active);
-            structure[ch].push(mags, spectrum, active);
-            if active {
-                resampling[ch].push(mags);
+    let second = source_fault.check(scan(
+        &mut *format,
+        &mut *decoder,
+        &context,
+        |frames, force| progress.frames(2, frames, Some(first.frames), force),
+        |ch, x, _| {
+            if let Some(r) = &mut input_second {
+                r.push(ch, x);
             }
-        });
-        noise[ch].push_sample(x);
-        noise_floor[ch].push(x);
-        preceding_energy[ch].push(x);
-        if let Some(event) = transients[ch].push(x) {
-            preceding_energy[ch].observe(&event);
-        }
-        segments.push(ch, x);
-        vorbis.push(ch, x);
-        aac.push(ch, x);
-    }))?;
+            loudness.push(ch, x);
+            stfts[ch].push_spectrum(x as f32, |mags, spectrum| {
+                noise[ch].push_spectrum(spectrum);
+                let active = spectral[ch].push(mags);
+                rolloff[ch].push(mags, active);
+                envelope[ch].push(mags, active);
+                sparsity[ch].push(mags, active);
+                structure[ch].push(mags, spectrum, active);
+                if active {
+                    resampling[ch].push(mags);
+                }
+            });
+            noise[ch].push_sample(x);
+            noise_floor[ch].push(x);
+            preceding_energy[ch].push(x);
+            if let Some(event) = transients[ch].push(x) {
+                preceding_energy[ch].observe(&event);
+            }
+            segments.push(ch, x);
+            vorbis.push(ch, x);
+            aac.push(ch, x);
+        },
+    ))?;
     if first.frames != second.frames
         || first.integer != second.integer
         || first.pcm_hash != second.pcm_hash
@@ -590,9 +888,104 @@ fn analyze(
             "Decoder checksum verification failed on second pass".into(),
         ));
     }
-    if let Some(flac_info) = flac {
+    drop(stfts);
+    let mut input_record = None;
+    if let Some(r) = input_second {
+        progress.emit(AnalysisProgress::AnalyzingDetectors);
+        let mut third_inputs = r.into_third(|| check_control(options, cancel, start))?;
+        if let Some(flac_info) = flac {
+            let mut stream = flac_stream(format, &second, flac_info)?;
+            source_fault.check(
+                stream
+                    .seek(SeekFrom::Start(0))
+                    .map_err(|error| Failure::Decode(format!("FLAC source rewind: {error}"))),
+            )?;
+            let third_info =
+                source_fault.check(validate_container(&mut stream, options, cancel, start))?;
+            if third_info != flac {
+                return Err(Failure::Decode(
+                    "FLAC STREAMINFO or audio offset changed between analysis passes".into(),
+                ));
+            }
+            // A seek on the locked FLAC reader can retain the last frame sequence,
+            // merge earlier frames into one packet, and require a known byte_len.
+            // Re-probe from zero with bounded metadata and a fresh reader instead.
+            format = source_fault
+                .check(
+                    symphonia::default::get_probe()
+                        .format(
+                            &hint,
+                            MediaSourceStream::new(Box::new(stream), Default::default()),
+                            &FormatOptions::default(),
+                            &MetadataOptions::default(),
+                        )
+                        .map_err(Failure::from),
+                )?
+                .format;
+        } else {
+            let seeked = source_fault.check(
+                format
+                    .seek(
+                        SeekMode::Accurate,
+                        SeekTo::TimeStamp {
+                            ts: 0,
+                            track_id: info.track_id,
+                        },
+                    )
+                    .map_err(Failure::from),
+            )?;
+            if seeked.actual_ts != 0 {
+                return Err(Failure::Unsupported(
+                    "Cannot seek exactly to stream start".into(),
+                ));
+            }
+        }
+        decoder =
+            symphonia::default::get_codecs().make(&params, &DecoderOptions { verify: true })?;
+        let third = source_fault.check(scan(
+            &mut *format,
+            &mut *decoder,
+            &context,
+            |frames, force| progress.frames(3, frames, Some(first.frames), force),
+            |ch, x, _| third_inputs.push(ch, x),
+        ))?;
+        if third.frames != first.frames
+            || third.integer != first.integer
+            || third.pcm_hash != first.pcm_hash
+        {
+            return Err(Failure::Decode(
+                "Source changed on reference input pass".into(),
+            ));
+        }
+        if third.reached_end && decoder.finalize().verify_ok == Some(false) {
+            return Err(Failure::Decode(
+                "Decoder checksum verification failed on reference input pass".into(),
+            ));
+        }
+        if let Some(flac_info) = flac {
+            flac_stream(format, &third, flac_info)?;
+        }
+        check_control(options, cancel, start)?;
+        let mut record = third_inputs.finish();
+        record.decoded_pcm_sha256 = first.pcm_hash.clone();
+        record.pass_pcm_sha256 = vec![
+            first.pcm_hash.clone(),
+            second.pcm_hash.clone(),
+            third.pcm_hash,
+        ];
+        record.reached_end = first.reached_end;
+        record.hash_sample_encoding = if first.integer == Some(true) {
+            "s32le_msb_aligned"
+        } else {
+            "f64le"
+        }
+        .into();
+        input_record = Some(record);
+    } else if let Some(flac_info) = flac {
         flac_stream(format, &second, flac_info)?;
     }
+    progress.emit(AnalysisProgress::AnalyzingDetectors);
+    check_control(options, cancel, start)?;
     let segments = segments.finish();
     let vorbis = vorbis.finish(|| check_control(options, cancel, start))?;
     let aac = aac.finish(|| check_control(options, cancel, start))?;
@@ -733,10 +1126,20 @@ fn analyze(
         .map(|(ch, t)| t.finish(ch, rate))
         .collect();
     report.stereo_correlation = Some(stereo.finish(channels));
+    if let (Some(output), Some(collector)) = (reference, byproducts) {
+        *output =
+            Some(collector.finish(first.reached_end, || check_control(options, cancel, start))?);
+    }
+    if let (Some(output), Some(collector)) = (tools, tool_collector) {
+        *output = Some(collector.finish(|| check_control(options, cancel, start))?);
+    }
     detectors::append_observations(report, rate);
     report.stream = Some(info);
     if !first.reached_end {
         report.limitations.push("Only the requested prefix was analyzed; full-file integrity and later content were not checked.".into());
+    }
+    if let Some(output) = inputs {
+        *output = input_record;
     }
     report.status = FileStatus::Analyzed;
     Ok(())

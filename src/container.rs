@@ -1,4 +1,5 @@
 //! Bound ancillary container work before the decoder parses untrusted lengths.
+use crate::metadata::{ArtworkDescriptor, Collector, TechnicalMetadata};
 use std::io::SeekFrom;
 use symphonia::core::io::MediaSource;
 
@@ -34,9 +35,9 @@ pub(crate) fn validate(
     let mut marker = [0; 4];
     source.read_exact(&mut marker)?;
     let info = match &marker {
-        b"fLaC" => Some(flac(source, &mut control)?),
+        b"fLaC" => Some(flac(source, &mut control, None)?),
         b"RIFF" => {
-            wave(source, &mut control)?;
+            wave(source, &mut control, None)?;
             None
         }
         b"RF64" | b"BW64" => return Err(Error::Unsupported("RF64/BW64 WAV is not supported")),
@@ -49,6 +50,30 @@ pub(crate) fn validate(
     };
     source.seek(SeekFrom::Start(0))?;
     Ok(info)
+}
+
+pub(crate) fn inspect(
+    source: &mut dyn MediaSource,
+    mut control: impl FnMut() -> bool,
+    collector: &mut Collector<'_>,
+) -> Result<(), Error> {
+    source.seek(SeekFrom::Start(0))?;
+    let mut marker = [0; 4];
+    source.read_exact(&mut marker)?;
+    match &marker {
+        b"fLaC" => {
+            flac(source, &mut control, Some(collector))?;
+        }
+        b"RIFF" => wave(source, &mut control, Some(collector))?,
+        b"RF64" | b"BW64" => return Err(Error::Unsupported("RF64/BW64 WAV is not supported")),
+        b"RIFX" => return Err(Error::Unsupported("big-endian RIFX WAV is not supported")),
+        _ => {
+            return Err(Error::Unsupported(
+                "native FLAC or RIFF/WAVE signature required",
+            ));
+        }
+    }
+    Ok(())
 }
 
 fn check(control: &mut impl FnMut() -> bool) -> Result<(), Error> {
@@ -111,14 +136,25 @@ impl<'a> Fields<'a> {
         self.take(n)
     }
 }
-fn picture(bytes: &[u8]) -> Result<(), Error> {
+fn picture(bytes: &[u8]) -> Result<ArtworkDescriptor, Error> {
     let mut fields = Fields(bytes);
+    let picture_type = fields.number(true)? as u32;
+    fields.blob(true, MAX_FIELD)?;
+    fields.blob(true, MAX_FIELD)?;
+    let width = fields.number(true)? as u32;
+    let height = fields.number(true)? as u32;
+    let depth = fields.number(true)? as u32;
     fields.take(4)?;
-    fields.blob(true, MAX_FIELD)?;
-    fields.blob(true, MAX_FIELD)?;
-    fields.take(16)?;
-    fields.blob(true, MAX_PICTURE)?;
-    Ok(())
+    let data = fields.blob(true, MAX_PICTURE)?;
+    Ok(ArtworkDescriptor {
+        source: String::new(),
+        source_offset: 0,
+        picture_type: Some(picture_type),
+        width: (width != 0).then_some(width),
+        height: (height != 0).then_some(height),
+        depth_bits: (depth != 0).then_some(depth),
+        byte_length: data.len() as u64,
+    })
 }
 
 // Decode only the bounded special comment that Symphonia interprets as a picture.
@@ -151,20 +187,57 @@ fn base64(bytes: &[u8]) -> Result<Vec<u8>, Error> {
     }
     Ok(out)
 }
-fn comments(bytes: &[u8], total_records: &mut usize) -> Result<(), Error> {
+fn comments(
+    bytes: &[u8],
+    total_records: &mut usize,
+    mut collector: Option<&mut Collector<'_>>,
+    offset: u64,
+    control: &mut impl FnMut() -> bool,
+) -> Result<(), Error> {
     let mut fields = Fields(bytes);
-    fields.blob(false, MAX_FIELD)?;
+    let vendor = fields.blob(false, MAX_FIELD)?;
+    if let Some(sink) = collector.as_deref_mut() {
+        sink.tag(
+            ("flac_vorbis_vendor", offset, 0),
+            b"VENDOR",
+            vendor,
+            false,
+            None,
+        );
+    }
     let count = fields.number(false)?;
     if count > fields.0.len() / 4 {
         return Err(Error::Invalid("comment count exceeds block"));
     }
     records(total_records, count)?;
-    for _ in 0..count {
-        let comment = String::from_utf8_lossy(fields.blob(false, MAX_FIELD)?);
+    for index in 0..count {
+        check(control)?;
+        let raw = fields.blob(false, MAX_FIELD)?;
+        let comment = String::from_utf8_lossy(raw);
+        let mut artwork = None;
         if let Some((key, value)) = comment.split_once('=') {
             // Match the dependency's Unicode lowercase handling, including K.
             if key.to_lowercase() == "metadata_block_picture" {
-                picture(&base64(value.as_bytes())?)?;
+                let mut descriptor = picture(&base64(value.as_bytes())?)?;
+                if let Some(sink) = collector.as_deref_mut() {
+                    descriptor.source = "flac_vorbis_picture".into();
+                    descriptor.source_offset = offset;
+                    artwork = Some(sink.report.artwork.len());
+                    sink.report.artwork.push(descriptor);
+                }
+            }
+        }
+        if let Some(sink) = collector.as_deref_mut() {
+            if let Some(split) = raw.iter().position(|&c| c == b'=') {
+                sink.tag(
+                    ("flac_vorbis_comment", offset, index),
+                    &raw[..split],
+                    &raw[split + 1..],
+                    split == 0,
+                    artwork,
+                );
+            } else {
+                sink.tag(("flac_vorbis_comment", offset, index), b"", raw, true, None);
             }
         }
     }
@@ -186,6 +259,7 @@ fn cues(bytes: &[u8], total_records: &mut usize) -> Result<(), Error> {
 fn flac(
     source: &mut dyn MediaSource,
     control: &mut impl FnMut() -> bool,
+    mut collector: Option<&mut Collector<'_>>,
 ) -> Result<FlacInfo, Error> {
     let mut total = 0;
     let mut total_records = 0;
@@ -209,10 +283,49 @@ fn flac(
                 let mut bytes = vec![0; len as usize];
                 source.read_exact(&mut bytes)?;
                 match kind {
-                    0 => stream_info.copy_from_slice(&bytes),
-                    4 => comments(&bytes, &mut total_records)?,
+                    0 => {
+                        stream_info.copy_from_slice(&bytes);
+                        if let Some(sink) = collector.as_deref_mut() {
+                            let packed = u64::from_be_bytes(bytes[10..18].try_into().unwrap());
+                            let rate = (packed >> 44) as u32;
+                            let frames = packed & ((1u64 << 36) - 1);
+                            let bits = ((packed >> 36) & 31) as u32 + 1;
+                            sink.report.technical = Some(TechnicalMetadata {
+                                container: "FLAC".into(),
+                                codec: "FLAC".into(),
+                                declared_sample_rate_hz: (rate != 0).then_some(rate),
+                                declared_channels: Some(((packed >> 41) & 7) as u32 + 1),
+                                declared_precision_bits: Some(bits),
+                                storage_bits_per_sample: Some(bits),
+                                sample_encoding: Some("signed_integer_pcm".into()),
+                                declared_frames: (frames != 0).then_some(frames),
+                                declared_duration_seconds: (frames != 0 && rate != 0)
+                                    .then(|| frames as f64 / f64::from(rate)),
+                                compression_mode: Some("lossless".into()),
+                                unavailable_fields: vec![
+                                    "declared_bit_rate_bps".into(),
+                                    "format_profile".into(),
+                                ],
+                                ..Default::default()
+                            });
+                        }
+                    }
+                    4 => comments(
+                        &bytes,
+                        &mut total_records,
+                        collector.as_deref_mut(),
+                        start,
+                        control,
+                    )?,
                     5 => cues(&bytes, &mut total_records)?,
-                    6 => picture(&bytes)?,
+                    6 => {
+                        let mut descriptor = picture(&bytes)?;
+                        if let Some(sink) = collector.as_deref_mut() {
+                            descriptor.source = "flac_picture".into();
+                            descriptor.source_offset = start;
+                            sink.report.artwork.push(descriptor);
+                        }
+                    }
                     _ => unreachable!(),
                 }
             }
@@ -224,7 +337,18 @@ fn flac(
                 records(&mut total_records, (len / 18) as usize)?;
             }
             127 => return Err(Error::Invalid("reserved FLAC metadata type")),
-            _ => {}
+            _ => {
+                if let Some(sink) = collector.as_deref_mut() {
+                    if !matches!(kind, 1 | 3) {
+                        sink.opaque(
+                            &format!("flac_block_{kind}"),
+                            start,
+                            len,
+                            "No text adapter for this ancillary block",
+                        );
+                    }
+                }
+            }
         }
         source.seek(SeekFrom::Start(end))?;
         if header[0] & 128 != 0 {
@@ -237,7 +361,11 @@ fn flac(
     Err(Error::Unsupported("ancillary blocks exceed 1024"))
 }
 
-fn wave(source: &mut dyn MediaSource, control: &mut impl FnMut() -> bool) -> Result<(), Error> {
+fn wave(
+    source: &mut dyn MediaSource,
+    control: &mut impl FnMut() -> bool,
+    mut collector: Option<&mut Collector<'_>>,
+) -> Result<(), Error> {
     let mut header = [0; 8];
     source.read_exact(&mut header)?;
     if &header[4..] != b"WAVE" {
@@ -248,9 +376,13 @@ fn wave(source: &mut dyn MediaSource, control: &mut impl FnMut() -> bool) -> Res
     let mut total = 0;
     let mut total_records = 0;
     let mut frame_bytes = None;
+    let mut data_seen = false;
     for _ in 0..MAX_BLOCKS {
         check(control)?;
         let pos = source.stream_position()?;
+        if collector.is_some() && pos == riff_end && data_seen {
+            return Ok(());
+        }
         if pos + 8 > riff_end {
             return Err(Error::Invalid("missing WAV data chunk"));
         }
@@ -274,7 +406,28 @@ fn wave(source: &mut dyn MediaSource, control: &mut impl FnMut() -> bool) -> Res
             if len % frame_bytes != 0 {
                 return Err(Error::Invalid("WAV data contains a partial PCM frame"));
             }
-            return Ok(());
+            if collector.is_none() {
+                return Ok(());
+            }
+            if data_seen {
+                return Err(Error::Unsupported("multiple WAV data chunks are ambiguous"));
+            }
+            data_seen = true;
+            checked_end(source, start, u64::from(len))?;
+            if let Some(sink) = collector.as_deref_mut() {
+                if let Some(technical) = &mut sink.report.technical {
+                    let frames = u64::from(len / frame_bytes);
+                    technical.declared_frames = Some(frames);
+                    technical.declared_duration_seconds = technical
+                        .declared_sample_rate_hz
+                        .filter(|&rate| rate != 0)
+                        .map(|rate| frames as f64 / f64::from(rate));
+                }
+            }
+            // Seek over audio, including RIFF alignment, without reading PCM.
+            let padded = end + u64::from(len % 2);
+            source.seek(SeekFrom::Start(if end == riff_end { end } else { padded }))?;
+            continue;
         }
         charge(&mut total, u64::from(len) + 8)?;
         checked_end(source, start, u64::from(len))?;
@@ -297,6 +450,7 @@ fn wave(source: &mut dyn MediaSource, control: &mut impl FnMut() -> bool) -> Res
                 }
                 let format = u16::from_le_bytes([fmt[0], fmt[1]]);
                 let bits = u16::from_le_bytes([fmt[14], fmt[15]]);
+                let mut precision = bits;
                 if !matches!(format, 1 | 3 | 65534) {
                     return Err(Error::Unsupported("integer/float PCM WAV required"));
                 }
@@ -322,6 +476,7 @@ fn wave(source: &mut dyn MediaSource, control: &mut impl FnMut() -> bool) -> Res
                         return Err(Error::Unsupported("extensible WAV extension size"));
                     }
                     let valid = u16::from_le_bytes(extension[2..4].try_into().unwrap());
+                    precision = valid;
                     if valid == 0 || valid > bits || (subtype == 3 && valid != bits) {
                         return Err(Error::Invalid("extensible WAV valid bits"));
                     }
@@ -355,6 +510,33 @@ fn wave(source: &mut dyn MediaSource, control: &mut impl FnMut() -> bool) -> Res
                     return Err(Error::Invalid("WAV byte rate does not match PCM geometry"));
                 }
                 frame_bytes = Some(u32::from(alignment));
+                if let Some(sink) = collector.as_deref_mut() {
+                    sink.report.technical = Some(TechnicalMetadata {
+                        container: "RIFF/WAVE".into(),
+                        codec: "PCM".into(),
+                        declared_sample_rate_hz: (rate != 0).then_some(rate),
+                        declared_channels: Some(u32::from(channels)),
+                        declared_precision_bits: Some(u32::from(precision)),
+                        storage_bits_per_sample: Some(u32::from(bits)),
+                        sample_encoding: Some(
+                            if pcm_format == 3 {
+                                "ieee_float_pcm"
+                            } else if bits == 8 {
+                                "unsigned_integer_pcm"
+                            } else {
+                                "signed_integer_pcm"
+                            }
+                            .into(),
+                        ),
+                        derived_pcm_bit_rate_bps: Some(u64::from(byte_rate) * 8),
+                        compression_mode: Some("uncompressed".into()),
+                        unavailable_fields: vec![
+                            "declared_bit_rate_bps".into(),
+                            "format_profile".into(),
+                        ],
+                        ..Default::default()
+                    });
+                }
             }
             b"LIST" => {
                 if len < 4 {
@@ -363,6 +545,7 @@ fn wave(source: &mut dyn MediaSource, control: &mut impl FnMut() -> bool) -> Res
                 let mut form = [0; 4];
                 source.read_exact(&mut form)?;
                 if &form == b"INFO" {
+                    let mut order = 0;
                     while source.stream_position()? + 8 <= end {
                         check(control)?;
                         source.read_exact(&mut header)?;
@@ -375,15 +558,89 @@ fn wave(source: &mut dyn MediaSource, control: &mut impl FnMut() -> bool) -> Res
                             return Err(Error::Unsupported("WAV INFO field exceeds 1 MiB"));
                         }
                         records(&mut total_records, 1)?;
+                        if let Some(sink) = collector.as_deref_mut() {
+                            let key = header[..4].to_vec();
+                            let mut value = vec![0; n as usize];
+                            source.read_exact(&mut value)?;
+                            // RIFF INFO terminator/padding is not part of its text.
+                            let value = value.strip_suffix(&[0]).unwrap_or(&value);
+                            sink.tag(("wav_info", start, order), &key, value, false, None);
+                            order += 1;
+                        }
                         let padded = next + n % 2;
                         if padded > end {
                             return Err(Error::Invalid("WAV INFO padding exceeds list"));
                         }
                         source.seek(SeekFrom::Start(padded))?;
                     }
+                    if collector.is_some() && source.stream_position()? != end {
+                        return Err(Error::Invalid("WAV INFO trailing fragment"));
+                    }
+                } else if let Some(sink) = collector.as_deref_mut() {
+                    sink.opaque(
+                        "wav_list",
+                        start,
+                        u64::from(len),
+                        "Non-INFO LIST has no text adapter",
+                    );
                 }
             }
-            _ => {}
+            b"iXML" | b"axml" | b"_PMX" if collector.is_some() => {
+                if len as usize > MAX_FIELD {
+                    return Err(Error::Unsupported("WAV XML field exceeds 1 MiB"));
+                }
+                let mut bytes = vec![0; len as usize];
+                source.read_exact(&mut bytes)?;
+                if let Some(sink) = collector.as_deref_mut() {
+                    sink.tag(("wav_xml", start, 0), &header[..4], &bytes, false, None);
+                }
+            }
+            b"bext" if collector.is_some() => {
+                if len < 602 {
+                    return Err(Error::Invalid("short WAV bext chunk"));
+                }
+                if len as usize > MAX_FIELD {
+                    return Err(Error::Unsupported("WAV bext exceeds 1 MiB"));
+                }
+                let mut bytes = vec![0; len as usize];
+                source.read_exact(&mut bytes)?;
+                if let Some(sink) = collector.as_deref_mut() {
+                    for (order, (key, range)) in [
+                        ("Description", 0..256),
+                        ("Originator", 256..288),
+                        ("OriginatorReference", 288..320),
+                        ("OriginationDate", 320..330),
+                        ("OriginationTime", 330..338),
+                        ("CodingHistory", 602..bytes.len()),
+                    ]
+                    .into_iter()
+                    .enumerate()
+                    {
+                        let text = &bytes[range];
+                        let end = text.iter().position(|&b| b == 0).unwrap_or(text.len());
+                        sink.tag(
+                            ("wav_bext", start, order),
+                            key.as_bytes(),
+                            &text[..end],
+                            false,
+                            None,
+                        );
+                    }
+                }
+            }
+            _ => {
+                if let Some(sink) = collector.as_deref_mut() {
+                    if !matches!(&header[..4], b"JUNK" | b"PAD " | b"fact") {
+                        let id = String::from_utf8_lossy(&header[..4]);
+                        sink.opaque(
+                            &format!("wav_chunk_{id}"),
+                            start,
+                            u64::from(len),
+                            "No text/artwork adapter for this ancillary chunk",
+                        );
+                    }
+                }
+            }
         }
         source.seek(SeekFrom::Start(end + u64::from(len % 2)))?;
     }

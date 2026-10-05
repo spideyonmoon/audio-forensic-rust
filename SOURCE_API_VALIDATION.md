@@ -1,5 +1,48 @@
 # Caller-provided source and batch resilience — 2026-10-03
 
+The 0.20.0 background-job lifecycle built on this interface is recorded in
+`JOB_VALIDATION.md`; the callback and source contracts below remain applicable.
+
+## Live progress implementation — 2026-10-04
+
+Engine 0.19.0 implements `analyze_source_with_progress`,
+`analyze_path_with_progress` and the public non-exhaustive `AnalysisProgress`
+enum. The original entry points delegate with a no-op callback. CLI `--progress`
+prints readable stages and frame counts to stderr, preserving stdout JSON.
+The background host example now uses the source callback.
+
+Notifications report waiting, metadata, decode passes 1/2, detector processing
+and exactly one terminal status per normal API return. Pass counts are actual
+native frames and reset at the next pass. First-pass expected length comes from
+the declaration/requested bound; it may be unknown or wrong. Second-pass
+expected length is the observed first-pass length. Packet updates are throttled
+to 100 ms, with unconditional pass start/end events. A completed pass is not a
+finished report, and detector execution has no fabricated percentage.
+
+Callbacks execute synchronously on the analysis thread and must not block or
+reenter analysis. Processing callback time counts toward the deadline. A cloned
+token may cancel from the callback; Finished runs after worker/source release
+and cancellation at that point does not change the result. Callback panics
+unwind normally; they are host failures, not structured decoder errors, and do
+not promise a Finished event. Core queues/storage and report wire format remain
+unchanged; no new dependency, decoder arithmetic or detector policy is added.
+
+Initial focused Rust 1.85 run passed 25 tests: four new progress tests plus ten
+FLAC, ten source-contract and one worker-budget tests. Controls cover unchanged
+serialized reports/exact prefix counts, ordered phases, cancellation at every
+processing stage, terminal early errors, callback deadline accounting and worker
+recovery after callback panic. The final focused run passed **28 tests** after
+adding all three CLI integrations, including stdout JSON/stderr progress and
+path-open failure completion. Its first attempt failed because the new test
+mistook the old helper's stdout return for stderr; the corrected test captures
+both streams directly. Initial no-CLI library/progress/example Clippy passed;
+formatting, schema drift and whitespace checks passed. Final Rust 1.85 all-target
+Clippy passed with warnings denied. No task jobs remain running. Logs are local/ignored under
+`corpus/local/results/progress-v19-20261004/`. The prior complete 164-test
+regression applies to 0.18.3; no full-suite rerun is claimed for this feature.
+
+## Historical source-resilience patch
+
 Engine **0.18.1**, schema `0.18.0`, policy `observations-only-v18`. This continuation
 fixes source I/O handling, failed-report precision and CLI input discovery. It
 adds no decoder dependency or detector/accuracy policy. Ancestry stays

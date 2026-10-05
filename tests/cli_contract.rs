@@ -23,6 +23,55 @@ fn wav() -> Vec<u8> {
     bytes
 }
 
+#[test]
+fn summary_groups_evidence_and_keeps_failed_inputs_explicit() {
+    let dir = tempfile::tempdir().unwrap();
+    let valid = dir.path().join("generated.wav");
+    let missing = dir.path().join("missing.wav");
+    fs::write(&valid, wav()).unwrap();
+    let output = Command::new(env!("CARGO_BIN_EXE_audio-forensic"))
+        .arg("--summary")
+        .args([&valid, &missing])
+        .output()
+        .unwrap();
+    assert_eq!(output.status.code(), Some(1));
+    let text = String::from_utf8(output.stdout).unwrap();
+    assert!(text.contains("Evidence interpretation: Available"));
+    assert!(text.contains("Codec transform patterns:"));
+    assert!(text.contains("Source medium: INCONCLUSIVE"));
+    assert!(text.contains("Evidence interpretation: InputUnavailable"));
+    assert!(text.contains("invalid_input:"));
+    let conflict = Command::new(env!("CARGO_BIN_EXE_audio-forensic"))
+        .args(["--summary", "--json"])
+        .arg(&valid)
+        .output()
+        .unwrap();
+    assert_eq!(conflict.status.code(), Some(2));
+    assert!(conflict.stdout.is_empty());
+}
+
+#[test]
+fn progress_stays_on_stderr_and_preserves_json_for_success_and_open_failure() {
+    let dir = tempfile::tempdir().unwrap();
+    let valid = dir.path().join("generated.wav");
+    let missing = dir.path().join("missing.wav");
+    fs::write(&valid, wav()).unwrap();
+    let output = Command::new(env!("CARGO_BIN_EXE_audio-forensic"))
+        .args(["--json", "--progress"])
+        .args([&valid, &missing])
+        .output()
+        .unwrap();
+    let reports: Vec<AnalysisReport> = serde_json::from_slice(&output.stdout).unwrap();
+    assert_eq!(output.status.code(), Some(1));
+    assert_eq!(reports[0].status, FileStatus::Analyzed);
+    assert_eq!(reports[1].status, FileStatus::Failed);
+    let progress = String::from_utf8(output.stderr).unwrap();
+    assert!(progress.contains("decode pass 1/2: 100 frames"));
+    assert!(progress.contains("decode pass 2/2: 100 frames"));
+    assert!(progress.contains("finished: Analyzed"));
+    assert!(progress.contains("finished: Failed"));
+}
+
 fn run(paths: &[&Path], options: &[&str]) -> (i32, Vec<AnalysisReport>, Vec<u8>) {
     let output = Command::new(env!("CARGO_BIN_EXE_audio-forensic"))
         .arg("--json")

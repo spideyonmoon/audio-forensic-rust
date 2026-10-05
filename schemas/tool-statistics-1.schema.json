@@ -1,0 +1,706 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:audio-forensic:tool-statistics:1",
+  "$ref": "#/$defs/ToolStatisticsReport",
+  "$defs": {
+    "ToolStatisticsReport": {
+      "type": "object",
+      "properties": {
+        "statistics_version": {
+          "const": 1
+        },
+        "contract_version": {
+          "const": 1
+        },
+        "method_id": {
+          "const": "ffmpeg-7.1.1-sox-14.4.2-v1"
+        },
+        "engine_version": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/FileStatus"
+        },
+        "stream": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/StreamInfo"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "coverage": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Coverage"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "measurements": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ToolMeasurements"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "diagnostics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/Diagnostic"
+          }
+        },
+        "caveats": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "statistics_version",
+        "contract_version",
+        "method_id",
+        "engine_version",
+        "source",
+        "status",
+        "stream",
+        "coverage",
+        "measurements",
+        "diagnostics",
+        "caveats"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "analyzed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "stream": {
+                "$ref": "#/$defs/StreamInfo"
+              },
+              "coverage": {
+                "$ref": "#/$defs/Coverage"
+              },
+              "measurements": {
+                "$ref": "#/$defs/ToolMeasurements"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "coverage": {
+                "type": "null"
+              },
+              "measurements": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "FileStatus": {
+      "type": "string",
+      "enum": [
+        "analyzed",
+        "failed",
+        "unsupported",
+        "cancelled",
+        "timed_out"
+      ]
+    },
+    "StreamInfo": {
+      "type": "object",
+      "properties": {
+        "track_id": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "codec": {
+          "type": "string"
+        },
+        "sample_rate": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "channels": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "bits_per_sample": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4294967295
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "declared_frames": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 18446744073709551615
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "integer_pcm": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "track_id",
+        "codec",
+        "sample_rate",
+        "channels",
+        "bits_per_sample",
+        "declared_frames",
+        "integer_pcm"
+      ],
+      "additionalProperties": false
+    },
+    "Coverage": {
+      "type": "object",
+      "properties": {
+        "start_seconds": {
+          "type": "number",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308
+        },
+        "end_seconds": {
+          "type": "number",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308
+        },
+        "analyzed_frames": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "reached_end": {
+          "type": "boolean"
+        },
+        "requested_max_seconds": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": -1.7976931348623157e+308,
+              "maximum": 1.7976931348623157e+308
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "length_matches_header": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "decoder_verification": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "analysis_passes": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "decoded_pcm_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "hash_sample_encoding": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "start_seconds",
+        "end_seconds",
+        "analyzed_frames",
+        "reached_end",
+        "requested_max_seconds",
+        "length_matches_header",
+        "decoder_verification",
+        "analysis_passes",
+        "decoded_pcm_sha256",
+        "hash_sample_encoding"
+      ],
+      "additionalProperties": false
+    },
+    "ToolMeasurements": {
+      "type": "object",
+      "properties": {
+        "astats": {
+          "$ref": "#/$defs/AstatsReport"
+        },
+        "sox": {
+          "$ref": "#/$defs/SoxReport"
+        },
+        "dr": {
+          "$ref": "#/$defs/DrReport"
+        },
+        "legacy_loudness_profile": {
+          "type": "object",
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "description": "Pinned last printed astats selection; crest_factor_db is raw linear here.",
+          "required": [
+            "peak_db",
+            "rms_db",
+            "rms_peak_db",
+            "rms_trough_db",
+            "noise_floor_db",
+            "dynamic_range_db",
+            "crest_factor_db",
+            "flat_factor",
+            "peak_count",
+            "sox_entropy",
+            "dc_offset",
+            "zero_crossings_rate"
+          ],
+          "minProperties": 12,
+          "maxProperties": 12
+        }
+      },
+      "required": [
+        "astats",
+        "sox",
+        "dr",
+        "legacy_loudness_profile"
+      ],
+      "additionalProperties": false
+    },
+    "AstatsReport": {
+      "type": "object",
+      "properties": {
+        "input_domain": {
+          "type": "string"
+        },
+        "window_frames": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "channels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/AstatsChannel"
+          },
+          "minItems": 1,
+          "maxItems": 2
+        },
+        "overall": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ToolValue"
+          },
+          "required": [
+            "dc_offset",
+            "peak_dbfs",
+            "rms_dbfs",
+            "rms_peak_dbfs",
+            "rms_trough_dbfs",
+            "flat_factor_db",
+            "peak_count",
+            "noise_floor_dbfs",
+            "entropy",
+            "absolute_peak_count"
+          ],
+          "minProperties": 10,
+          "maxProperties": 10
+        }
+      },
+      "required": [
+        "input_domain",
+        "window_frames",
+        "channels",
+        "overall"
+      ],
+      "additionalProperties": false
+    },
+    "AstatsChannel": {
+      "type": "object",
+      "properties": {
+        "channel_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "frames": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "minimum_samples": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "maximum_samples": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "absolute_peak_samples": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "zero_crossings": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "noise_floor_windows": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "fields": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ToolValue"
+          },
+          "required": [
+            "dc_offset",
+            "peak_dbfs",
+            "rms_dbfs",
+            "rms_peak_dbfs",
+            "rms_trough_dbfs",
+            "flat_factor_db",
+            "peak_count",
+            "noise_floor_dbfs",
+            "entropy",
+            "absolute_peak_count",
+            "crest_linear",
+            "crest_db",
+            "amplitude_range_db",
+            "zero_crossings_rate"
+          ],
+          "minProperties": 14,
+          "maxProperties": 14
+        }
+      },
+      "required": [
+        "channel_index",
+        "frames",
+        "minimum_samples",
+        "maximum_samples",
+        "absolute_peak_samples",
+        "zero_crossings",
+        "noise_floor_windows",
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "ToolValue": {
+      "type": "object",
+      "properties": {
+        "availability": {
+          "$ref": "#/$defs/ByproductAvailability"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": -1.7976931348623157e+308,
+              "maximum": 1.7976931348623157e+308
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "unit": {
+          "type": "string"
+        },
+        "display": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "source_label": {
+          "type": "string"
+        },
+        "legacy_text": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "description": "Tool-precision text, including nonfinite/omitted legacy results."
+        }
+      },
+      "required": [
+        "availability",
+        "value",
+        "unit",
+        "display",
+        "reason",
+        "source_label",
+        "legacy_text"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "availability": {
+                "const": "available"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "value": {
+                "type": "number"
+              },
+              "display": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "value": {
+                "type": "null"
+              },
+              "display": {
+                "type": "null"
+              },
+              "reason": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ByproductAvailability": {
+      "type": "string",
+      "enum": [
+        "available",
+        "unavailable",
+        "inapplicable",
+        "resource_limit"
+      ]
+    },
+    "SoxReport": {
+      "type": "object",
+      "properties": {
+        "input_domain": {
+          "type": "string"
+        },
+        "channel_sample_count": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "conversion_clips": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "fields": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/$defs/ToolValue"
+          },
+          "required": [
+            "samplesRead",
+            "lengthSeconds",
+            "scaledBy",
+            "maximumAmplitude",
+            "minimumAmplitude",
+            "midlineAmplitude",
+            "meanNorm",
+            "meanAmplitude",
+            "rmsAmplitude",
+            "maximumDelta",
+            "minimumDelta",
+            "meanDelta",
+            "rmsDelta",
+            "roughFrequency",
+            "volumeAdjustment"
+          ],
+          "minProperties": 15,
+          "maxProperties": 15
+        }
+      },
+      "required": [
+        "input_domain",
+        "channel_sample_count",
+        "conversion_clips",
+        "fields"
+      ],
+      "additionalProperties": false
+    },
+    "DrReport": {
+      "type": "object",
+      "properties": {
+        "input_domain": {
+          "type": "string"
+        },
+        "block_frames": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "complete_blocks_before_tail": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "trailing_frames": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "selected_block_target": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "channels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/DrChannel"
+          },
+          "minItems": 1,
+          "maxItems": 2
+        },
+        "overall": {
+          "$ref": "#/$defs/ToolValue"
+        },
+        "overall_integer_label": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "legacy_python_label": {
+          "type": "string",
+          "description": "Pinned Python selects the first positive-only matching channel text."
+        }
+      },
+      "required": [
+        "input_domain",
+        "block_frames",
+        "complete_blocks_before_tail",
+        "trailing_frames",
+        "selected_block_target",
+        "channels",
+        "overall",
+        "overall_integer_label",
+        "legacy_python_label"
+      ],
+      "additionalProperties": false
+    },
+    "DrChannel": {
+      "type": "object",
+      "properties": {
+        "channel_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "numeric_dr": {
+          "$ref": "#/$defs/ToolValue"
+        }
+      },
+      "required": [
+        "channel_index",
+        "numeric_dr"
+      ],
+      "additionalProperties": false
+    },
+    "Diagnostic": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
