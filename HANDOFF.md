@@ -5,18 +5,26 @@ another session, coding tool or human. Keep it current using `AGENTS.md`.
 
 ## Current state and next action
 
-- **Source-history publication in progress (2026-10-05).** The owner requested
-  committing/pushing the saved work histories. Remote `origin` is
-  `https://github.com/spideyonmoon/audio-forensic-rust.git`; its `main` matches
-  local base `5ebe87d0c26b79236144a38a0c4ab67efbd3f066`. Selected checkpoint:
-  88 public source/test/schema/helper/roadmap/validation/history files covering
-  completed work through engine 0.26.0/P04c. Private `reference/`, local reports
-  `corpus/local/`, receipts/builds `target/` and toolchains `.tools/` are excluded.
-  Public pending-path/credential-pattern audit and whitespace check passed;
-  48 private recording/note files are fingerprinted for preservation. No DSP
-  implementation/test result changed. Next: commit selected files, push main
-  without rewriting history, verify remote SHA and record publication outcome.
+- **Source histories published (2026-10-05, owner requested).** Public source
+  checkpoint `5425406499828edf9bbb86defc87449db911bb5c` was committed on local
+  `main`, pushed without force to `origin/main`, and its exact remote SHA was
+  independently verified. Remote:
+  `https://github.com/spideyonmoon/audio-forensic-rust.git`. The checkpoint
+  records 88 public source/test/schema/helper/roadmap/validation/history files
+  covering the completed work through engine 0.26.0/P04c; the original
+  `5ebe87d` history is retained. Local `main` now tracks `origin/main`. This
+  publication record is a subsequent documentation commit; consult Git log
+  for the current tip rather than treating the source checkpoint as a forever
+  current branch SHA. Staged path, credential-pattern, whitespace and parity
+  inventory checks passed. All 48 private recording/note files and the clean
+  pinned Python reference were preserved. Private `reference/`, local reports
+  `corpus/local/`, receipts/builds `target/` and toolchains `.tools/` stay ignored
+  and were not committed/uploaded. This remote source history does not back up
+  those local files. Existing milestone entries below record their state at
+  completion, before this later publication. No DSP code changed or detector
+  tests reran for packaging; prior exact validation results remain as recorded.
   Local packaging receipts: ignored `target/history-push-20261005/`.
+  **Next delivery task: P04a. No analysis jobs running.**
 
 - **P04c complete: separate reference spectral/transform inputs (2026-10-05).**
   Engine **0.26.0**. Read `REFERENCE_INPUTS_VALIDATION.md`, `task-results/P04c.md`
