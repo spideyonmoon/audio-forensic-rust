@@ -36,6 +36,10 @@ class NativeSmokeActivity : Activity() {
         check(response["ok"] == true) { response.toString() }
         return obj(response["value"])
     }
+    private fun BigInteger.asHandle(): Long {
+        check(signum() > 0 && bitLength() <= 63) { "invalid native handle" }
+        return toLong()
+    }
     private fun hash(bytes: ByteArray) = MessageDigest.getInstance("SHA-256").digest(bytes).joinToString("") { "%02x".format(it) }
     private fun request(input: File, kind: String = "feature", feature: String? = "forensics", png: Boolean = false): ByteArray {
         val attempt = UUID.randomUUID().toString()
@@ -90,7 +94,7 @@ class NativeSmokeActivity : Activity() {
             val input = File(filesDir, name.substringAfterLast('/'))
             assets.open(name).use { source -> input.outputStream().use { source.copyTo(it) } }
             val req = request(input, png = true)
-            val h = (ok(NativeTransport.start(req))["handle"] as BigInteger).longValueExact()
+            val h = (ok(NativeTransport.start(req))["handle"] as BigInteger).asHandle()
             check(obj(decode(NativeTransport.start(req))["error"])["code"] == "busy")
             val result = finish(h)
             val product = payload(result)
@@ -105,9 +109,9 @@ class NativeSmokeActivity : Activity() {
             check(dimensions.int == 2560 && dimensions.int == 1440)
         }
         val input = File(filesDir,"noise16.wav")
-        val probe = finish((ok(NativeTransport.start(request(input,"probe",null)))["handle"] as BigInteger).longValueExact())
+        val probe = finish((ok(NativeTransport.start(request(input,"probe",null)))["handle"] as BigInteger).asHandle())
         check(payload(probe)["metadata_version"] == BigInteger.ONE)
-        val spec = finish((ok(NativeTransport.start(request(input,feature="spectrogram",png=true)))["handle"] as BigInteger).longValueExact())
+        val spec = finish((ok(NativeTransport.start(request(input,feature="spectrogram",png=true)))["handle"] as BigInteger).asHandle())
         check(obj(payload(spec)["measurement"])["status"] == "analyzed")
         // AAC-in-M4A codec marker mutation follows the existing core rejection control.
         val aac = File(filesDir, "unsupported.m4a")
@@ -118,7 +122,7 @@ class NativeSmokeActivity : Activity() {
         aac.writeBytes(encoded)
         val dsd = File(filesDir, "unsupported.dsf").apply { writeBytes("DSD     ".toByteArray()) }
         for (unsupported in listOf(aac, dsd)) {
-            val p = payload(finish((ok(NativeTransport.start(request(unsupported)))["handle"] as BigInteger).longValueExact()))
+            val p = payload(finish((ok(NativeTransport.start(request(unsupported)))["handle"] as BigInteger).asHandle()))
             check(obj(p["measurement_report"])["status"] == "unsupported")
         }
         val wave = input.readBytes()
@@ -137,10 +141,10 @@ class NativeSmokeActivity : Activity() {
         }.toByteArray()
         java.nio.ByteBuffer.wrap(tagged, 4, 4).order(java.nio.ByteOrder.LITTLE_ENDIAN).putInt(tagged.size - 8)
         val taggedFile = File(filesDir, "large-metadata.wav").apply { writeBytes(tagged) }
-        val metadata = finish((ok(NativeTransport.start(request(taggedFile,"probe",null)))["handle"] as BigInteger).longValueExact())
+        val metadata = finish((ok(NativeTransport.start(request(taggedFile,"probe",null)))["handle"] as BigInteger).asHandle())
         check((obj(metadata["payload"])["bytes"] as BigInteger) > BigInteger.valueOf(65536))
         check(obj(payload(metadata)["text_limits"])["retained_text_utf8_bytes"] == BigInteger.valueOf(120040))
-        val cancelHandle = (ok(NativeTransport.start(request(input)))["handle"] as BigInteger).longValueExact()
+        val cancelHandle = (ok(NativeTransport.start(request(input)))["handle"] as BigInteger).asHandle()
         ok(NativeTransport.cancel(cancelHandle)); ok(NativeTransport.close(cancelHandle))
         val releaseDeadline = System.nanoTime() + 10_000_000_000L
         while (ok(NativeTransport.describe())["active_handle"] != null) {

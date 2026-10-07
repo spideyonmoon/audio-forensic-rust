@@ -28,7 +28,6 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     sourceSets["main"].jniLibs.srcDir(layout.buildDirectory.dir("generated/jniLibs"))
-    sourceSets["debug"].assets.srcDir(layout.buildDirectory.dir("generated/smokeAssets"))
     packaging { jniLibs.useLegacyPackaging = false }
 }
 kotlin { compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) } }
@@ -49,7 +48,9 @@ val smokeAssets by tasks.registering(Copy::class) {
     }
     into(layout.buildDirectory.dir("generated/smokeAssets"))
 }
-tasks.matching { it.name == "mergeDebugAssets" }.configureEach { dependsOn(smokeAssets) }
+// Pass the producer, not a bare directory, so lint as well as packaging inherits
+// the generated-assets dependency.
+android.sourceSets["debug"].assets.srcDir(smokeAssets)
 dependencies {
     implementation(project(":shared"))
     implementation(project(":feature-forensics"))
