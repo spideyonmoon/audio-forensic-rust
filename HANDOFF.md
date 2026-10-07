@@ -4,6 +4,24 @@ Updated **2026-10-07**. This is the current continuation point. Historical miles
 entries and exact older check totals are preserved in
 [the handoff archive](docs/history/HANDOFF_20261006.md); newer decisions here win.
 
+## Main synchronization — 2026-10-07
+
+Owner requested getting the completed work up to date. A01/A02 are DONE; A03 is
+next and has not started. Local main fast-forwarded to the tested Android branch
+after staging and verifying an exact matching source tree, without resetting or
+stashing owner files. Three additional local planning edits were preserved;
+AGENTS/architecture/validation index and stale current handoff pointers now agree.
+Remaining synchronization changes are documentation only. Normal source, core,
+private recordings and ignored tool/build/evidence files are preserved. Source
+Git history is distinct from local target/.tools evidence and external backups.
+
+Checks: exact pre-merge source tree equality passed; no merge conflict. Final
+current-dispatch and documentation-only checks passed, with 115 local Markdown
+file targets verified. Staged whitespace and core-preservation checks passed.
+No rebuild, analysis/device test or new jobs are needed for these doc changes.
+Existing green Android run 37635443625 remains the build/runtime scaffold evidence.
+Recovery snapshots are ignored target/sync-main-20261007/ local files only.
+
 ## Android 11 and GitHub Actions amendment — 2026-10-07
 
 Owner authorized Android 11–16 support for Hot 11S/Helio G88 and offloading heavy
@@ -13,9 +31,10 @@ No phone-specific chunking/throttling or core/DSP changes. Separate x86_64 CI
 APK enables emulator smoke; lifecycle API guards and planned A07 coverage are
 amended in ANDROID_CONTRACT.md. A03 remains the next delivery task.
 
-Source-only branch `codex/android11-ci` is published; main/checkout/normal index
-are unchanged. It includes the previously untracked A01/A02 scaffold needed for
-remote builds. Owner's large-diff concern was audited: root core, Cargo files,
+The tested `codex/android11-ci` branch has been fast-forwarded into local main.
+A01/A02 source and Android compatibility work are now tracked in Git history.
+The source tree was verified identical to the tested branch before the merge;
+remaining local planning edits were preserved and updated for the A03 handoff. Owner's large-diff concern was audited: root core, Cargo files,
 schemas/examples/tests unchanged; bulk additions were existing dependency pins.
 No Kotlin application screen or Rust source changed in this compatibility packet.
 
@@ -70,8 +89,8 @@ with complete metadata payloads, one negotiated comparison scope and same-track
 assertion, and Publication 2560×1440 as the default with all existing PNG presets.
 Affected A03/A04/A06a/A06b acceptance cases are explicit. Correction checks are
 recorded in task-results/A01.md and the Android validation record; the original
-completion/check record below is preserved. **Stop after A01 as requested; A02
-remains unstarted.** No jobs are running.
+completion/check record below is preserved. At that earlier A01 handoff the
+owner requested stopping before A02; A02 has since completed as recorded above.
 
 **DONE**, documentation-only packet. [ANDROID_CONTRACT.md](ANDROID_CONTRACT.md)
 freezes initial shared selection/capabilities, immutable bounded SAF staging,
@@ -94,12 +113,12 @@ not-run scope: [A01 results](task-results/A01.md),
 [validation](docs/validation/ANDROID_INTEGRATION_VALIDATION.md). Receipts are
 ignored target/a01 local evidence only. No Rust/Android builds, private-audio
 analysis, commit/push/upload or extraction; no unresolved failure or running job.
-Next **A02** scaffold/builds; no app implementation has been started.
+At that earlier A01 handoff A02 was next. A02 is now complete; A03 is next.
 
 ## Current task and delivery boundary
 
 - Active task: **none**. A02 completed 2026-10-07; A03 is next. No jobs running.
-- Next default delivery task: **A02 — Alfred workspace scaffold and reproducible builds (Sol)**.
+- Next default delivery task: **A03 — Audio Forensics native adapter (Astra)**.
 - **F02/DSD DEFERRED beyond the first standalone release and Alfred launch**,
   owner approved 2026-10-06 to conserve Astra budget. Its frozen DSF/DFF,
   DSD64/128/256, mono/stereo and 88.2 kHz conversion contract remains for later.
@@ -120,15 +139,17 @@ Next **A02** scaffold/builds; no app implementation has been started.
 Read [ROADMAP.md](ROADMAP.md), [A01 card](ROADMAP_TASKS.md#a01--alfred-shared-architecture-and-integration-contract),
 [release scope amendment](RELEASE_CONTRACT.md),
 [Alfred boundary](ALFRED_ARCHITECTURE.md) and [OWNER_CHECKLIST.md](OWNER_CHECKLIST.md).
-P09 and A01 are complete. Read [ANDROID_CONTRACT.md](ANDROID_CONTRACT.md) for
-A02–A07 implementation decisions. No Android app/native code exists yet.
+P09/A01/A02 are complete. Read [ANDROID_CONTRACT.md](ANDROID_CONTRACT.md) for
+A03–A07 implementation decisions. The app/native bootstrap scaffold exists and
+passes Android 11–16 CI; analysis handles, acquisition and jobs are not implemented.
 
 ## Implemented state and evidence
 
 Actual manifest version is **0.32.0**, Rust 1.85 minimum. Native report schema is
 **0.18.0**, policy `observations-only-v18`, ancestry `INCONCLUSIVE`, index null.
 P09 is accepted; completed P/F statuses remain intact. F02 is deferred;
-A01's contract is done, A02–A08 implementation/device gates remain open.
+A01's contract and A02 scaffold/builds are done; A03–A08 implementation/device
+gates remain open.
 
 - **P07**: independent full product/saved/info/batch/comparison and P06 export
   workflows, all 155 Python field locations. Scoped suite 103 passed; final
@@ -201,9 +222,9 @@ these are local files, not Git history or an external backup. Prior milestone
 receipts remain where originally recorded (including target/p06-msrv and
 accepted P05/P06/F01 receipts). U05 external backup remains owner work.
 
-Next concrete action: **A02**, creating apps/alfred and its separate Gradle/native
-build under ANDROID_CONTRACT.md. Check available SDK/NDK first, pin compatible
-build tooling, produce the debug scaffold APK and preserve independent core builds.
+Next concrete action: **A03**, implementing the app-owned native adapter under
+ANDROID_CONTRACT.md. Consume existing product APIs without changing core/DSP
+semantics; preserve shared memory admission and use GitHub Actions for heavy checks.
 Keep P06/P07 reuse unchanged. P09 details
 are in task-results/P09.md and docs/validation/CORE_RELEASE_VALIDATION.md;
 no publication is authorized by the gate.

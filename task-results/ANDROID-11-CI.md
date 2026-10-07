@@ -86,3 +86,10 @@ the green run tests the unchanged implementation revision `aca29fa`.
 Remaining product work: A03 adapter, A04 acquisition, A05 lifecycle/API guards,
 A06 feature results and A07 physical acceptance. Scaffold compatibility does not
 establish full application or phone memory/background behavior.
+
+## Main synchronization — 2026-10-07
+
+Owner requested synchronizing completed A01/A02 work. Local main fast-forwarded
+to this branch after exact source-tree verification, preserving remaining local
+planning edits. Documentation now identifies A03 as next. The implementation
+remains identical to green CI revision aca29fa; no rebuild or device test rerun.

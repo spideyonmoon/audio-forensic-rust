@@ -383,6 +383,9 @@ choices recorded. Unsafe FFI stays outside the safe analysis core.
 
 ## A02 — Alfred workspace scaffold and builds
 
+**Status: DONE 2026-10-07.** [A02 results](task-results/A02.md); later
+[Android 11–16 CI acceptance](task-results/ANDROID-11-CI.md) passed. A03 is next.
+
 **Sol; after A01.** Create the separate Android application subtree, offline
 workspace/navigation and pinned reproducible native builds. Open to selection;
 route applicable operations without requiring a forensic report. Add feature

@@ -11,7 +11,11 @@ not the application's home, input model or universal result schema.
 ## Delivery boundary
 
 The independent `audio-forensic-rust` library/CLI completed P07/P08/P09;
-P09 accepted scoped engine 0.32.0 on 2026-10-06. A01 is next. Owner approved 2026-10-06 deferring F02/DSD
+P09 accepted scoped engine 0.32.0 on 2026-10-06. A01 completed 2026-10-07;
+[ANDROID_CONTRACT.md](ANDROID_CONTRACT.md) freezes the initial seams and retains
+P06/P07 reusable backends/contracts/tests in this independent core. Alfred owns
+their feature UI and the app/native host boundary. A02 scaffold/builds completed
+2026-10-07; Android 11–16 scaffold CI passed. Next A03. Owner approved 2026-10-06 deferring F02/DSD
 beyond that release and Alfred launch; its frozen future contract remains. Completed P/F packets and their validation remain intact.
 P09 is the standalone release acceptance decision, not an Android gate or an
 automatic public release. It covers required formats, faithful reference outputs,

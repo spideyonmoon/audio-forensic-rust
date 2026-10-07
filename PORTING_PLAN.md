@@ -8,6 +8,7 @@ Primary phone ABI stays ARM64; x86_64 is a separate CI emulator artifact.
 Shared memory admission/frame limits stay unchanged; no device-specific chunking
 or throttling. Build/emulator evidence is separate from physical A07 acceptance.
 See [compatibility packet](task-results/ANDROID-11-CI.md).
+P09/A01/A02 are complete; A03 native adapter is the next delivery packet.
 
 ## Current delivery priority — 2026-10-06
 
