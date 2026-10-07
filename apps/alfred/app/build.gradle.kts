@@ -48,9 +48,13 @@ val smokeAssets by tasks.registering(Copy::class) {
     }
     into(layout.buildDirectory.dir("generated/smokeAssets"))
 }
-// Pass the producer, not a bare directory, so lint as well as packaging inherits
-// the generated-assets dependency.
-android.sourceSets["debug"].assets.srcDir(smokeAssets)
+android.sourceSets["debug"].assets.srcDir(layout.buildDirectory.dir("generated/smokeAssets"))
+// AGP's assets source set does not retain a Copy task provider's dependency.
+// Declare every debug asset/lint consumer explicitly so the files are generated
+// and Gradle's lint-model validation sees the producer edge.
+tasks.matching {
+    it.name.contains("Debug") && (it.name.contains("Lint", ignoreCase = true) || it.name.endsWith("Assets"))
+}.configureEach { dependsOn(smokeAssets) }
 dependencies {
     implementation(project(":shared"))
     implementation(project(":feature-forensics"))

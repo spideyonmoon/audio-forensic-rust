@@ -61,7 +61,7 @@ try {
     if ($ResolveLocks) { $gradleArguments += @('--write-locks', '--write-verification-metadata', 'sha256') }
     & ./gradlew.bat @gradleArguments
     if ($LASTEXITCODE -ne 0) { throw 'Android build/lint failed' }
-    & python scripts/verify_apk.py app/build/outputs/apk/debug/app-debug.apk --sdk $env:ANDROID_HOME
+    & python scripts/verify_apk.py app/build/outputs/apk/debug/app-debug.apk --sdk $env:ANDROID_HOME --smoke-assets
     if ($LASTEXITCODE -ne 0) { throw 'APK verification failed' }
     $receiptDirectory = Join-Path $appRoot 'build/receipts'
     New-Item -ItemType Directory -Force $receiptDirectory | Out-Null

@@ -12,10 +12,14 @@ import subprocess
 import zipfile
 
 
-def inspect(apk, sdk, abi="arm64-v8a"):
+def inspect(apk, sdk, abi="arm64-v8a", smoke_assets=False):
     machine = {"arm64-v8a": 183, "x86_64": 62}[abi]
     records = []
     with zipfile.ZipFile(apk) as archive, open(apk, "rb") as raw:
+        if smoke_assets:
+            fixtures = Path(__file__).resolve().parents[3] / "tests/fixtures"
+            for name in ("noise16.wav", "noise16.flac", "alac/8000-16-1-tail.m4a"):
+                assert archive.read(f"assets/{name}") == (fixtures / name).read_bytes(), name
         for info in archive.infolist():
             if not info.filename.endswith(".so"):
                 continue
@@ -87,5 +91,6 @@ if __name__ == "__main__":
     parser.add_argument("apk", type=Path)
     parser.add_argument("--sdk", required=True)
     parser.add_argument("--abi", choices=("arm64-v8a", "x86_64"), default="arm64-v8a")
+    parser.add_argument("--smoke-assets", action="store_true")
     args = parser.parse_args()
-    inspect(args.apk, args.sdk, args.abi)
+    inspect(args.apk, args.sdk, args.abi, args.smoke_assets)

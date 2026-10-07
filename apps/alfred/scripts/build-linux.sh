@@ -25,7 +25,7 @@ if [[ ! -f "$key" ]]; then
 fi
 cd "$app_root"
 bash gradlew --no-daemon --console=plain "-PnativeAbi=$abi" :app:assembleDebug :app:lintDebug
-python3 scripts/verify_apk.py app/build/outputs/apk/debug/app-debug.apk --sdk "$sdk" --abi "$abi"
+python3 scripts/verify_apk.py app/build/outputs/apk/debug/app-debug.apk --sdk "$sdk" --abi "$abi" --smoke-assets
 mkdir -p "build/ci/$abi"
 cp app/build/outputs/apk/debug/{app-debug.apk,alignment.json} "build/ci/$abi/"
 python3 - "$abi" "$target" <<'PY'
