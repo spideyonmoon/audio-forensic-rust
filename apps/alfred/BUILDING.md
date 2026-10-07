@@ -82,11 +82,9 @@ custody stays U04/A08. Never publish this as an accepted analysis app.
 
 On other hosts provision the same Rust/JDK/SDK/NDK versions, set JAVA_HOME and
 ANDROID_HOME, then use Cargo plus the wrapper directly. Replace the NDK prebuilt
-host/linker path with that host's API-30 clang. This Windows driver is the tested
-recipe; Linux/macOS execution and x86_64 emulator packaging are unverified. Do
+host/linker path with that host's API-30 clang. Windows and Linux CI builds have
+passed; macOS execution and physical phone runtime remain unverified. Do
 not add x86_64 to the primary APK; build a separate emulator variant in A03/A07.
-
-## Independent core and repository boundary
 
 ## GitHub Actions compatibility checks
 

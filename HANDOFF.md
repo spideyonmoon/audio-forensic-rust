@@ -4,46 +4,46 @@ Updated **2026-10-07**. This is the current continuation point. Historical miles
 entries and exact older check totals are preserved in
 [the handoff archive](docs/history/HANDOFF_20261006.md); newer decisions here win.
 
-## Android 11 and GitHub Actions amendment — 2026-10-07
+## Android 11 and GitHub Actions amendment â€” 2026-10-07
 
-Owner authorized Android 11–16 support for Hot 11S/Helio G88 and offloading heavy
-checks to GitHub Actions. Gradle module minimums/native linker move to API 30;
-compile/target 36 and shared memory rules remain. No phone-specific chunking or
-throttling. Linux build driver and separate x86_64 emulator artifact support
-API 30–36 workspace/JNI smoke; ARM64 phone and 16 KiB load remain A07 work.
-Contract lifecycle API guards and planned A07 coverage are updated.
+Owner authorized Android 11â€“16 support for Hot 11S/Helio G88 and offloading heavy
+checks to GitHub Actions. All five Gradle minimums/native linker now use API 30;
+compile/target 36, ARM64 primary ABI and common memory admission are unchanged.
+No phone-specific chunking/throttling or core/DSP changes. Separate x86_64 CI
+APK enables emulator smoke; lifecycle API guards and planned A07 coverage are
+amended in ANDROID_CONTRACT.md. A03 remains the next delivery task.
 
-Local Python syntax and tracked whitespace checks passed. Initial YAML check
-lacked PyYAML; initial Bash check hit sandbox denial. No heavy laptop builds or
-phone checks run. Remote CI dispatch/results are pending in
-[the packet](task-results/ANDROID-11-CI.md). Preserve pre-existing A01/A02 changes;
-core/private evidence is untouched. Next: publish source-only compatibility
-branch, inspect Actions builds/matrix and repair failures before A03.
+Source-only branch `codex/android11-ci` is published; main/checkout/normal index
+are unchanged. It includes the previously untracked A01/A02 scaffold needed for
+remote builds. Owner's large-diff concern was audited: root core, Cargo files,
+schemas/examples/tests unchanged; bulk additions were existing dependency pins.
+No Kotlin application screen or Rust source changed in this compatibility packet.
 
-Publication attempted: local `codex/android11-ci` contains the source-only app,
-contract and workflow; normal index/checkout unchanged. GitHub rejected the push
-because the OAuth login lacks `workflow` scope. No remote CI is running. A
-`gh auth refresh -h github.com -s workflow` process is awaiting owner browser
-authorization; retry push after authorization. Bash syntax passed on authorized
-retry; staged whitespace passed. CI compilation/lint/emulator remain unverified.
+Run 37635443625 passed both API-30 native/Gradle ABI builds, lint and ELF/ZIP/
+signature checks. API 30â€“35 emulator install/workspace/JNI smoke passed; API 36
+is still running at this checkpoint. Successful API-30 saved UI evidence was
+independently verified. Existing A02 APK verifier regression and Python/Bash/XML
+syntax/staged whitespace passed. Local YAML parser was absent; GitHub parsed and
+executed the workflow. No heavy laptop build or private-audio upload ran.
 
-Latest CI: authorization completed and branch pushed. First run 37631085115
-failed on retired SDK `tools`; fixed explicit platform-tools. Retry 37632592927
-linked API-30 ARM64 native code, then failed strict verification on three missing
-Maven metadata pins. Exact upstream files/SHA1 reviewed and SHA256 added, preserving
-all existing pins. Next retry pending; no APK/emulator success yet. Existing A02
-APK verifier regression passed without rebuilding. Core CI 37632592799 passed;
-filters now avoid app-only repeats. Owner raised concern about large diff: audit
-confirmed root core/schema/tests/examples/manifests unchanged; most additions were
-previously untracked A01/A02 scaffold and lock/checksum records, not new DSP work.
+Initial failures retained in [the packet](task-results/ANDROID-11-CI.md): missing
+OAuth workflow permission (owner authorized), retired SDK tools package, four
+missing upstream-reviewed metadata/Linux-tool pins, and a test that failed to
+scroll to the native status. No checksum bypass or oracle change. Core CI
+37632592799 passed; app-only changes now avoid redundant core builds.
 
-## A02 completion — 2026-10-07
+Completed run: https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37635443625.
+Next concrete action: A03 under the amended contract. No local/remote jobs running. Phone RSS/background, 16 KiB
+runtime, analysis/SAF/jobs/results and release acceptance remain A03â€“A07 work.
+Ignored evidence under target/android11-* is local, not source history or backup.
+
+## A02 completion â€” 2026-10-07
 
 Owner requested complete A02. Five-module Compose scaffold and separate native
 Cargo workspace are created under apps/alfred; pinned provisioning/build scripts
 and build guide are present. Existing A01 dirty work and core/private inputs are
 preserved. Native transport is only the caught-unwind load/version bootstrap;
-analysis/SAF acquisition/jobs/results remain A03–A06.
+analysis/SAF acquisition/jobs/results remain A03â€“A06.
 
 Tool provisioning completed, log target/a02/provision-resume.log. Initial
 Invoke-WebRequest JDK download stalled and was interrupted; authorized curl retry
@@ -62,12 +62,12 @@ native/ELF/ZIP/signature evidence is `apps/alfred/app/build/outputs/apk/debug/al
 The build receipt is `apps/alfred/build/receipts/build.json`. A03 is next; no
 device/runtime, SAF, JNI handles, jobs or result-payload acceptance was run.
 
-## A01 completion — 2026-10-07
+## A01 completion â€” 2026-10-07
 
 **Owner-requested review corrections completed:** [A01 review](task-results/A01-review.md)
 now records all three findings resolved in the contract: cancellable probe handles
 with complete metadata payloads, one negotiated comparison scope and same-track
-assertion, and Publication 2560×1440 as the default with all existing PNG presets.
+assertion, and Publication 2560Ã—1440 as the default with all existing PNG presets.
 Affected A03/A04/A06a/A06b acceptance cases are explicit. Correction checks are
 recorded in task-results/A01.md and the Android validation record; the original
 completion/check record below is preserved. **Stop after A01 as requested; A02
@@ -83,9 +83,9 @@ owns feature UI and platform infrastructure. No duplication/refactor/new crate.
 Product memory admission caps reference capture at 8,640,000 native-rate frames,
 with explicit prefix offers for larger scopes. Reservations are unmeasured
 engineering defaults for A07, not phone guarantees. 700 MiB staged import stays
-required. Android 14–16, API 34/36 and NDK 30.0.16248370 choices were checked
+required. Android 14â€“16, API 34/36 and NDK 30.0.16248370 choices were checked
 against linked official documentation; actual tool installation/link/device
-behavior remains A02–A07 work. Final package identity/signing stays U04/A08.
+behavior remains A02â€“A07 work. Final package identity/signing stays U04/A08.
 
 Checks passed: parity inventory (155/139/30/34, pinned clean reference), contract
 and public-API/path/frame-budget checks, current dispatch/local Markdown targets,
@@ -99,7 +99,7 @@ Next **A02** scaffold/builds; no app implementation has been started.
 ## Current task and delivery boundary
 
 - Active task: **none**. A02 completed 2026-10-07; A03 is next. No jobs running.
-- Next default delivery task: **A02 — Alfred workspace scaffold and reproducible builds (Sol)**.
+- Next default delivery task: **A02 â€” Alfred workspace scaffold and reproducible builds (Sol)**.
 - **F02/DSD DEFERRED beyond the first standalone release and Alfred launch**,
   owner approved 2026-10-06 to conserve Astra budget. Its frozen DSF/DFF,
   DSD64/128/256, mono/stereo and 88.2 kHz conversion contract remains for later.
@@ -121,14 +121,14 @@ Read [ROADMAP.md](ROADMAP.md), [A01 card](ROADMAP_TASKS.md#a01--alfred-shared-ar
 [release scope amendment](RELEASE_CONTRACT.md),
 [Alfred boundary](ALFRED_ARCHITECTURE.md) and [OWNER_CHECKLIST.md](OWNER_CHECKLIST.md).
 P09 and A01 are complete. Read [ANDROID_CONTRACT.md](ANDROID_CONTRACT.md) for
-A02–A07 implementation decisions. No Android app/native code exists yet.
+A02â€“A07 implementation decisions. No Android app/native code exists yet.
 
 ## Implemented state and evidence
 
 Actual manifest version is **0.32.0**, Rust 1.85 minimum. Native report schema is
 **0.18.0**, policy `observations-only-v18`, ancestry `INCONCLUSIVE`, index null.
 P09 is accepted; completed P/F statuses remain intact. F02 is deferred;
-A01's contract is done, A02–A08 implementation/device gates remain open.
+A01's contract is done, A02â€“A08 implementation/device gates remain open.
 
 - **P07**: independent full product/saved/info/batch/comparison and P06 export
   workflows, all 155 Python field locations. Scoped suite 103 passed; final
@@ -144,11 +144,11 @@ A01's contract is done, A02–A08 implementation/device gates remain open.
   embedded licensed font, axes/legend, scoped bitrate and collision-safe export.
   Final follow-up focused tests 80 passed plus independent generated PNG/data
   checks. [Results](task-results/P06-PNG.md), [validation](docs/validation/SPECTROGRAM_VALIDATION.md).
-- **F01**: offline native ALAC/M4A, 16/24-bit mono/stereo 8–384 kHz, bounded
+- **F01**: offline native ALAC/M4A, 16/24-bit mono/stereo 8â€“384 kHz, bounded
   metadata/seekable source. Final optimized MSRV/no-CLI suite 96 passed;
   72 generated matrix controls and 700 MiB seek/padding control passed.
   [Results](task-results/F01.md), [validation](docs/validation/ALAC_VALIDATION.md).
-- **P04a/P04b/P04c** and P01–P03a remain complete; original task/validation
+- **P04a/P04b/P04c** and P01â€“P03a remain complete; original task/validation
   records retain exact commands, bounds, initial failures and final evidence.
   [Packet index](task-results/README.md), [validation index](docs/validation/README.md).
 
@@ -161,7 +161,7 @@ containment before any Android panic=abort decision. P07 implements product enve
 naming/version dispatch as `audio-forensic-product-v1` (the proposed
 `alfred-product-v1` is not emitted); it contains no shared Alfred state. No Kotlin scoring or app-owned state belongs in the safe core.
 
-## Repository cleanup and checks — 2026-10-06
+## Repository cleanup and checks â€” 2026-10-06
 
 Documentation is organized under docs/validation, docs/history and docs/REFERENCE.md;
 root retains agent entry/planning files. README is now a concise front page.
@@ -180,7 +180,7 @@ inventory helper's initial P08 dependency expansion.
 See [cleanup record](task-results/REPO-POLISH.md) for receipts. No Rust/DSP/Android builds were run for these
 planning/documentation changes. No commit, push, upload or repository extraction.
 
-## Feature-ownership clarification — 2026-10-06
+## Feature-ownership clarification â€” 2026-10-06
 
 [Planning record](task-results/SPECTROGRAM-OWNERSHIP.md): A01 now owns explicit
 long-term spectrogram/comparison ownership decisions and standalone compatibility;
@@ -208,7 +208,7 @@ Keep P06/P07 reuse unchanged. P09 details
 are in task-results/P09.md and docs/validation/CORE_RELEASE_VALIDATION.md;
 no publication is authorized by the gate.
 
-## P07 completion — 2026-10-06
+## P07 completion â€” 2026-10-06
 
 Engine 0.32.0 adds `audio-forensic-product-v1`/comparison v1, combined source
 collectors, actual no-decode info, saved rendering, all 155 field locations and
@@ -235,11 +235,11 @@ private recordings/reference were preserved. **No unresolved P07 failures or
 running jobs. At that handoff P08 was next; its completion is recorded below.
 Alfred A01 begins after standalone acceptance.**
 
-## P08 completion — 2026-10-06
+## P08 completion â€” 2026-10-06
 
 P08 DONE in engine 0.32.0; production source/dependencies/schemas/accepted fixtures
 unchanged. Permanent finite freeze/acceptance helper: scripts/check_core_release.py.
-All 30 P01 groups and R01–R34 have mapped differential/deviation evidence in
+All 30 P01 groups and R01â€“R34 have mapped differential/deviation evidence in
 docs/validation/CORE_RELEASE_VALIDATION.md; exact commands in task-results/P08.md.
 
 Final Rust/Cargo 1.85.0 optimized core regression: **271 passed, zero failed or
@@ -265,7 +265,7 @@ audio/calibration/MQA confirmation, DSD conversion/new schema, Android target/
 link/APK/device, remote CI, commit/push/publication or external backup.
 **Next P09 finite standalone accept/reject review; Alfred A01 follows P09.**
 
-## P09 completion — 2026-10-06
+## P09 completion â€” 2026-10-06
 
 **ACCEPT standalone engine 0.32.0**, Rust minimum 1.85, for documented offline
 FLAC/WAV/ALAC-M4A scope. F02/native DSD remains deferred beyond initial release
@@ -274,7 +274,7 @@ and Alfred launch. The written decision and finite review are in
 and [P09 results](task-results/P09.md). No production blocker or change; native
 schema 0.18.0 / observations-only-v18 / INCONCLUSIVE / null index unchanged.
 Reference outputs remain uncalibrated; the existing 30-group/34-rule P08 ledger
-and D01–D12 cover required rows and named deviations.
+and D01â€“D12 cover required rows and named deviations.
 
 Fresh checks passed: unchanged 287-file P08 computational tree and binary hash,
 actual P08 log/receipt verification (271 Rust passes, zero failed/ignored;

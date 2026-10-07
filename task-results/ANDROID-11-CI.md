@@ -1,13 +1,13 @@
-# Android 11 support and CI — 2026-10-07
+# Android 11 support and CI â€” 2026-10-07
 
-Owner expanded Alfred to Android 11–16 and requested heavy checks in GitHub
+Owner expanded Alfred to Android 11â€“16 and requested heavy checks in GitHub
 Actions to avoid laptop builds. Existing A01/A02 work is preserved. No core/DSP
 source, fixtures, private audio, memory policy, chunking or throttling changes.
 
 All five Gradle module minimums and the Windows native link target move to API
 30; compile/target remains 36. Separate Linux ARM64/x86_64 builds use pinned
 NDK/Rust, locked dependencies, checksum verification, lint and all-native
-ELF/ZIP/signature checks. The workflow's API 30–36 matrix checks workspace and
+ELF/ZIP/signature checks. The workflow's API 30â€“36 matrix checks workspace and
 JNI bootstrap; phone acceptance and later workflow functionality remain pending.
 The contract now specifies API guards for foreground-service types and Android
 13+ notification permission, and expanded A07 OS/device coverage.
@@ -56,3 +56,27 @@ was found in saved logcat. Test now records picker visibility, scrolls to the
 status label, rejects explicit load/version errors and still requires successful
 JNI bootstrap. Test-only repair, no production UI/native change. Remaining jobs
 in the old run are canceled to avoid spending CI time on the same test defect.
+
+## Final validation — DONE for compatibility configuration/scaffold CI
+
+Repaired run [37635443625](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37635443625):
+ARM64 and x86_64 API-30 native/Gradle builds, lint, all packaged ELF/ZIP alignment
+and signature checks passed. API 30â€“35 emulator install/workspace/JNI smoke passed;
+API 36 is still running at this checkpoint. Saved API-30 UI evidence was downloaded
+and independently checked for both picker controls and the successful native-load
+label. Evidence is ignored `target/android11-emulator30-passed/`; prior failures,
+upstream artifact reviews and build logs also remain local under `target/`.
+
+Source is published on `codex/android11-ci`; main is unchanged. The branch includes
+the previously untracked A01/A02 scaffold required for a remote build. Root core,
+Cargo manifests/lock, schemas, examples and tests are byte-identical to HEAD.
+Common memory limits are unchanged, and no Kotlin application screen or Rust
+source was edited for this packet. No heavy local build, physical Hot 11S/Redmi
+test, 16 KiB runtime, analysis/SAF/jobs test, private-audio upload or release ran.
+The cross-platform verifier regression passed against the existing A02 APK.
+Local Python/Bash/XML syntax and staged whitespace passed. Local YAML parsing
+was unavailable, but GitHub successfully parsed and executed the workflow.
+
+Remaining product work: A03 adapter, A04 acquisition, A05 lifecycle/API guards,
+A06 feature results and A07 physical acceptance. Scaffold compatibility does not
+establish full application or phone memory/background behavior.
