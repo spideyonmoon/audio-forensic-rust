@@ -42,3 +42,8 @@ their SHA256 entries individually. Existing checksums/dependency versions were
 not replaced and strict verification stays enabled. Retry pending. Cross-platform
 APK verifier regression passed on the existing API-34 A02 APK; this does not
 validate the new API-30 APK. Unchanged-core CI run 37632592799 passed.
+
+Run 37633427012 passed the three metadata pins and reached resource compilation,
+then rejected missing Linux aapt2 8.11.1-12782657 checksum. Reviewed the exact
+Google Maven artifact against its published SHA1 and added its SHA256 alongside
+the existing Windows pin. No verification disabled. Retry pending.
