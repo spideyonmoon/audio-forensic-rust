@@ -47,3 +47,12 @@ Run 37633427012 passed the three metadata pins and reached resource compilation,
 then rejected missing Linux aapt2 8.11.1-12782657 checksum. Reviewed the exact
 Google Maven artifact against its published SHA1 and added its SHA256 alongside
 the existing Windows pin. No verification disabled. Retry pending.
+
+Run 37634060603 passed ARM64 and x86_64 builds, lint, ELF/ZIP alignment and
+signature checks. API 30/31 emulator smoke failed because the test did not scroll
+to the bootstrap text below the default 320x640 AVD viewport. Saved API-30 XML
+shows the rendered workspace/pickers and a scrollable view; no app fatal exception
+was found in saved logcat. Test now records picker visibility, scrolls to the
+status label, rejects explicit load/version errors and still requires successful
+JNI bootstrap. Test-only repair, no production UI/native change. Remaining jobs
+in the old run are canceled to avoid spending CI time on the same test defect.

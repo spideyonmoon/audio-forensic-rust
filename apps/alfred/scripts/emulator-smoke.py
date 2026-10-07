@@ -18,13 +18,24 @@ try:
     (output / "start.txt").write_text(result)
     assert "Status: ok" in result, result
     deadline = time.monotonic() + 60
+    picker_labels = set()
     while time.monotonic() < deadline:
         adb("shell", "uiautomator", "dump", "/sdcard/alfred-smoke.xml")
         adb("pull", "/sdcard/alfred-smoke.xml", str(output / "ui.xml"))
-        texts = [node.attrib.get("text", "") for node in ET.parse(output / "ui.xml").iter()]
+        tree = ET.parse(output / "ui.xml")
+        texts = [node.attrib.get("text", "") for node in tree.iter()]
+        picker_labels.update(text for text in texts if text in {"Choose documents", "Choose folder"})
+        if len(picker_labels) == 2 and not (output / "workspace.xml").exists():
+            (output / "workspace.xml").write_bytes((output / "ui.xml").read_bytes())
+        assert not any("native_load_failed" in text or "unsupported_version" in text for text in texts), texts
         if any("Native host v1 loaded" in text for text in texts):
-            assert "Choose documents" in texts and "Choose folder" in texts, texts
+            assert len(picker_labels) == 2, picker_labels
             break
+        # The bootstrap label is below the fold on the runner's small default AVD.
+        bounds = tree.getroot().find("node").attrib["bounds"]
+        width, height = map(int, bounds.split("][")[1].rstrip("]").split(","))
+        adb("shell", "input", "swipe", str(width // 2), str(height * 4 // 5),
+            str(width // 2), str(height // 3), "400")
         time.sleep(2)
     else:
         raise AssertionError("Workspace/JNI bootstrap did not become ready")
