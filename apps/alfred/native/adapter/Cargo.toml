@@ -1,0 +1,14 @@
+[package]
+name = "alfred-native"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.85"
+license = "MIT"
+publish = false
+
+[lib]
+name = "alfred_native"
+crate-type = ["cdylib"]
+
+[dependencies]
+audio-forensic = { path = "../../../..", default-features = false }

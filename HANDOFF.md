@@ -4,10 +4,85 @@ Updated **2026-10-07**. This is the current continuation point. Historical miles
 entries and exact older check totals are preserved in
 [the handoff archive](docs/history/HANDOFF_20261006.md); newer decisions here win.
 
+## Android 11 and GitHub Actions amendment — 2026-10-07
+
+Owner authorized Android 11–16 support for Hot 11S/Helio G88 and offloading heavy
+checks to GitHub Actions. Gradle module minimums/native linker move to API 30;
+compile/target 36 and shared memory rules remain. No phone-specific chunking or
+throttling. Linux build driver and separate x86_64 emulator artifact support
+API 30–36 workspace/JNI smoke; ARM64 phone and 16 KiB load remain A07 work.
+Contract lifecycle API guards and planned A07 coverage are updated.
+
+Local Python syntax and tracked whitespace checks passed. Initial YAML check
+lacked PyYAML; initial Bash check hit sandbox denial. No heavy laptop builds or
+phone checks run. Remote CI dispatch/results are pending in
+[the packet](task-results/ANDROID-11-CI.md). Preserve pre-existing A01/A02 changes;
+core/private evidence is untouched. Next: publish source-only compatibility
+branch, inspect Actions builds/matrix and repair failures before A03.
+
+## A02 completion — 2026-10-07
+
+Owner requested complete A02. Five-module Compose scaffold and separate native
+Cargo workspace are created under apps/alfred; pinned provisioning/build scripts
+and build guide are present. Existing A01 dirty work and core/private inputs are
+preserved. Native transport is only the caught-unwind load/version bootstrap;
+analysis/SAF acquisition/jobs/results remain A03–A06.
+
+Tool provisioning completed, log target/a02/provision-resume.log. Initial
+Invoke-WebRequest JDK download stalled and was interrupted; authorized curl retry
+verified JDK/Gradle/platform archives. Prerequisites are local .tools/alfred,
+with explicitly approved SDK licence acceptance. Root CLI and no-CLI builds passed with Rust 1.85, locked/offline and the
+existing local gcc/lld shim (CLI required an authorized linker retry);
+logs target/a02/core-cli.log and core-no-cli.log. Native NDK link passed on authorized retry, and the checksum-pinned wrapper
+passed after a fresh-process retry for Windows immutable-cache rename failure.
+Complete online Gradle build/lint, dependency locks, clean offline repeat and
+ELF/ZIP/signature inspection passed.
+No publication/device acceptance is implied. Task record: task-results/A02.md.
+
+Completion evidence: the complete online Gradle build/lint and clean offline
+repeat passed. The debug APK is `apps/alfred/app/build/outputs/apk/debug/app-debug.apk`;
+native/ELF/ZIP/signature evidence is `apps/alfred/app/build/outputs/apk/debug/alignment.json`.
+The build receipt is `apps/alfred/build/receipts/build.json`. A03 is next; no
+device/runtime, SAF, JNI handles, jobs or result-payload acceptance was run.
+
+## A01 completion — 2026-10-07
+
+**Owner-requested review corrections completed:** [A01 review](task-results/A01-review.md)
+now records all three findings resolved in the contract: cancellable probe handles
+with complete metadata payloads, one negotiated comparison scope and same-track
+assertion, and Publication 2560×1440 as the default with all existing PNG presets.
+Affected A03/A04/A06a/A06b acceptance cases are explicit. Correction checks are
+recorded in task-results/A01.md and the Android validation record; the original
+completion/check record below is preserved. **Stop after A01 as requested; A02
+remains unstarted.** No jobs are running.
+
+**DONE**, documentation-only packet. [ANDROID_CONTRACT.md](ANDROID_CONTRACT.md)
+freezes initial shared selection/capabilities, immutable bounded SAF staging,
+app-owned JNI handles/exact JSON, serial jobs/lifecycle/interruption, quotas and
+feature payloads, build/ABI/unwind strategy and repository extraction. P06/P07
+computation/rendering/contracts/tests remain in this independent core; Alfred
+owns feature UI and platform infrastructure. No duplication/refactor/new crate.
+
+Product memory admission caps reference capture at 8,640,000 native-rate frames,
+with explicit prefix offers for larger scopes. Reservations are unmeasured
+engineering defaults for A07, not phone guarantees. 700 MiB staged import stays
+required. Android 14–16, API 34/36 and NDK 30.0.16248370 choices were checked
+against linked official documentation; actual tool installation/link/device
+behavior remains A02–A07 work. Final package identity/signing stays U04/A08.
+
+Checks passed: parity inventory (155/139/30/34, pinned clean reference), contract
+and public-API/path/frame-budget checks, current dispatch/local Markdown targets,
+287 unchanged frozen computational hashes and whitespace. Exact commands and
+not-run scope: [A01 results](task-results/A01.md),
+[validation](docs/validation/ANDROID_INTEGRATION_VALIDATION.md). Receipts are
+ignored target/a01 local evidence only. No Rust/Android builds, private-audio
+analysis, commit/push/upload or extraction; no unresolved failure or running job.
+Next **A02** scaffold/builds; no app implementation has been started.
+
 ## Current task and delivery boundary
 
-- Active task: **none**. P09 accepted 2026-10-06; no jobs running.
-- Next default delivery task: **A01 — Alfred shared architecture and integration contract (Astra)**.
+- Active task: **none**. A02 completed 2026-10-07; A03 is next. No jobs running.
+- Next default delivery task: **A02 — Alfred workspace scaffold and reproducible builds (Sol)**.
 - **F02/DSD DEFERRED beyond the first standalone release and Alfred launch**,
   owner approved 2026-10-06 to conserve Astra budget. Its frozen DSF/DFF,
   DSD64/128/256, mono/stereo and 88.2 kHz conversion contract remains for later.
@@ -28,13 +103,15 @@ entries and exact older check totals are preserved in
 Read [ROADMAP.md](ROADMAP.md), [A01 card](ROADMAP_TASKS.md#a01--alfred-shared-architecture-and-integration-contract),
 [release scope amendment](RELEASE_CONTRACT.md),
 [Alfred boundary](ALFRED_ARCHITECTURE.md) and [OWNER_CHECKLIST.md](OWNER_CHECKLIST.md).
-P09 is complete; A01 has not started. A named P09 request does not start app work.
+P09 and A01 are complete. Read [ANDROID_CONTRACT.md](ANDROID_CONTRACT.md) for
+A02–A07 implementation decisions. No Android app/native code exists yet.
 
 ## Implemented state and evidence
 
 Actual manifest version is **0.32.0**, Rust 1.85 minimum. Native report schema is
 **0.18.0**, policy `observations-only-v18`, ancestry `INCONCLUSIVE`, index null.
-P09 is accepted; completed P/F statuses remain intact. F02 is deferred; A tasks are not done.
+P09 is accepted; completed P/F statuses remain intact. F02 is deferred;
+A01's contract is done, A02–A08 implementation/device gates remain open.
 
 - **P07**: independent full product/saved/info/batch/comparison and P06 export
   workflows, all 155 Python field locations. Scoped suite 103 passed; final
@@ -107,10 +184,10 @@ these are local files, not Git history or an external backup. Prior milestone
 receipts remain where originally recorded (including target/p06-msrv and
 accepted P05/P06/F01 receipts). U05 external backup remains owner work.
 
-Next concrete action: **A01**, producing ANDROID_CONTRACT.md from the Alfred
-architecture, integration/job guides and accepted P09 contract. Define shared
-workspace/input/jobs/storage, feature/native seams, extraction ownership, ALAC
-unwind and memory/admission budgets. Keep P06/P07 reuse unchanged. P09 details
+Next concrete action: **A02**, creating apps/alfred and its separate Gradle/native
+build under ANDROID_CONTRACT.md. Check available SDK/NDK first, pin compatible
+build tooling, produce the debug scaffold APK and preserve independent core builds.
+Keep P06/P07 reuse unchanged. P09 details
 are in task-results/P09.md and docs/validation/CORE_RELEASE_VALIDATION.md;
 no publication is authorized by the gate.
 

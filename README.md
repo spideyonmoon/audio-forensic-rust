@@ -17,7 +17,7 @@ Engine **0.32.0** · Rust **1.85+** · MIT
 | Reference assessment | Versioned pinned-Python scores, rule traces and qualified candidate interpretations |
 | Spectrogram | Bounded offline data and complete calibrated Rust PNG canvas |
 | DSD | **Deferred beyond the first release and Alfred launch**; no shipped DSD analysis |
-| Alfred Android app | Planned; no APK/device acceptance claimed |
+| Alfred Android app | A02 scaffold; Android 11–16 ARM64 planned, device acceptance pending |
 
 The measurement report keeps ancestry `INCONCLUSIVE` and evidence index `null`.
 Reference scores are uncalibrated method outputs, not probabilities or proof of
@@ -60,8 +60,9 @@ CLI options, exit codes, precision and numerical conventions.
 
 ## Delivery and Alfred
 
-**Standalone 0.32.0 accepted at P09 (2026-10-06). Next: A01 (Astra)**,
-the Alfred architecture/integration contract.
+**Standalone 0.32.0 accepted at P09 (2026-10-06). A01 and A02 complete
+(2026-10-07). Next: A03 (Astra)**, the Alfred native adapter and linked smoke under the
+[Android integration contract](ANDROID_CONTRACT.md).
 The owner deferred F02/DSD on 2026-10-06 to conserve Astra budget; its frozen
 future format/conversion contract remains planned.
 
@@ -70,7 +71,7 @@ It consumes this library through a separate feature adapter. Shared selection,
 input, jobs and storage belong to Alfred; Audio Forensics, Spectrogram and Audio
 Compare are independently reachable features. Spectrogram's longer-term ambition
 is a competitive viewing/exploration tool; P06/A06a are its initial foundation.
-A01 defines reusable spectrogram/comparison ownership for repository extraction;
+A01's contract retains reusable spectrogram/comparison backends in this core;
 reuse existing implementations now. Tag Studio, Audio Converter and
 Archival Tools remain future placeholders. Alfred starts here in a separate app
 subtree and later moves into its own repository; this core remains independent.

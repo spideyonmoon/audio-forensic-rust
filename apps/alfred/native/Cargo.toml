@@ -1,0 +1,6 @@
+[workspace]
+members = ["adapter"]
+resolver = "3"
+
+[profile.release]
+panic = "unwind"

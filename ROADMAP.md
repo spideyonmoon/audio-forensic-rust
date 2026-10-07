@@ -53,16 +53,16 @@ the entire roadmap. If a task spans sessions, resume the same ID and saved state
 
 ## Current dispatch
 
-- **Active task:** none; P09 accepted 2026-10-06. No jobs running.
-- **Next delivery task:** **A01 — Alfred shared architecture and integration contract (Astra)**.
+- **Active task:** none; A02 completed 2026-10-07. No jobs running.
+- **Next delivery task:** **A03 — Audio Forensics native adapter and linked smoke (Astra)**.
 - **Owner inputs received:** Redmi 13 4G, Android 16, APK/ADB available;
   FLAC/WAV/ALAC-M4A/DSD; detailed verdict, complete metadata and deep results;
   approximately 600–700 MB upper typical file size; Alfred via GitHub Releases.
-  Consider Android 14/15 compatibility. U02/U05 continue alongside implementation.
+  Support Android 11–16; owner added Hot 11S/Android 11 on 2026-10-07.
+  Heavy Android checks run in GitHub Actions; retain common memory rules. U02/U05 continue alongside implementation.
 - **Deferred:** F02/DSD beyond the first standalone release and Alfred launch,
   owner approved 2026-10-06 to conserve Astra budget. DSD is not shipped support.
-- **Next Sol task:** A02 after P09/A01; P07/P08 are complete.
-  Alfred begins at A01 after P09; A02 follows A01.
+- **Next Sol task:** A04 after A03; P09/A01/A02 are complete. Follow ANDROID_CONTRACT.md.
 - **Next endgame task when explicitly requested:** E01, the AAC trim work.
 - **Independent MQA work:** existing prototype/corpus at
   `C:\Users\Bishal\Documents\antigravity-dev\mqa`; E09 now READY for a
@@ -178,8 +178,8 @@ unless the card explicitly permits work against the frozen contract.
 | P07 | CLI/report/comparison workflows using reference assessment | Sol | P05, P06, P03a | DONE |
 | P08 | Frozen differential suite and final core regression | Sol | P02–P07, F01; required child tasks | DONE 2026-10-06 |
 | P09 | Core release review and finite acceptance decision | Astra | P08 | DONE — ACCEPT 2026-10-06 |
-| A01 | Alfred shared architecture and feature/native integration contract | Astra | P09 | TODO |
-| A02 | Alfred workspace scaffold and reproducible builds | Sol | A01 | TODO |
+| A01 | Alfred shared architecture and feature/native integration contract | Astra | P09 | DONE 2026-10-07 |
+| A02 | Alfred workspace scaffold and reproducible builds | Sol | A01 | DONE 2026-10-07 |
 | A03 | Audio Forensics native adapter and linked smoke | Astra | A02 | TODO |
 | A04 | Shared selection, SAF file/folder input and bounded staging | Sol | A02 | TODO |
 | A05 | Shared jobs, background lifecycle, progress/cancel and retention | Sol | A03, A04 | TODO |
@@ -197,7 +197,7 @@ ledger; it does not imply publication or Android acceptance.
 Alfred development then begins: A01 → A02 → A03/A04 → A05 → A06/A06a/A06b →
 A07 → A08. A03 and A04 have independent responsibilities; sessions still run
 sequentially by default. The former permission to start A01–A03 before the core
-release is superseded by this boundary. All A tasks are planning only today.
+release is superseded by this boundary. A01/A02 are complete; A03–A08 remain.
 
 Shared infrastructure: A01/A02/A04/A05. Audio Forensics integration: A03/A06.
 Independent existing-functionality workflows: A06a/A06b. A07/A08 gate the Alfred
@@ -296,4 +296,14 @@ controls. [Results](task-results/P08.md), [ledger](docs/validation/CORE_RELEASE_
 P09 **ACCEPT**: unchanged frozen tree/binary and P08 receipts verified; fresh
 inventory/version/saved rendering/comparison passed. No production change or
 full regression rerun. [P09 results](task-results/P09.md) records accepted limits;
-next A01, no app work started or publication performed.
+that packet preceded A01; no app work or publication was part of P09.
+
+A01 completed 2026-10-07: [Android contract](ANDROID_CONTRACT.md) freezes shared
+seams, JNI/ownership, resource/lifecycle limits, feature payloads and extraction.
+[Results](task-results/A01.md) distinguish contract checks from future link/device
+tests. A02 subsequently completed; no jobs are running.
+
+The owner-requested A01 review corrections are incorporated: cancellable complete
+metadata probing, shared same-track comparison scope, and the accepted PNG default.
+See [review resolution](task-results/A01-review.md#resolution--2026-10-07).
+That A01 snapshot predates A02; A02 is now complete.

@@ -343,7 +343,8 @@ E tasks and cannot silently block a faithful, correctly described release.
 
 ## A01 — Alfred shared architecture and integration contract
 
-**Astra; after P09.** Alfred development begins here, after the standalone core
+**Astra; DONE 2026-10-07.** See [ANDROID_CONTRACT.md](ANDROID_CONTRACT.md) and
+[A01 results](task-results/A01.md). Alfred development begins here, after the standalone core
 acceptance. Read ALFRED_ARCHITECTURE.md, CORE_INTEGRATION.md, JOB_VALIDATION.md
 and the release/result contract. Produce `ANDROID_CONTRACT.md` separating shared
 workspace/selection, input ownership/staging, capability routing, jobs/lifecycle,
@@ -371,7 +372,7 @@ Record Spectrogram as a broader competitive viewing/exploration feature, with
 A06a only its initial slice. Fuller requirements and comparison expansion remain
 future packets, not detailed APIs or implicit launch requirements.
 Do not design detailed APIs for Tag Studio, Converter or Archival Tools.
-Plan Android 14–16/Redmi 13 4G testing; verify SDK/NDK/API choices against current
+Plan Android 11–16/Redmi 13 4G and Hot 11S testing; verify SDK/NDK/API choices against current
 official documentation during execution. Required formats, 700 MiB import and
 fidelity remain the release contract's. DSD is deferred beyond launch; reserve
 feature payload version dispatch without designing/implementing F02 now.
@@ -478,7 +479,9 @@ results, ties and all-unavailable cases match P07; export/storage use shared sea
 ## A07 — Alfred physical-device gate
 
 **Astra + owner; after A06/A06a/A06b/P09/U01.** Test Redmi 13 4G/Android 16;
-label Android 14/15 device/emulator evidence. Exercise shared file/multiple/folder
+label Android 11–16 emulator evidence and Hot 11S/Android 11 physical evidence
+when available. Use shared memory admission, without device-specific chunking
+or throttling; CI emulator success does not establish phone RSS/background behavior. Exercise shared file/multiple/folder
 selection and operation routing, each initial workflow, required formats,
 600–700 MB inputs, cancel/retry, rotation, background/screen-off, process death,
 storage pressure and runtime/thermal/memory behavior. Compare generated forensic

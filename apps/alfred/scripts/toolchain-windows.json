@@ -1,0 +1,42 @@
+{
+  "jdk": {
+    "url": "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.16%2B8/OpenJDK17U-jdk_x64_windows_hotspot_17.0.16_8.zip",
+    "sha256": "8c7cfff78a55c56ebaf470ed6a89c6466b47d8274bdabdda997d7507c20325c5",
+    "bytes": 190520081
+  },
+  "gradle": {
+    "url": "https://services.gradle.org/distributions/gradle-8.13-bin.zip",
+    "sha256": "20f1b1176237254a6fc204d8434196fa11a4cfb387567519c61556e8710aed78",
+    "bytes": 136983045
+  },
+  "android": [
+    {
+      "package": "platforms;android-36",
+      "url": "https://dl.google.com/android/repository/platform-36_r02.zip",
+      "sha1": "2c1a80dd4d9f7d0e6dd336ec603d9b5c55a6f576",
+      "bytes": 65878410,
+      "sha256": "37607369a28c5b640b3a7998868d45898ebcb777565a0e85f9acf36f29631d2e"
+    },
+    {
+      "package": "ndk;30.0.16248370",
+      "url": "https://dl.google.com/android/repository/android-ndk-r30-windows.zip",
+      "sha1": "9bf167a1985fa7d4a036186b78f702eab9179408",
+      "bytes": 727980788,
+      "sha256": "b830098aaf18b67a42eb831c404e15e5f2990a474f054ac145b0bc957ac6d729"
+    },
+    {
+      "package": "build-tools;36.0.0",
+      "url": "https://dl.google.com/android/repository/build-tools_r36_windows.zip",
+      "sha1": "f16ccffd34de8790dede813a6c7d8e2c11a27b50",
+      "bytes": 58699878,
+      "sha256": "aa1095cb14d83e483818a748a2c06faaeb8e601561b06a356a119a1b2ca280d3"
+    },
+    {
+      "package": "cmdline-tools;19.0",
+      "url": "https://dl.google.com/android/repository/commandlinetools-win-13114758_latest.zip",
+      "sha1": "54a582f3bf73e04253602f2d1c80bd5868aac115",
+      "bytes": 143040480,
+      "sha256": "98b565cb657b012dae6794cefc0f66ae1efb4690c699b78a614b4a6a3505b003"
+    }
+  ]
+}

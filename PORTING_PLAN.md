@@ -1,5 +1,14 @@
 # Rust port decisions
 
+## Android compatibility amendment — 2026-10-07
+
+Owner authorized Android 11–16 (min/native API 30, compile/target 36), including
+Infinix Hot 11S/Helio G88, and GitHub Actions for heavy builds/emulator checks.
+Primary phone ABI stays ARM64; x86_64 is a separate CI emulator artifact.
+Shared memory admission/frame limits stay unchanged; no device-specific chunking
+or throttling. Build/emulator evidence is separate from physical A07 acceptance.
+See [compatibility packet](task-results/ANDROID-11-CI.md).
+
 ## Current delivery priority — 2026-10-06
 
 Validation records now live under `docs/validation/`; see its README index for
@@ -32,8 +41,11 @@ P09 accepted the scoped standalone 0.32.0 library/CLI on 2026-10-06 after
 verifying the unchanged frozen tree/binary and P08 receipts and reviewing product,
 policy and host/resource risks. Fresh inventory/version/saved-render/comparison
 checks passed; no production change or repeated full regression. See
-task-results/P09.md and the release ledger for accepted limits. Next is A01;
-no Android implementation or publication is implied.
+task-results/P09.md and the release ledger for accepted limits. A01 completed
+2026-10-07: ANDROID_CONTRACT.md freezes app-owned JNI, shared input/jobs/storage,
+conservative native-rate resource admission and extraction with P06/P07 backends
+retained here. A02 scaffold/builds are complete; next A03 native adapter. No
+device acceptance is implied.
 
 
 Follow `ROADMAP.md` and `ROADMAP_TASKS.md`: faithful rewrite and offline Alfred

@@ -5,6 +5,10 @@ in [the roadmap](../ROADMAP.md); historical next-task instructions here do not
 override it. Validation documents are indexed [under docs](../docs/validation/README.md).
 
 - [ALFRED-BOUNDARY](ALFRED-BOUNDARY.md)
+- [A01](A01.md)
+- [A01 focused review](A01-review.md)
+- [A02](A02.md)
+- [Android 11 compatibility and CI](ANDROID-11-CI.md)
 - [F01](F01.md)
 - [P01-MQA](P01-MQA.md)
 - [P01](P01.md)

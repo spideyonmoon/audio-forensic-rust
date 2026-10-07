@@ -48,8 +48,10 @@ high-resolution and DSD material relevant. Other formats can be evaluated throug
 P01 rather than silently becoming release blockers.
 
 The owner currently runs Android 16, but compatibility should not assume Android 16
-is the minimum supported version. Android 14/15 should be considered when defining
-the Android support contract.
+is the minimum supported version. Owner expanded the support contract to
+Android 11–16 on 2026-10-07 for an Infinix Hot 11S (Helio G88). Use existing
+shared memory admission; no phone-specific chunking/throttling. Heavy build and
+emulator checks belong in GitHub Actions; physical acceptance stays separate.
 
 ## U02 — collect useful evidence without creating false labels
 
