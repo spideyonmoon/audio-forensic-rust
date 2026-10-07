@@ -1,0 +1,435 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:audio-forensic:spectrogram:1",
+  "$ref": "#/$defs/SpectrogramArtifact",
+  "$defs": {
+    "SpectrogramArtifact": {
+      "type": "object",
+      "properties": {
+        "artifact_version": {
+          "const": 1
+        },
+        "contract_version": {
+          "const": 1
+        },
+        "method_id": {
+          "const": "hann1024-power-pair-merge-v1"
+        },
+        "status": {
+          "$ref": "#/$defs/ArtifactStatus"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "coverage": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Coverage"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "data": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SpectrogramData"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "artifact_version",
+        "contract_version",
+        "method_id",
+        "status",
+        "reason",
+        "coverage",
+        "data"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "available"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "data": {
+                "$ref": "#/$defs/SpectrogramData"
+              },
+              "coverage": {
+                "$ref": "#/$defs/Coverage"
+              },
+              "reason": {
+                "type": "null"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "data": {
+                "type": "null"
+              },
+              "reason": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ArtifactStatus": {
+      "type": "string",
+      "enum": [
+        "available",
+        "unavailable",
+        "failed",
+        "unsupported",
+        "cancelled",
+        "timed_out"
+      ]
+    },
+    "Coverage": {
+      "type": "object",
+      "properties": {
+        "start_seconds": {
+          "const": 0
+        },
+        "end_seconds": {
+          "type": "number",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308
+        },
+        "analyzed_frames": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 18446744073709551615
+        },
+        "reached_end": {
+          "type": "boolean"
+        },
+        "requested_max_seconds": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": -1.7976931348623157e+308,
+              "maximum": 1.7976931348623157e+308
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "length_matches_header": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "decoder_verification": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "analysis_passes": {
+          "const": 2
+        },
+        "decoded_pcm_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "hash_sample_encoding": {
+          "enum": [
+            "s32le_msb_aligned",
+            "f64le"
+          ]
+        }
+      },
+      "required": [
+        "start_seconds",
+        "end_seconds",
+        "analyzed_frames",
+        "reached_end",
+        "requested_max_seconds",
+        "length_matches_header",
+        "decoder_verification",
+        "analysis_passes",
+        "decoded_pcm_sha256",
+        "hash_sample_encoding"
+      ],
+      "additionalProperties": false
+    },
+    "SpectrogramData": {
+      "type": "object",
+      "properties": {
+        "sample_rate_hz": {
+          "type": "integer",
+          "minimum": 8000,
+          "maximum": 384000
+        },
+        "basis": {
+          "$ref": "#/$defs/DisplayBasis"
+        },
+        "channel_indices": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 1
+          },
+          "minItems": 1,
+          "maxItems": 2,
+          "uniqueItems": true
+        },
+        "interval": {
+          "$ref": "#/$defs/AnalysisInterval"
+        },
+        "spectral_interval": {
+          "$ref": "#/$defs/AnalysisInterval"
+        },
+        "unwindowed_tail_frames": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "fft_size": {
+          "const": 1024
+        },
+        "hop_frames": {
+          "const": 512
+        },
+        "window": {
+          "const": "symmetric_f32_hann"
+        },
+        "frame_boundary": {
+          "const": "window_end_strictly_before_analyzed_end"
+        },
+        "frequency_rows": {
+          "const": 513
+        },
+        "frequency_start_hz": {
+          "const": 0
+        },
+        "frequency_step_hz": {
+          "type": "number",
+          "minimum": -1.7976931348623157e+308,
+          "maximum": 1.7976931348623157e+308
+        },
+        "time_unit": {
+          "const": "seconds"
+        },
+        "frequency_unit": {
+          "const": "Hz"
+        },
+        "value_unit": {
+          "const": "dBFS_power_per_bin"
+        },
+        "power_reference": {
+          "const": 1
+        },
+        "reduction": {
+          "const": "linear_power_mean_pairwise_time_merge"
+        },
+        "bucket_stft_frames": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 18446744073709551615
+        },
+        "total_stft_frames": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 18446744073709551615
+        },
+        "time_columns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/TimeColumn"
+          },
+          "minItems": 1,
+          "maxItems": 1280
+        },
+        "power_db": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": -140,
+            "maximum": 3.4028234663852886e+38
+          },
+          "description": "Time-major, then DC-to-Nyquist. Floor applied after linear-power averaging.",
+          "minItems": 513,
+          "maxItems": 656640
+        },
+        "color_floor_db": {
+          "const": -140
+        },
+        "color_ceiling_db": {
+          "const": 0
+        },
+        "palette": {
+          "const": "ember-v1"
+        },
+        "native_peak": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 16
+        },
+        "basis_peak": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 16
+        },
+        "mid_cancelled_with_native_signal": {
+          "type": "boolean"
+        },
+        "warnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "sample_rate_hz",
+        "basis",
+        "channel_indices",
+        "interval",
+        "spectral_interval",
+        "unwindowed_tail_frames",
+        "fft_size",
+        "hop_frames",
+        "window",
+        "frame_boundary",
+        "frequency_rows",
+        "frequency_start_hz",
+        "frequency_step_hz",
+        "time_unit",
+        "frequency_unit",
+        "value_unit",
+        "power_reference",
+        "reduction",
+        "bucket_stft_frames",
+        "total_stft_frames",
+        "time_columns",
+        "power_db",
+        "color_floor_db",
+        "color_ceiling_db",
+        "palette",
+        "native_peak",
+        "basis_peak",
+        "mid_cancelled_with_native_signal",
+        "warnings"
+      ],
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "basis": {
+                "const": "mono"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "channel_indices": {
+                "const": [
+                  0
+                ]
+              },
+              "mid_cancelled_with_native_signal": {
+                "const": false
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "channel_indices": {
+                "const": [
+                  0,
+                  1
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "DisplayBasis": {
+      "type": "string",
+      "enum": [
+        "mono",
+        "stereo_mid"
+      ]
+    },
+    "AnalysisInterval": {
+      "type": "object",
+      "properties": {
+        "start_frame": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "end_frame": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        }
+      },
+      "required": [
+        "start_frame",
+        "end_frame"
+      ],
+      "additionalProperties": false
+    },
+    "TimeColumn": {
+      "type": "object",
+      "properties": {
+        "interval": {
+          "$ref": "#/$defs/AnalysisInterval",
+          "description": "Display bucket, in native PCM frames; final bucket extends to analyzed end."
+        },
+        "window_support": {
+          "$ref": "#/$defs/AnalysisInterval",
+          "description": "Actual overlapping FFT window support (which can extend beyond the bucket)."
+        },
+        "stft_frames": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 18446744073709551615
+        }
+      },
+      "required": [
+        "interval",
+        "window_support",
+        "stft_frames"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

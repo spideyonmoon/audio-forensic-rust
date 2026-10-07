@@ -3,15 +3,27 @@
 ## Start here
 
 - Read `HANDOFF.md` before continuing work. Then read `PORTING_PLAN.md` and the
-  validation document relevant to the change. Inspect the actual files before
-  assuming that a recorded status is still current.
+  validation document relevant to the change (see `docs/validation/README.md`).
+  Older handoff details are in `docs/history/HANDOFF_20261006.md`.
+  Inspect actual files before assuming that a recorded status is current.
 - Read `ROADMAP.md`, the requested card in `ROADMAP_TASKS.md`, and current
   `OWNER_CHECKLIST.md`. A plain resume prioritizes the active/next eligible
   delivery task. Finish a named packet and update its status and handoff.
+- Product boundary: finish standalone Audio Forensics through P09, then begin
+  Alfred A01. Read ALFRED_ARCHITECTURE.md; Alfred is a file/folder workspace
+  consuming this independent core, initially co-located and later extracted.
+  Shared input/jobs/storage belong to Alfred; Forensics, Spectrogram and Compare
+  are independent features. P06/A06a are only the initial Spectrogram slice;
+  its broader competitive viewing scope needs later requirements. Reuse current
+  spectrogram/comparison code without duplication/refactoring; A01 defines their
+  long-term ownership/extraction boundary. Other tools remain future placeholders.
 - Current priority: faithful Rust rewrite and the offline Alfred Android app,
   while endgame detector research proceeds separately. Android is authorized;
   endgame accuracy/calibration and MQA confirmation do not block the first app.
-  Required formats include FLAC, WAV, ALAC/M4A and DSD; follow the task contracts.
+  Initial formats are FLAC, WAV and ALAC/M4A. Owner deferred F02/DSD beyond
+  the first standalone release and Alfred launch on 2026-10-06. P09 is accepted;
+  next is A01 (Alfred architecture/integration contract).
+  Keep the frozen future DSD contract; follow current task cards.
 - Conserve usage: targeted inspection/checks, concise updates, Sol for bounded
   implementation and Astra for difficult DSP/policy/native-boundary work. Do not
   rerun completed audits without a concrete reason or silently expand scope.

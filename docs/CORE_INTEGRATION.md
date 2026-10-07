@@ -1,11 +1,38 @@
 # Measurement core integration baseline
 
-The core supplies an offline WAV/FLAC **measurement component** for a
+The core supplies an offline WAV/FLAC/ALAC-M4A **measurement component** for a
 host application. It does not supply a calibrated authenticity classifier.
 The first application can expose the implemented measurements and provisional
 observations without waiting for source-history research to finish. Android
 bindings, NDK linking, lifecycle handling and phone validation remain separate
 engineering work; this document does not declare those complete.
+
+F01 adds native 16/24-bit mono/stereo ALAC in nonfragmented unencrypted M4A
+through the same APIs. See [ALAC validation](validation/ALAC_VALIDATION.md) for format,
+metadata and resource conditions. A stable seekable source with unknown length
+uses a preflight seek-to-end; it is never buffered as a whole file. Public track
+ID 0 selects the sole supported audio track. ALAC has no embedded PCM checksum;
+cross-pass hashes and checked container geometry are distinct integrity checks.
+
+P06 (0.30.0, including the owner's PNG follow-up) supplies optional same-pass
+`analyze_*_with_spectrogram` APIs, unchanged artifact v1, raw RGB/PPM and a complete
+offline Rust canvas/PNG. The native measurement shape/ancestry/policy stays
+unchanged. The engine labels mono/stereo mid, warnings, kHz/time axes/grid,
+dBFS/bin legend, actual prefix intervals, scoped audio bitrate and native p95.
+Artifact availability/export success is separate from report status; never
+link a null/failed export as an existing image. Use create-new host-owned
+paths, validate saved descriptors before rendering, and bind saved artifacts
+to the measurement PCM hash/coverage. P07/A06 call `render_canvas` or
+`write_png_new` with `spectrogram_png::CanvasOptions`: optional stored track title
+and Standard/Publication/Large preset. Default is 2560×1440; maximum RGB payload
+is 24,883,200 bytes (3840×2160), plus artifact/font/encoder/native overhead.
+The engine owns composition and PNG encoding; the host owns path selection,
+stored wrapper/title, display, storage, deletion and explicit sharing. Preserve
+optional wrapper `presentation` to retain bitrate; old wrappers remain readable
+and explicitly show unavailable bitrate. Cutoffs are native-channel p95, never
+an invented stereo-mid cutoff. No runtime font, shell, GUI or network is needed.
+Read [SPECTROGRAM_VALIDATION.md](validation/SPECTROGRAM_VALIDATION.md) for exact geometry,
+tail/support semantics, resource bounds and acceptance evidence.
 
 The desktop baseline passed its closing validation on 2026-10-03: all 164
 release tests, Rust 1.85 all-target Clippy and CLI-free consumer build, plus
@@ -135,8 +162,37 @@ source-medium/bit-depth inference and structural MQA confirmation. Those are
 not prerequisites for displaying the current measurements correctly. They
 remain prerequisites for any future claims depending on them.
 
-The next application engineering stage is Android binding/link and lifecycle
-work, followed by on-device validation. The user authorized this delivery track
+After initial standalone P07/P08/P09 delivery (F02/DSD deferred beyond launch), Alfred development begins at A01.
+See ALFRED_ARCHITECTURE.md: shared workspace/input/jobs/storage sit above feature
+adapters, and the Forensics feature consumes this independent Rust library.
+App-owned native glue stays outside the safe core; no Android workspace state
+is added to portable source/jobs/reports. Spectrogram and Compare are separately
+reachable workflows reusing existing functionality. Android linking and actual
+device checks belong to Alfred gates, not the standalone P09 decision. The user authorized this delivery track
 on 2026-10-05; follow A01–A08 in ROADMAP_TASKS.md. It does not wait for endgame
 calibration. P01 defines the faithful product scope and separate reference
 assessment; the historical measurement baseline above remains its own scope.
+
+## P05 reference interpretation
+
+Call `reference_assessment::assess_reference(&ReferenceAnalysis)` after a
+successful reference-input analysis, or on its saved result. It performs no I/O
+or new decode pass. Persist assessment version 1/method
+`python-reference-c6ecce2-v1` with its original input binding. Use qualified
+`display_summary` and candidate wording; legacy text/confidence names are audit
+only. Partial scores/labels are null. Unknown versions and mismatched PCM,
+coverage or domains fail. P07 combines metadata/byproducts/statistics/artifacts
+in the product envelope; existing measurement JSON remains unchanged.
+See `REFERENCE_ASSESSMENT_VALIDATION.md` for deviations and actual checks.
+
+## Independent P07 product workflows
+
+The 0.32.0 core exposes `analyze_path_product`/`analyze_source_product`, saved
+product rendering/version dispatch, all Python field locations and qualified
+reference comparison. It keeps the existing report/API semantics and shares
+collectors on one source under one worker/deadline. Product reference collection
+adds its verified third pass; optional spectral data stays in the existing two.
+Read [the product guide](PRODUCT_REPORT.md) for signatures, availability, saved
+limits, method/domain/coverage compatibility and P06 export ownership. This is a
+Forensics feature payload, never an Alfred shared-state envelope. A01 defines
+long-term reusable comparison/spectrogram ownership without duplicating them now.

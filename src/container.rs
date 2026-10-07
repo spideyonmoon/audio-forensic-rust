@@ -27,27 +27,38 @@ pub(crate) struct FlacInfo {
     pub stream_info: [u8; 34],
 }
 
+#[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+pub(crate) struct ContainerInfo {
+    pub flac: Option<FlacInfo>,
+    pub alac: Option<crate::mp4::AlacInfo>,
+}
+
 pub(crate) fn validate(
     source: &mut dyn MediaSource,
     mut control: impl FnMut() -> bool,
-) -> Result<Option<FlacInfo>, Error> {
+) -> Result<ContainerInfo, Error> {
     source.seek(SeekFrom::Start(0))?;
     let mut marker = [0; 4];
     source.read_exact(&mut marker)?;
-    let info = match &marker {
-        b"fLaC" => Some(flac(source, &mut control, None)?),
+    let mut info = ContainerInfo::default();
+    match &marker {
+        b"fLaC" => info.flac = Some(flac(source, &mut control, None)?),
         b"RIFF" => {
             wave(source, &mut control, None)?;
-            None
         }
         b"RF64" | b"BW64" => return Err(Error::Unsupported("RF64/BW64 WAV is not supported")),
         b"RIFX" => return Err(Error::Unsupported("big-endian RIFX WAV is not supported")),
         _ => {
-            return Err(Error::Unsupported(
-                "native FLAC or RIFF/WAVE signature required",
-            ));
+            let mut kind = [0; 4];
+            source.read_exact(&mut kind).map_err(signature_error)?;
+            if &kind != b"ftyp" {
+                return Err(Error::Unsupported(
+                    "native FLAC, RIFF/WAVE or M4A ftyp signature required",
+                ));
+            }
+            info.alac = Some(crate::mp4::read(source, &mut control, None)?);
         }
-    };
+    }
     source.seek(SeekFrom::Start(0))?;
     Ok(info)
 }
@@ -56,24 +67,31 @@ pub(crate) fn inspect(
     source: &mut dyn MediaSource,
     mut control: impl FnMut() -> bool,
     collector: &mut Collector<'_>,
-) -> Result<(), Error> {
+) -> Result<ContainerInfo, Error> {
     source.seek(SeekFrom::Start(0))?;
     let mut marker = [0; 4];
     source.read_exact(&mut marker)?;
+    let mut info = ContainerInfo::default();
     match &marker {
         b"fLaC" => {
-            flac(source, &mut control, Some(collector))?;
+            info.flac = Some(flac(source, &mut control, Some(collector))?);
         }
         b"RIFF" => wave(source, &mut control, Some(collector))?,
         b"RF64" | b"BW64" => return Err(Error::Unsupported("RF64/BW64 WAV is not supported")),
         b"RIFX" => return Err(Error::Unsupported("big-endian RIFX WAV is not supported")),
         _ => {
-            return Err(Error::Unsupported(
-                "native FLAC or RIFF/WAVE signature required",
-            ));
+            let mut kind = [0; 4];
+            source.read_exact(&mut kind).map_err(signature_error)?;
+            if &kind != b"ftyp" {
+                return Err(Error::Unsupported(
+                    "native FLAC, RIFF/WAVE or M4A ftyp signature required",
+                ));
+            }
+            info.alac = Some(crate::mp4::read(source, &mut control, Some(collector))?);
         }
     }
-    Ok(())
+    source.seek(SeekFrom::Start(0))?;
+    Ok(info)
 }
 
 fn check(control: &mut impl FnMut() -> bool) -> Result<(), Error> {
@@ -81,6 +99,13 @@ fn check(control: &mut impl FnMut() -> bool) -> Result<(), Error> {
         Ok(())
     } else {
         Err(Error::Interrupted)
+    }
+}
+fn signature_error(error: std::io::Error) -> Error {
+    if error.kind() == std::io::ErrorKind::UnexpectedEof {
+        Error::Unsupported("native FLAC, RIFF/WAVE or M4A ftyp signature required")
+    } else {
+        Error::Io(error)
     }
 }
 fn charge(total: &mut u64, bytes: u64) -> Result<(), Error> {

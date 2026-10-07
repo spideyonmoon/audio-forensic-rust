@@ -13,19 +13,29 @@ mod loudness;
 mod loudness_range;
 pub mod metadata;
 pub mod model;
+mod mp4;
+pub mod product;
 mod progress;
+pub mod reference_assessment;
 pub mod reference_inputs;
+mod reference_labels;
+pub mod reference_source;
+pub mod reference_spectral;
 mod source;
+pub mod spectrogram;
+pub mod spectrogram_png;
 mod stereo;
 pub mod tool_statistics;
 mod true_peak;
 mod worker;
 
 pub use decode::{
-    analyze_path, analyze_path_with_byproducts, analyze_path_with_progress,
-    analyze_path_with_reference_inputs, analyze_path_with_tool_statistics, analyze_source,
+    analyze_path, analyze_path_product, analyze_path_with_byproducts, analyze_path_with_progress,
+    analyze_path_with_reference_inputs, analyze_path_with_spectrogram,
+    analyze_path_with_tool_statistics, analyze_source, analyze_source_product,
     analyze_source_with_byproducts, analyze_source_with_progress,
-    analyze_source_with_reference_inputs, analyze_source_with_tool_statistics,
+    analyze_source_with_reference_inputs, analyze_source_with_spectrogram,
+    analyze_source_with_tool_statistics,
 };
 pub use evidence::{EvidenceAssessment, assess_evidence};
 pub use job::{AnalysisJob, AnalysisJobError, StartJobError};

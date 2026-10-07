@@ -2,6 +2,12 @@ use audio_forensic::{
     AnalysisOptions, AnalysisProgress, AnalysisReport, CancellationToken, FileStatus, analyze_path,
     analyze_path_with_progress, assess_evidence,
 };
+use audio_forensic::{
+    analyze_path_product,
+    metadata::{MetadataStatus, read_metadata_path},
+    product::{ProductReport, compare_products, read_product_json, render_batch, render_product},
+    spectrogram_png::{CanvasOptions, CanvasSize},
+};
 use clap::Parser;
 use std::{
     fs,
@@ -13,7 +19,7 @@ use std::{
 #[derive(Parser)]
 #[command(
     version,
-    about = "Offline WAV/FLAC measurements and provisional forensic observations"
+    about = "Offline WAV/FLAC/ALAC-M4A measurements and provisional forensic observations"
 )]
 struct Args {
     #[arg(required = true)]
@@ -21,6 +27,36 @@ struct Args {
     /// Emit a versioned JSON array, including per-file failures.
     #[arg(long)]
     json: bool,
+    /// Emit separately versioned full product reports, preserving --json.
+    #[arg(long, conflicts_with_all = ["json", "summary", "info"])]
+    product_json: bool,
+    /// Read only headers and bounded tags; never decode audio.
+    #[arg(long, conflicts_with_all = ["summary", "saved", "compare", "spectrogram", "collect_spectrogram"])]
+    info: bool,
+    /// Render/compare/export saved product JSON without opening audio files.
+    #[arg(long, conflicts_with_all = ["json", "summary", "fast", "max_seconds", "track_id", "progress", "collect_spectrogram"])]
+    saved: bool,
+    /// Caller asserts variants of ONE track; show qualified reference-method ranking.
+    #[arg(long, conflicts_with_all = ["json", "summary", "product_json"])]
+    compare: bool,
+    /// Machine-readable versioned comparison, including tuple and missing fields.
+    #[arg(long, requires = "compare")]
+    comparison_json: bool,
+    /// Display a compact product batch table rather than full details.
+    #[arg(long, conflicts_with_all = ["json", "summary", "product_json", "info", "compare"])]
+    batch_summary: bool,
+    /// Save bounded spectral data in product JSON for later export.
+    #[arg(long, conflicts_with_all = ["json", "summary", "info"])]
+    collect_spectrogram: bool,
+    /// NEW PNG output path; repeat once per input/result, in input order.
+    #[arg(long, conflicts_with_all = ["json", "summary", "info"])]
+    spectrogram: Vec<PathBuf>,
+    /// Rust canvas size (pixels do not increase spectral precision).
+    #[arg(long, default_value = "publication", value_parser = ["standard", "publication", "large"])]
+    spectrogram_preset: String,
+    /// Optional stored spectrogram title, overriding the retained metadata title.
+    #[arg(long)]
+    title: Option<String>,
     /// Show grouped non-MQA evidence and inference limits instead of detailed measurements.
     #[arg(long, conflicts_with = "json")]
     summary: bool,
@@ -88,11 +124,11 @@ fn directory_inputs(
                 continue;
             }
         };
-        if !path
-            .extension()
-            .and_then(|s| s.to_str())
-            .is_some_and(|s| s.eq_ignore_ascii_case("wav") || s.eq_ignore_ascii_case("flac"))
-        {
+        if !path.extension().and_then(|s| s.to_str()).is_some_and(|s| {
+            ["wav", "flac", "m4a"]
+                .iter()
+                .any(|ext| s.eq_ignore_ascii_case(ext))
+        }) {
             continue;
         }
         match fs::metadata(&path) {
@@ -107,7 +143,7 @@ fn directory_inputs(
     if inputs.is_empty() {
         inputs.push(BatchInput::Failed(
             directory,
-            "No WAV/FLAC files found in directory".into(),
+            "No WAV/FLAC/ALAC-M4A files found in directory".into(),
         ));
     }
     inputs.sort_by(|left, right| left.path().cmp(right.path()));
@@ -137,7 +173,7 @@ fn print_progress(event: AnalysisProgress) {
     }
 }
 
-fn run(args: Args) -> Result<i32, Box<dyn std::error::Error>> {
+fn run_native(args: Args) -> Result<i32, Box<dyn std::error::Error>> {
     let options = AnalysisOptions {
         track_id: args.track_id,
         max_seconds: if args.fast {
@@ -446,6 +482,197 @@ fn run(args: Args) -> Result<i32, Box<dyn std::error::Error>> {
     } else {
         0
     })
+}
+
+fn run(args: Args) -> Result<i32, Box<dyn std::error::Error>> {
+    if (args.json && !args.info) || args.summary {
+        return run_native(args);
+    }
+    let options = AnalysisOptions {
+        track_id: args.track_id,
+        max_seconds: if args.fast {
+            Some(60.)
+        } else {
+            args.max_seconds
+        },
+        deadline: Duration::from_secs(args.deadline_seconds),
+    };
+    let cancel = CancellationToken::default();
+    let token = cancel.clone();
+    ctrlc::set_handler(move || token.cancel())?;
+    let mut inputs = Vec::new();
+    for path in &args.inputs {
+        if !args.saved && path.is_dir() {
+            inputs.extend(directory_inputs(
+                path.clone(),
+                fs::read_dir(path).map(|entries| entries.map(|e| e.map(|e| e.path()))),
+            ));
+        } else {
+            inputs.push(BatchInput::Audio(path.clone()));
+        }
+    }
+    if inputs.len() > 32 {
+        return Err("Product/info batch limit is 32 inputs; split larger batches (native --json is unchanged)".into());
+    }
+    let mut out = io::BufWriter::new(io::stdout().lock());
+    let mut failed = false;
+    if args.info {
+        if args.json {
+            write!(out, "[")?;
+        }
+        for (i, input) in inputs.iter().enumerate() {
+            let metadata = match input {
+                BatchInput::Audio(path) => read_metadata_path(path, &options, &cancel),
+                BatchInput::Failed(path, message) => {
+                    ProductReport::input_failure(AnalysisReport::input_failure(
+                        path.to_string_lossy(),
+                        message,
+                    ))
+                    .metadata
+                }
+            };
+            failed |= metadata.status != MetadataStatus::Available;
+            if args.json {
+                if i > 0 {
+                    write!(out, ",")?;
+                }
+                serde_json::to_writer_pretty(&mut out, &metadata)?;
+            } else {
+                writeln!(
+                    out,
+                    "Metadata only (no audio decode): {}",
+                    serde_json::to_string_pretty(&metadata)?
+                )?;
+            }
+        }
+        if args.json {
+            writeln!(out, "]")?;
+        }
+    } else {
+        let mut reports = Vec::new();
+        let collect = args.collect_spectrogram || !args.spectrogram.is_empty();
+        for (i, input) in inputs.iter().enumerate() {
+            if args.saved {
+                // Bound a saved document before allocating/deserializing it. This
+                // limit covers one full spectral product or a small saved batch.
+                let mut file = fs::File::open(input.path())?;
+                let mut bytes = Vec::new();
+                use std::io::Read;
+                (&mut file)
+                    .take(64 * 1024 * 1024 + 1)
+                    .read_to_end(&mut bytes)?;
+                if bytes.len() > 64 * 1024 * 1024 {
+                    return Err("Saved product document exceeds 64 MiB".into());
+                }
+                let saved = read_product_json(std::str::from_utf8(&bytes)?)?;
+                if reports.len() + saved.len() > 32 {
+                    return Err("Saved product batch limit is 32 results".into());
+                }
+                reports.extend(saved);
+            } else {
+                eprintln!("[{}/{}] {}", i + 1, inputs.len(), input.path().display());
+                let mut p = match input {
+                    BatchInput::Audio(path) => {
+                        analyze_path_product(path, &options, &cancel, collect, |event| {
+                            if args.progress {
+                                print_product_progress(event);
+                            }
+                        })
+                    }
+                    BatchInput::Failed(path, message) => {
+                        let p = ProductReport::input_failure(AnalysisReport::input_failure(
+                            path.to_string_lossy(),
+                            message,
+                        ));
+                        if args.progress {
+                            print_product_progress(AnalysisProgress::Finished {
+                                status: p.measurement_report.status.clone(),
+                            });
+                        }
+                        p
+                    }
+                };
+                if let Some(title) = &args.title {
+                    p.artifacts.title = Some(title.clone());
+                }
+                reports.push(p);
+            }
+        }
+        if !args.spectrogram.is_empty() && args.spectrogram.len() != reports.len() {
+            return Err("Supply one --spectrogram NEW_PATH for each result, in input order".into());
+        }
+        for (i, p) in reports.iter_mut().enumerate() {
+            failed |= p.measurement_report.status != FileStatus::Analyzed;
+            if let Some(title) = &args.title {
+                p.artifacts.title = Some(title.clone());
+            }
+            if let Some(path) = args.spectrogram.get(i) {
+                let size = match args.spectrogram_preset.as_str() {
+                    "standard" => CanvasSize::Standard,
+                    "large" => CanvasSize::Large,
+                    _ => CanvasSize::Publication,
+                };
+                let export = p.export_png(
+                    path,
+                    &CanvasOptions {
+                        size,
+                        title: args.title.clone(),
+                    },
+                    &cancel,
+                    options.deadline,
+                );
+                failed |= export.path.is_none();
+            }
+        }
+        if args.compare {
+            let comparison = compare_products(&reports)?;
+            if args.comparison_json {
+                serde_json::to_writer_pretty(&mut out, &comparison)?;
+                writeln!(out)?;
+            } else {
+                writeln!(
+                    out,
+                    "Reference-method ranking (variants of one track, uncalibrated):\n{}",
+                    serde_json::to_string_pretty(&comparison)?
+                )?;
+            }
+        } else if args.product_json {
+            serde_json::to_writer_pretty(&mut out, &reports)?;
+            writeln!(out)?;
+        } else if args.batch_summary {
+            write!(out, "{}", render_batch(&reports))?;
+        } else {
+            for p in &reports {
+                write!(out, "{}", render_product(p)?)?;
+            }
+            if reports.len() > 1 {
+                write!(out, "{}", render_batch(&reports))?;
+            }
+        }
+    }
+    out.flush()?;
+    Ok(if cancel.is_cancelled() {
+        130
+    } else if failed {
+        1
+    } else {
+        0
+    })
+}
+
+fn print_product_progress(event: AnalysisProgress) {
+    if let AnalysisProgress::Decoding {
+        pass,
+        processed_frames,
+        expected_frames,
+    } = event
+    {
+        eprintln!(
+            "  decode pass {pass}/3: {processed_frames} frames (expected {expected_frames:?})"
+        );
+    } else {
+        print_progress(event);
+    }
 }
 
 fn main() {

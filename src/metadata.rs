@@ -129,7 +129,7 @@ pub struct MetadataReport {
 }
 
 impl MetadataReport {
-    fn new(source: &str) -> Self {
+    pub(crate) fn new(source: &str) -> Self {
         Self {
             metadata_version: METADATA_VERSION,
             contract_version: 1,
@@ -210,11 +210,6 @@ pub fn read_metadata_source(
                 "Metadata requires a seekable source".into(),
             ));
         }
-        if options.track_id.is_some_and(|id| id != 0) {
-            return Err(Failure::Invalid(
-                "Requested audio track is not present".into(),
-            ));
-        }
         let _worker = crate::worker::ANALYSIS_WORKER.acquire(control)?;
         let size = source.byte_len();
         let (mut source, fault) =
@@ -233,6 +228,16 @@ pub fn read_metadata_source(
             _ => Failure::Decode(error.to_string()),
         });
         fault.check(inspected)?;
+        if options.track_id.is_some_and(|id| {
+            report
+                .technical
+                .as_ref()
+                .is_none_or(|t| t.selected_track_id != id)
+        }) {
+            return Err(Failure::Invalid(
+                "Requested audio track is not present".into(),
+            ));
+        }
         control()?;
         if let Some(technical) = &mut report.technical {
             technical.file_size_bytes = size;
@@ -251,6 +256,7 @@ pub fn read_metadata_source(
                 Failure::Unsupported(_) => (MetadataStatus::Unsupported, "unsupported"),
                 Failure::Invalid(_) => (MetadataStatus::Failed, "invalid_input"),
                 Failure::Decode(_) => (MetadataStatus::Failed, "decode_error"),
+                Failure::ResourceLimit(_) => (MetadataStatus::Failed, "resource_limit"),
             };
             report.status = status;
             report.text_limits.complete = false;
@@ -273,17 +279,22 @@ fn bounded(text: &str, cap: usize) -> &str {
 
 fn named_field(key: &str) -> Option<&'static str> {
     match key.to_ascii_uppercase().as_str() {
-        "TITLE" | "TRACK" | "INAM" => Some("title"),
-        "ALBUM" | "IPRD" => Some("album"),
-        "DATE" | "YEAR" | "RECORDED_DATE" | "ICRD" => Some("date"),
+        "TITLE" | "TRACK" | "INAM" | "©NAM" => Some("title"),
+        "ALBUM" | "IPRD" | "©ALB" => Some("album"),
+        "DATE" | "YEAR" | "RECORDED_DATE" | "ICRD" | "©DAY" => Some("date"),
         "ALBUMARTIST" | "ALBUM_ARTIST" | "ALBUM ARTIST" | "ALBUM_PERFORMER" => Some("album_artist"),
-        "ARTIST" | "PERFORMER" | "IART" => Some("artist"),
-        "BPM" | "IBPM" => Some("bpm"),
+        "ARTIST" | "PERFORMER" | "IART" | "©ART" => Some("artist"),
+        "AART" => Some("album_artist"),
+        "BPM" | "IBPM" | "TMPO" => Some("bpm"),
         "COMMENTQUALITY" => Some("comment_quality"),
-        "COMMENT" | "COMMENTS" | "DESCRIPTION" | "ICMT" => Some("comments"),
-        "REPLAYGAIN_TRACK_GAIN" => Some("replaygain_track_gain"),
-        "REPLAYGAIN_ALBUM_GAIN" => Some("replaygain_album_gain"),
-        "VENDOR" | "ENCODER" | "ENCODED_LIBRARY" | "WRITING_LIBRARY" | "ISFT" => {
+        "COMMENT" | "COMMENTS" | "DESCRIPTION" | "ICMT" | "©CMT" => Some("comments"),
+        "REPLAYGAIN_TRACK_GAIN" | "COM.APPLE.ITUNES:REPLAYGAIN_TRACK_GAIN" => {
+            Some("replaygain_track_gain")
+        }
+        "REPLAYGAIN_ALBUM_GAIN" | "COM.APPLE.ITUNES:REPLAYGAIN_ALBUM_GAIN" => {
+            Some("replaygain_album_gain")
+        }
+        "VENDOR" | "ENCODER" | "ENCODED_LIBRARY" | "WRITING_LIBRARY" | "ISFT" | "©TOO" => {
             Some("writing_library")
         }
         "FORMAT_PROFILE" => Some("format_profile"),
@@ -377,6 +388,24 @@ impl Collector<'_> {
             reason: reason.into(),
         });
     }
+
+    /// Converted identifiers/numeric text retain wire lengths; text-budget
+    /// counters still measure the decoded UTF-8 presentation.
+    pub fn tag_encoded(
+        &mut self,
+        location: (&str, u64, usize),
+        key: &[u8],
+        value: &[u8],
+        artwork: Option<usize>,
+        lengths: (u64, u64),
+    ) {
+        let before = self.report.entries.len();
+        self.tag(location, key, value, false, artwork);
+        if let Some(entry) = self.report.entries.get_mut(before) {
+            entry.original_key_bytes = lengths.0;
+            entry.original_value_bytes = lengths.1;
+        }
+    }
 }
 
 const SIGNATURES: &[&str] = &[
@@ -419,7 +448,7 @@ fn mqa_claim(text: &str) -> bool {
     false
 }
 
-fn observations(report: &MetadataReport) -> MetadataObservations {
+pub(crate) fn observations(report: &MetadataReport) -> MetadataObservations {
     let mut out = MetadataObservations {
         text_scan_complete: report.text_limits.complete && report.opaque_metadata.is_empty(),
         ..Default::default()

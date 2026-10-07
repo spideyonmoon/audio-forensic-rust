@@ -1,6 +1,6 @@
 # Bishal's part of the roadmap
 
-Updated 2026-10-04. Fill this file in directly, or tell the agent your answers
+Updated 2026-10-06. Fill this file in directly, or tell the agent your answers
 and ask it to update the file. Unknowns do not stop unrelated implementation.
 
 ## U01 — first app and test device
@@ -10,7 +10,9 @@ and ask it to update the file. Unknowns do not stop unrelated implementation.
 - Can install a test APK: **yes**.
 - USB debugging/ADB available: **yes; available if needed, but not required for
   ordinary owner testing**.
-- Must-have initial formats: **FLAC, WAV, ALAC in M4A, and DSD**.
+- Initial formats: **FLAC, WAV and ALAC in M4A**.
+- DSD remains wanted; owner deferred F02 **beyond first release and Alfred launch**
+  on 2026-10-06 to conserve Astra budget. The frozen future scope is retained.
 - Your three most important Python outputs/workflows:
   1. **The forensic verdict / final interpretation.**
   2. **Complete metadata exposure.**
@@ -18,7 +20,20 @@ and ask it to update the file. Unknowns do not stop unrelated implementation.
 - Typical longest/largest file: **usually a single song; generally no more than
   roughly 600–700 MB even for unusually high-resolution material**.
 
-The product philosophy is to expose essentially every useful piece of information
+Owner clarification 2026-10-06: Alfred opens to a file/folder workspace and offers
+applicable operations for selected tracks. Audio Forensics is one feature;
+Spectrogram and Audio Compare are first-class features. Spectrogram is intended
+to rival existing viewing/exploration apps, not stop at image generation. Reuse
+P06 and existing comparison functionality now; A01 owns their long-term code,
+contract and test ownership at repository extraction. Detailed competitive and
+interactive requirements remain to be defined later; initial integration does
+not claim that full scope is complete. Tag Studio, Converter
+and Archival Tools remain future placeholders. Finish standalone delivery through
+P09 before Alfred A01; co-locate initially, then extract Alfred to its own repo
+while preserving this independent library. Existing device/format/signing and
+forensic information requirements below remain unchanged.
+
+The forensic feature philosophy is to expose essentially every useful piece of information
 that can be obtained from the audio file rather than reduce analysis to a simple
 verdict screen. The app should preserve the depth of the Python analyzer and make
 the underlying measurements, metadata, detector observations and interpretations
@@ -27,7 +42,7 @@ available to users who want them.
 The first app must work entirely offline. It must not require a cloud account or
 upload users' audio for analysis.
 
-Initial compatibility should include FLAC, WAV and ALAC/M4A. DSD is also important
+Initial compatibility includes FLAC, WAV and ALAC/M4A. DSD is deferred, but important
 because source-medium analysis, including vinyl/cassette-rip detection, makes
 high-resolution and DSD material relevant. Other formats can be evaluated through
 P01 rather than silently becoming release blockers.

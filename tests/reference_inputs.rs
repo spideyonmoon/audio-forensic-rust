@@ -86,8 +86,29 @@ fn base_and_source_scatter_match_frozen_generated_controls() {
             result.measurement.diagnostics
         );
         let inputs = result.reference_inputs.unwrap();
-        assert_eq!(inputs.version, 1);
+        assert_eq!(inputs.version, 2);
         assert_eq!(inputs.processing_passes, 3);
+        assert_eq!(inputs.spectral.active_frames, inputs.base.active_frames);
+        assert_eq!(
+            inputs.source.captured_interval.end_frame,
+            inputs
+                .analyzed_frames
+                .min(u64::from(inputs.sample_rate) * 180)
+        );
+        assert_eq!(
+            inputs.source.cassette_profile.interval.end_frame,
+            inputs
+                .analyzed_frames
+                .min(u64::from(inputs.sample_rate) * 60)
+        );
+        assert_eq!(
+            inputs.source.effective_bits_interval.end_frame,
+            inputs
+                .analyzed_frames
+                .min(u64::from(inputs.sample_rate) * 30)
+        );
+        assert!(inputs.source.quiet_profile.complete_blocks <= 300);
+        assert_eq!(inputs.header.duration_mismatch, Some(false));
         assert_eq!(
             inputs.decoded_pcm_sha256,
             case["pcm_sha256"].as_str().unwrap()
@@ -331,12 +352,23 @@ fn third_pass_source_mutation_and_deadline_are_structured() {
     struct Source {
         cursor: Cursor<Vec<u8>>,
         changed: Arc<AtomicBool>,
+        pcm_only: bool,
     }
     impl Read for Source {
         fn read(&mut self, buffer: &mut [u8]) -> std::io::Result<usize> {
+            let start = self.cursor.position();
             let n = self.cursor.read(buffer)?;
             if n > 0 && self.changed.load(Ordering::Relaxed) {
-                buffer[0] ^= 1;
+                if self.pcm_only {
+                    // Change one finite f32 mantissa bit late in the audio payload.
+                    // Headers, frame count and PCM kind remain valid and identical.
+                    let offset = 44 + 40000 * 4;
+                    if (start..start + n as u64).contains(&offset) {
+                        buffer[(offset - start) as usize] ^= 1;
+                    }
+                } else {
+                    buffer[0] ^= 1;
+                }
             }
             Ok(n)
         }
@@ -361,43 +393,57 @@ fn third_pass_source_mutation_and_deadline_are_structured() {
         1,
         48000,
     );
-    let changed = Arc::new(AtomicBool::new(false));
-    let notify = changed.clone();
-    let result = analyze_source_with_reference_inputs(
-        Box::new(Source {
-            cursor: Cursor::new(data.clone()),
-            changed,
-        }),
-        "one-source.wav",
-        &AnalysisOptions::default(),
-        &CancellationToken::default(),
-        move |e| {
-            if matches!(
-                e,
-                AnalysisProgress::Decoding {
-                    pass: 3,
-                    processed_frames: 0,
-                    ..
+    for pcm_only in [false, true] {
+        let changed = Arc::new(AtomicBool::new(false));
+        let notify = changed.clone();
+        let result = analyze_source_with_reference_inputs(
+            Box::new(Source {
+                cursor: Cursor::new(data.clone()),
+                changed,
+                pcm_only,
+            }),
+            "one-source.wav",
+            &AnalysisOptions::default(),
+            &CancellationToken::default(),
+            move |e| {
+                if matches!(
+                    e,
+                    AnalysisProgress::Decoding {
+                        pass: 3,
+                        processed_frames: 0,
+                        ..
+                    }
+                ) {
+                    notify.store(true, Ordering::Relaxed);
                 }
-            ) {
-                notify.store(true, Ordering::Relaxed);
-            }
-        },
-    );
-    assert_eq!(
-        result.measurement.status,
-        FileStatus::Failed,
-        "{:?}",
-        result.measurement.diagnostics
-    );
-    assert!(result.reference_inputs.is_none());
-    assert!(
-        result
-            .measurement
-            .diagnostics
-            .iter()
-            .any(|d| d.code == "decode_error")
-    );
+            },
+        );
+        assert_eq!(
+            result.measurement.status,
+            FileStatus::Failed,
+            "{:?}",
+            result.measurement.diagnostics
+        );
+        assert!(result.reference_inputs.is_none());
+        assert!(
+            result
+                .measurement
+                .diagnostics
+                .iter()
+                .any(|d| d.code == "decode_error")
+        );
+        if pcm_only {
+            assert!(
+                result
+                    .measurement
+                    .diagnostics
+                    .iter()
+                    .any(|d| d.message == "Source changed on reference input pass"),
+                "{:?}",
+                result.measurement.diagnostics
+            );
+        }
+    }
     let timed = analyze_source_with_reference_inputs(
         Box::new(Cursor::new(data)),
         "one-source.wav",

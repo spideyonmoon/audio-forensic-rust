@@ -1,0 +1,315 @@
+{
+  "reference_commit": "c6ecce2296256b516709d87088896d1be913908c",
+  "cases": [
+    {
+      "name": "base",
+      "key": {
+        "available": true,
+        "main_score": 10,
+        "rate_history_flag": false,
+        "cutoff_hz": 20000.0,
+        "depth_category": 0,
+        "legacy_dr_integer": 12,
+        "precision_times_rate": 705600
+      },
+      "python_tuple": [
+        0,
+        10,
+        0,
+        -20000.0,
+        0,
+        -12,
+        -705600
+      ]
+    },
+    {
+      "name": "tie",
+      "key": {
+        "available": true,
+        "main_score": 10,
+        "rate_history_flag": false,
+        "cutoff_hz": 20000.0,
+        "depth_category": 0,
+        "legacy_dr_integer": 12,
+        "precision_times_rate": 705600
+      },
+      "python_tuple": [
+        0,
+        10,
+        0,
+        -20000.0,
+        0,
+        -12,
+        -705600
+      ]
+    },
+    {
+      "name": "unavailable",
+      "key": {
+        "available": false,
+        "main_score": null,
+        "rate_history_flag": false,
+        "cutoff_hz": 20000.0,
+        "depth_category": 0,
+        "legacy_dr_integer": 12,
+        "precision_times_rate": 705600
+      },
+      "python_tuple": [
+        1,
+        999,
+        0,
+        -20000.0,
+        0,
+        -12,
+        -705600
+      ]
+    },
+    {
+      "name": "lower_main",
+      "key": {
+        "available": true,
+        "main_score": 9,
+        "rate_history_flag": false,
+        "cutoff_hz": 20000.0,
+        "depth_category": 0,
+        "legacy_dr_integer": 12,
+        "precision_times_rate": 705600
+      },
+      "python_tuple": [
+        0,
+        9,
+        0,
+        -20000.0,
+        0,
+        -12,
+        -705600
+      ]
+    },
+    {
+      "name": "rate_history",
+      "key": {
+        "available": true,
+        "main_score": 10,
+        "rate_history_flag": true,
+        "cutoff_hz": 20000.0,
+        "depth_category": 0,
+        "legacy_dr_integer": 12,
+        "precision_times_rate": 705600
+      },
+      "python_tuple": [
+        0,
+        10,
+        1,
+        -20000.0,
+        0,
+        -12,
+        -705600
+      ]
+    },
+    {
+      "name": "wider",
+      "key": {
+        "available": true,
+        "main_score": 10,
+        "rate_history_flag": false,
+        "cutoff_hz": 21000.0,
+        "depth_category": 0,
+        "legacy_dr_integer": 12,
+        "precision_times_rate": 705600
+      },
+      "python_tuple": [
+        0,
+        10,
+        0,
+        -21000.0,
+        0,
+        -12,
+        -705600
+      ]
+    },
+    {
+      "name": "depth_abstain",
+      "key": {
+        "available": true,
+        "main_score": 10,
+        "rate_history_flag": false,
+        "cutoff_hz": 20000.0,
+        "depth_category": 1,
+        "legacy_dr_integer": 12,
+        "precision_times_rate": 705600
+      },
+      "python_tuple": [
+        0,
+        10,
+        0,
+        -20000.0,
+        1,
+        -12,
+        -705600
+      ]
+    },
+    {
+      "name": "depth_flag",
+      "key": {
+        "available": true,
+        "main_score": 10,
+        "rate_history_flag": false,
+        "cutoff_hz": 20000.0,
+        "depth_category": 2,
+        "legacy_dr_integer": 12,
+        "precision_times_rate": 705600
+      },
+      "python_tuple": [
+        0,
+        10,
+        0,
+        -20000.0,
+        2,
+        -12,
+        -705600
+      ]
+    },
+    {
+      "name": "higher_dr",
+      "key": {
+        "available": true,
+        "main_score": 10,
+        "rate_history_flag": false,
+        "cutoff_hz": 20000.0,
+        "depth_category": 0,
+        "legacy_dr_integer": 13,
+        "precision_times_rate": 705600
+      },
+      "python_tuple": [
+        0,
+        10,
+        0,
+        -20000.0,
+        0,
+        -13,
+        -705600
+      ]
+    },
+    {
+      "name": "higher_container",
+      "key": {
+        "available": true,
+        "main_score": 10,
+        "rate_history_flag": false,
+        "cutoff_hz": 20000.0,
+        "depth_category": 0,
+        "legacy_dr_integer": 12,
+        "precision_times_rate": 1058400
+      },
+      "python_tuple": [
+        0,
+        10,
+        0,
+        -20000.0,
+        0,
+        -12,
+        -1058400
+      ]
+    },
+    {
+      "name": "missing_dr",
+      "key": {
+        "available": true,
+        "main_score": 10,
+        "rate_history_flag": false,
+        "cutoff_hz": 20000.0,
+        "depth_category": 0,
+        "legacy_dr_integer": null,
+        "precision_times_rate": 705600
+      },
+      "python_tuple": [
+        0,
+        10,
+        0,
+        -20000.0,
+        0,
+        1,
+        -705600
+      ]
+    },
+    {
+      "name": "missing_cutoff",
+      "key": {
+        "available": true,
+        "main_score": 10,
+        "rate_history_flag": false,
+        "cutoff_hz": null,
+        "depth_category": 0,
+        "legacy_dr_integer": 12,
+        "precision_times_rate": 705600
+      },
+      "python_tuple": [
+        0,
+        10,
+        0,
+        -0.0,
+        0,
+        -12,
+        -705600
+      ]
+    },
+    {
+      "name": "missing_depth",
+      "key": {
+        "available": true,
+        "main_score": 10,
+        "rate_history_flag": false,
+        "cutoff_hz": 20000.0,
+        "depth_category": null,
+        "legacy_dr_integer": 12,
+        "precision_times_rate": 705600
+      },
+      "python_tuple": [
+        0,
+        10,
+        0,
+        -20000.0,
+        0,
+        -12,
+        -705600
+      ]
+    },
+    {
+      "name": "missing_container",
+      "key": {
+        "available": true,
+        "main_score": 10,
+        "rate_history_flag": false,
+        "cutoff_hz": 20000.0,
+        "depth_category": 0,
+        "legacy_dr_integer": 12,
+        "precision_times_rate": null
+      },
+      "python_tuple": [
+        0,
+        10,
+        0,
+        -20000.0,
+        0,
+        -12,
+        0
+      ]
+    }
+  ],
+  "expected_order": [
+    3,
+    5,
+    8,
+    9,
+    0,
+    1,
+    12,
+    13,
+    10,
+    6,
+    7,
+    11,
+    4,
+    2
+  ]
+}

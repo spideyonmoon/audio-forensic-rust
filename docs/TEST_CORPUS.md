@@ -252,7 +252,7 @@ runs full-file Rust measurements for non-locked entries, preserves explicit
 failures, and checks declared/file/decoded-PCM duplicates across groups. Locked
 entries are hashed and reserved without analysis. Every run requires a new output
 directory; receipts remain ignored/local. See
-[CORPUS_INTAKE_VALIDATION.md](CORPUS_INTAKE_VALIDATION.md) for coverage, checks and
+[CORPUS_INTAKE_VALIDATION.md](validation/CORPUS_INTAKE_VALIDATION.md) for coverage, checks and
 limits. Independent FFmpeg decoding remains a separate validation step; intake
 does not verify source labels, generate transformations or evaluate accuracy.
 

@@ -1,0 +1,288 @@
+{
+  "reference_sha256": "b60959955ed5ed8317cd9c43f7619ca1917c81a41e0d93fa9b2b4185367c1e30",
+  "spectral": [
+    {
+      "rate": 8000,
+      "kind": "constant",
+      "cutoff": 4000.0,
+      "banding": 1.0,
+      "lpf": [
+        false,
+        ""
+      ],
+      "dsd": false,
+      "resample": null,
+      "sparsity": 0.0,
+      "envelope": 1.0,
+      "lags": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ]
+    },
+    {
+      "rate": 48000,
+      "kind": "wall",
+      "cutoff": 15996.09375,
+      "banding": 0.604433536529541,
+      "lpf": [
+        true,
+        "~15kHz"
+      ],
+      "dsd": false,
+      "resample": null,
+      "sparsity": 0.0,
+      "envelope": -0.06229880949220179,
+      "lags": [
+        -0.0003866848871117407,
+        -0.003411701905861499,
+        -0.002987346347474442,
+        -0.0013188177748374174,
+        0.0033751388568348476,
+        -0.0032556574544678417,
+        -0.0036266869724690598,
+        -0.0025579809364168096,
+        -0.006470592810171201
+      ]
+    },
+    {
+      "rate": 96000,
+      "kind": "notch",
+      "cutoff": 48000.0,
+      "banding": 0.5913927555084229,
+      "lpf": [
+        false,
+        ""
+      ],
+      "dsd": false,
+      "resample": [
+        44100,
+        "notch",
+        79.72892158420056
+      ],
+      "sparsity": 0.0019989013671875,
+      "envelope": -0.4708746908611785,
+      "lags": [
+        -0.019293630277422272,
+        0.023644865747947826,
+        null,
+        0.015725020449325573,
+        0.028870499410816864,
+        -0.04198451234705401,
+        -0.012503948622729176,
+        null,
+        null
+      ]
+    },
+    {
+      "rate": 96000,
+      "kind": "constant",
+      "cutoff": 48000.0,
+      "banding": 1.0,
+      "lpf": [
+        false,
+        ""
+      ],
+      "dsd": false,
+      "resample": null,
+      "sparsity": 0.0,
+      "envelope": 0.0,
+      "lags": [
+        0.0,
+        0.0,
+        null,
+        0.0,
+        0.0,
+        0.0,
+        0.0,
+        null,
+        null
+      ]
+    },
+    {
+      "rate": 192000,
+      "kind": "wall",
+      "cutoff": 15984.375,
+      "banding": 0.659868597984314,
+      "lpf": [
+        true,
+        "~15kHz"
+      ],
+      "dsd": false,
+      "resample": null,
+      "sparsity": 0.0,
+      "envelope": 0.2212893624734688,
+      "lags": [
+        -0.004942501350813497,
+        null,
+        null,
+        -0.00909543055647592,
+        -0.004965345516015578,
+        null,
+        null,
+        null,
+        null
+      ]
+    }
+  ],
+  "profiles": [
+    {
+      "rate": 8000,
+      "seconds": 3.2,
+      "kind": "noise",
+      "frames": 25600,
+      "fft_length": 25600,
+      "band": [
+        2400.0,
+        3600.0
+      ],
+      "rms_db": -64.51858153590736,
+      "std_db": -64.51858153590736,
+      "autocorrelation": 0.03514819609377611,
+      "temporal_std": 0.0029470340814441442,
+      "peaks": [],
+      "clicks": 11,
+      "baseline": null,
+      "affected": 0,
+      "eligible": 0,
+      "preceding_pct": null
+    },
+    {
+      "rate": 48000,
+      "seconds": 3.2,
+      "kind": "noise",
+      "frames": 153600,
+      "fft_length": 153600,
+      "band": [
+        14400.0,
+        21600.0
+      ],
+      "rms_db": -64.57499043062154,
+      "std_db": -64.57499043062154,
+      "autocorrelation": 0.007947473537045387,
+      "temporal_std": 0.09429040551185608,
+      "peaks": [],
+      "clicks": 60,
+      "baseline": 5.503458819788886e-20,
+      "affected": 0,
+      "eligible": 0,
+      "preceding_pct": null
+    },
+    {
+      "rate": 48000,
+      "seconds": 3.2,
+      "kind": "events",
+      "frames": 153600,
+      "fft_length": 153600,
+      "band": [
+        14400.0,
+        21600.0
+      ],
+      "rms_db": -54.21430078126122,
+      "std_db": -54.21430078126122,
+      "autocorrelation": 0.007580712167144884,
+      "temporal_std": 1.417490005493164,
+      "peaks": [
+        575,
+        33695,
+        72095,
+        110494
+      ],
+      "clicks": 65,
+      "baseline": 1.3133351929076042e-25,
+      "affected": 3,
+      "eligible": 3,
+      "preceding_pct": 100.0
+    },
+    {
+      "rate": 96000,
+      "seconds": 3.2,
+      "kind": "noise",
+      "frames": 307200,
+      "fft_length": 307200,
+      "band": [
+        28800.0,
+        43200.0
+      ],
+      "rms_db": -64.55874414107723,
+      "std_db": -64.55874414107723,
+      "autocorrelation": 0.014646342925352097,
+      "temporal_std": 0.00010807561193360016,
+      "peaks": [],
+      "clicks": 120,
+      "baseline": 3.4444034489531986e-20,
+      "affected": 0,
+      "eligible": 0,
+      "preceding_pct": null
+    },
+    {
+      "rate": 8000,
+      "seconds": 61,
+      "kind": "noise",
+      "frames": 488000,
+      "fft_length": 489888,
+      "band": [
+        2400.0,
+        3600.0
+      ],
+      "rms_db": -64.5587347411582,
+      "std_db": -64.5587347411582,
+      "autocorrelation": 0.035367835676812204,
+      "temporal_std": 0.3695727288722992,
+      "peaks": [],
+      "clicks": 190,
+      "baseline": null,
+      "affected": 0,
+      "eligible": 0,
+      "preceding_pct": null
+    },
+    {
+      "rate": 8000,
+      "seconds": 181,
+      "kind": "noise",
+      "frames": 1440000,
+      "fft_length": 1440000,
+      "band": [
+        2400.0,
+        3600.0
+      ],
+      "rms_db": -64.557418852891,
+      "std_db": -64.557418852891,
+      "autocorrelation": 0.03538528560568922,
+      "temporal_std": 0.36897194385528564,
+      "peaks": [],
+      "clicks": 559,
+      "baseline": null,
+      "affected": 0,
+      "eligible": 0,
+      "preceding_pct": null
+    },
+    {
+      "rate": 48000,
+      "seconds": 3.2,
+      "kind": "zero",
+      "frames": 153600,
+      "fft_length": 153600,
+      "band": [
+        14400.0,
+        21600.0
+      ],
+      "rms_db": -240.0,
+      "std_db": -240.0,
+      "autocorrelation": 0.0,
+      "temporal_std": 0.0,
+      "peaks": [],
+      "clicks": 0,
+      "baseline": 0.0,
+      "affected": 0,
+      "eligible": 0,
+      "preceding_pct": null
+    }
+  ]
+}

@@ -11,6 +11,8 @@ use crate::{
     model::*,
     progress::{AnalysisProgress, Progress},
     reference_inputs::{ReferenceAnalysis, ReferenceInputs, ReferenceSurvey},
+    spectrogram::{SpectrogramAnalysis, SpectrogramArtifact, SpectrogramCollector},
+    spectrogram_png::SpectrogramPresentation,
     stereo::StereoStats,
     tool_statistics::{ToolAnalysis, ToolCollector, ToolMeasurements},
     true_peak::TruePeakMeter,
@@ -25,7 +27,7 @@ use std::{
 use symphonia::core::{
     audio::{AudioBufferRef, SampleBuffer},
     codecs::{
-        CODEC_TYPE_PCM_F32BE, CODEC_TYPE_PCM_F32BE_PLANAR, CODEC_TYPE_PCM_F32LE,
+        CODEC_TYPE_ALAC, CODEC_TYPE_PCM_F32BE, CODEC_TYPE_PCM_F32BE_PLANAR, CODEC_TYPE_PCM_F32LE,
         CODEC_TYPE_PCM_F32LE_PLANAR, CODEC_TYPE_PCM_F64BE, CODEC_TYPE_PCM_F64BE_PLANAR,
         CODEC_TYPE_PCM_F64LE, CODEC_TYPE_PCM_F64LE_PLANAR, Decoder, DecoderOptions,
     },
@@ -44,6 +46,8 @@ pub(crate) enum Failure {
     Unsupported(String),
     #[error("{0}")]
     Decode(String),
+    #[error("Reference input resource limit: {0}")]
+    ResourceLimit(String),
     #[error("Analysis cancelled")]
     Cancelled,
     #[error("Analysis exceeded its cooperative deadline")]
@@ -64,6 +68,7 @@ fn failure(report: &mut AnalysisReport, error: Failure) {
         Failure::Invalid(_) => (FileStatus::Failed, "invalid_input"),
         Failure::Unsupported(_) => (FileStatus::Unsupported, "unsupported"),
         Failure::Decode(_) => (FileStatus::Failed, "decode_error"),
+        Failure::ResourceLimit(_) => (FileStatus::Failed, "resource_limit"),
         Failure::Cancelled => (FileStatus::Cancelled, "cancelled"),
         Failure::TimedOut => (FileStatus::TimedOut, "deadline_exceeded"),
     };
@@ -332,11 +337,157 @@ pub fn analyze_path_with_reference_inputs(
     }
 }
 
+/// Optional display spectrum in the same two PCM passes, worker and prefix.
+/// Artifact failure is separate from successful native measurement.
+pub fn analyze_source_with_spectrogram(
+    source: Box<dyn MediaSource>,
+    name: &str,
+    options: &AnalysisOptions,
+    cancel: &CancellationToken,
+    mut callback: impl FnMut(AnalysisProgress),
+) -> SpectrogramAnalysis {
+    let mut report = AnalysisReport::new(name.into());
+    let mut artifact = None;
+    let mut presentation = None;
+    let mut progress = Progress::new(&mut callback);
+    if let Err(error) = analyze(
+        source,
+        options,
+        cancel,
+        &mut report,
+        &mut progress,
+        ProductOutputs {
+            spectrogram: Some(&mut artifact),
+            spectrogram_presentation: Some(&mut presentation),
+            ..Default::default()
+        },
+    ) {
+        failure(&mut report, error);
+    }
+    progress.emit(AnalysisProgress::Finished {
+        status: report.status.clone(),
+    });
+    SpectrogramAnalysis::new(report, artifact).with_presentation(presentation)
+}
+
+/// Opens once and reuses the same guarded source for both verified passes.
+pub fn analyze_path_with_spectrogram(
+    path: impl AsRef<Path>,
+    options: &AnalysisOptions,
+    cancel: &CancellationToken,
+    mut callback: impl FnMut(AnalysisProgress),
+) -> SpectrogramAnalysis {
+    let path = path.as_ref();
+    match File::open(path) {
+        Ok(file) => analyze_source_with_spectrogram(
+            Box::new(file),
+            &path.to_string_lossy(),
+            options,
+            cancel,
+            callback,
+        ),
+        Err(error) => {
+            let report = AnalysisReport::input_failure(path.to_string_lossy(), error.to_string());
+            callback(AnalysisProgress::Finished {
+                status: report.status.clone(),
+            });
+            SpectrogramAnalysis::new(report, None)
+        }
+    }
+}
+
+/// Full product collection on one source/worker/deadline and three verified PCM
+/// passes. Existing collectors run together; no file is reopened for metadata.
+pub fn analyze_source_product(
+    source: Box<dyn MediaSource>,
+    name: &str,
+    options: &AnalysisOptions,
+    cancel: &CancellationToken,
+    collect_spectrogram: bool,
+    mut callback: impl FnMut(AnalysisProgress),
+) -> crate::product::ProductReport {
+    let product_start = Instant::now();
+    let mut report = AnalysisReport::new(name.into());
+    let mut metadata = crate::metadata::MetadataReport::new(name);
+    let (mut reference, mut tools, mut inputs, mut artifact, mut presentation) =
+        (None, None, None, None, None);
+    let mut progress = Progress::new(&mut callback);
+    if let Err(error) = analyze(
+        source,
+        options,
+        cancel,
+        &mut report,
+        &mut progress,
+        ProductOutputs {
+            metadata: Some(&mut metadata),
+            byproducts: Some(&mut reference),
+            tools: Some(&mut tools),
+            inputs: Some(&mut inputs),
+            spectrogram: collect_spectrogram.then_some(&mut artifact),
+            spectrogram_presentation: collect_spectrogram.then_some(&mut presentation),
+        },
+    ) {
+        failure(&mut report, error);
+        if metadata.status != crate::metadata::MetadataStatus::Available {
+            metadata.status = match report.status {
+                FileStatus::Cancelled => crate::metadata::MetadataStatus::Cancelled,
+                FileStatus::TimedOut => crate::metadata::MetadataStatus::TimedOut,
+                FileStatus::Unsupported => crate::metadata::MetadataStatus::Unsupported,
+                _ => crate::metadata::MetadataStatus::Failed,
+            };
+            metadata.text_limits.complete = false;
+            metadata.diagnostics = report.diagnostics.clone();
+        }
+    }
+    progress.emit(AnalysisProgress::Finished {
+        status: report.status.clone(),
+    });
+    let spectrogram = collect_spectrogram.then(|| {
+        SpectrogramAnalysis::new(report.clone(), artifact).with_presentation(presentation)
+    });
+    let tool = ToolAnalysis::new(report, reference, tools);
+    let mut product =
+        crate::product::ProductReport::from_collected(tool, metadata, inputs, spectrogram);
+    product.analysis_seconds = Some(product_start.elapsed().as_secs_f64());
+    product.refresh_aliases();
+    product
+}
+
+pub fn analyze_path_product(
+    path: impl AsRef<Path>,
+    options: &AnalysisOptions,
+    cancel: &CancellationToken,
+    collect_spectrogram: bool,
+    mut callback: impl FnMut(AnalysisProgress),
+) -> crate::product::ProductReport {
+    let path = path.as_ref();
+    match File::open(path) {
+        Ok(file) => analyze_source_product(
+            Box::new(file),
+            &path.to_string_lossy(),
+            options,
+            cancel,
+            collect_spectrogram,
+            callback,
+        ),
+        Err(error) => {
+            let report = AnalysisReport::input_failure(path.to_string_lossy(), error.to_string());
+            callback(AnalysisProgress::Finished {
+                status: report.status.clone(),
+            });
+            crate::product::ProductReport::input_failure(report)
+        }
+    }
+}
+
 #[derive(Default)]
 struct ProductOutputs<'a> {
+    metadata: Option<&'a mut crate::metadata::MetadataReport>,
     byproducts: Option<&'a mut Option<ReferenceByproducts>>,
     tools: Option<&'a mut Option<ToolMeasurements>>,
     inputs: Option<&'a mut Option<ReferenceInputs>>,
+    spectrogram: Option<&'a mut Option<SpectrogramArtifact>>,
+    spectrogram_presentation: Option<&'a mut Option<SpectrogramPresentation>>,
 }
 
 fn check_control(
@@ -356,6 +507,8 @@ fn check_control(
 struct ScanOutcome {
     frames: u64,
     packet_bytes: u64,
+    complete_packet_bytes: u64,
+    complete_packet_frames: u64,
     reached_end: bool,
     integer: Option<bool>,
     pcm_hash: String,
@@ -364,6 +517,7 @@ struct ScanOutcome {
 struct ScanContext<'a> {
     info: &'a StreamInfo,
     flac: Option<crate::container::FlacInfo>,
+    alac: bool,
     limit: Option<u64>,
     options: &'a AnalysisOptions,
     cancel: &'a CancellationToken,
@@ -380,6 +534,8 @@ fn scan(
     let mut outcome = ScanOutcome {
         frames: 0,
         packet_bytes: 0,
+        complete_packet_bytes: 0,
+        complete_packet_frames: 0,
         reached_end: false,
         integer: None,
         pcm_hash: String::new(),
@@ -408,9 +564,9 @@ fn scan(
         if packet.track_id() != info.track_id {
             continue;
         }
-        if context.flac.is_some() && packet.ts != outcome.frames {
+        if (context.flac.is_some() || context.alac) && packet.ts != outcome.frames {
             return Err(Failure::Decode(format!(
-                "FLAC packet discontinuity: expected sample {}, got {}",
+                "Lossless packet discontinuity: expected sample {}, got {}",
                 outcome.frames, packet.ts
             )));
         }
@@ -423,12 +579,25 @@ fn scan(
                 || check_control(context.options, context.cancel, context.start),
             )?;
         }
-        let decoded = decoder.decode(&packet)?;
-        if context.flac.is_some()
+        let decoded = if context.alac {
+            // Isolate only the third-party ALAC decoder. Its locked version can
+            // panic on corrupt partial-frame/predictor lengths. Caller I/O and
+            // progress callbacks retain their existing unwind behavior.
+            let decoder_ref = &mut *decoder;
+            let packet_ref = &packet;
+            std::panic::catch_unwind(std::panic::AssertUnwindSafe(move || {
+                let owned_borrow = decoder_ref;
+                owned_borrow.decode(packet_ref)
+            }))
+            .map_err(|_| Failure::Decode("Malformed ALAC packet caused a decoder panic".into()))??
+        } else {
+            decoder.decode(&packet)?
+        };
+        if (context.flac.is_some() || context.alac)
             && (decoded.frames() == 0 || packet.dur != decoded.frames() as u64)
         {
             return Err(Failure::Decode(
-                "FLAC packet duration does not match decoded frames".into(),
+                "Lossless packet duration does not match decoded frames".into(),
             ));
         }
         outcome.packet_bytes = outcome
@@ -458,6 +627,12 @@ fn scan(
                 .map(|n| usize::try_from(n.saturating_sub(outcome.frames)).unwrap_or(usize::MAX))
                 .unwrap_or(usize::MAX),
         );
+        if take == decoded.frames() {
+            // Exact compressed/PCM payload bytes for complete packets inside
+            // the selected prefix. Never count the unseen part of a last packet.
+            outcome.complete_packet_bytes += packet.data.len() as u64;
+            outcome.complete_packet_frames += take as u64;
+        }
         if integer {
             let mut samples = SampleBuffer::<i32>::new(decoded.capacity() as u64, *decoded.spec());
             samples.copy_interleaved_ref(decoded);
@@ -512,7 +687,7 @@ fn validate_container(
     options: &AnalysisOptions,
     cancel: &CancellationToken,
     start: Instant,
-) -> Result<Option<crate::container::FlacInfo>, Failure> {
+) -> Result<crate::container::ContainerInfo, Failure> {
     crate::container::validate(source, || check_control(options, cancel, start).is_ok()).map_err(
         |error| match error {
             crate::container::Error::Unsupported(_) => Failure::Unsupported(error.to_string()),
@@ -555,9 +730,12 @@ fn analyze(
     outputs: ProductOutputs<'_>,
 ) -> Result<(), Failure> {
     let ProductOutputs {
+        metadata,
         byproducts: reference,
         tools,
         inputs,
+        spectrogram,
+        spectrogram_presentation,
     } = outputs;
     let start = Instant::now();
     check_control(options, cancel, start)?;
@@ -582,7 +760,44 @@ fn analyze(
     progress.emit(AnalysisProgress::ReadingMetadata);
     let (mut source, source_fault) =
         crate::source::GuardedSource::new(source, cancel.clone(), options.deadline, start);
-    let flac = source_fault.check(validate_container(&mut source, options, cancel, start))?;
+    let container = if let Some(metadata) = metadata {
+        let size = source.byte_len();
+        let inspected = crate::container::inspect(
+            &mut source,
+            || check_control(options, cancel, start).is_ok(),
+            &mut crate::metadata::Collector { report: metadata },
+        )
+        .map_err(|error| match error {
+            crate::container::Error::Unsupported(_) => Failure::Unsupported(error.to_string()),
+            crate::container::Error::Interrupted => check_control(options, cancel, start)
+                .err()
+                .unwrap_or(Failure::Cancelled),
+            _ => Failure::Decode(error.to_string()),
+        });
+        let container = source_fault.check(inspected)?;
+        if options.track_id.is_some_and(|id| {
+            metadata
+                .technical
+                .as_ref()
+                .is_none_or(|t| t.selected_track_id != id)
+        }) {
+            return Err(Failure::Invalid(
+                "Requested audio track is not present".into(),
+            ));
+        }
+        if let Some(t) = &mut metadata.technical {
+            t.file_size_bytes = size;
+        }
+        metadata.status = crate::metadata::MetadataStatus::Available;
+        metadata.observations = crate::metadata::observations(metadata);
+        container
+    } else {
+        source_fault.check(validate_container(&mut source, options, cancel, start))?
+    };
+    let flac = container.flac;
+    if let Some(alac) = container.alac {
+        source.record_length(alac.source_len);
+    }
     let mut hint = Hint::new();
     if let Some(ext) = Path::new(&report.source)
         .extension()
@@ -607,7 +822,31 @@ fn analyze(
         None => format.default_track(),
     }
     .ok_or_else(|| Failure::Invalid("Requested audio track is not present".into()))?;
-    let params = track.codec_params.clone();
+    let mut params = track.codec_params.clone();
+    if let Some(alac) = container.alac {
+        if params.codec != CODEC_TYPE_ALAC || format.tracks().len() != 1 {
+            return Err(Failure::Unsupported(
+                "M4A requires one actual ALAC audio track".into(),
+            ));
+        }
+        if params.extra_data.as_deref() != Some(&alac.cookie[..alac.cookie_len]) {
+            return Err(Failure::Decode(
+                "ALAC cookie changed after container preflight".into(),
+            ));
+        }
+        // The locked MP4 reader leaves these cookie fields unset and reads the
+        // sample-entry rate as 16.16 (which cannot represent high ALAC rates).
+        params
+            .with_sample_rate(alac.rate)
+            .with_bits_per_sample(alac.bits)
+            .with_channels(if alac.channels == 1 {
+                symphonia::core::audio::Channels::FRONT_CENTRE
+            } else {
+                symphonia::core::audio::Channels::FRONT_LEFT
+                    | symphonia::core::audio::Channels::FRONT_RIGHT
+            })
+            .with_n_frames(alac.frames);
+    }
     let rate = params
         .sample_rate
         .ok_or_else(|| Failure::Unsupported("Missing sample rate".into()))?;
@@ -680,9 +919,21 @@ fn analyze(
     let mut input_survey = inputs
         .as_ref()
         .map(|_| ReferenceSurvey::new(rate, channels));
+    let mut spectrogram_error = None;
+    let mut spectrogram_collector =
+        spectrogram
+            .as_ref()
+            .and_then(|_| match SpectrogramCollector::new(rate, channels) {
+                Ok(collector) => Some(collector),
+                Err(error) => {
+                    spectrogram_error = Some(error);
+                    None
+                }
+            });
     let context = ScanContext {
         info: &info,
         flac,
+        alac: container.alac.is_some(),
         limit,
         options,
         cancel,
@@ -705,6 +956,13 @@ fn analyze(
             )
         },
         |ch, x, word| {
+            if let Some(collector) = &mut spectrogram_collector {
+                if let Err(error) = collector.push(ch, x, || check_control(options, cancel, start))
+                {
+                    spectrogram_error = Some(error);
+                    spectrogram_collector = None;
+                }
+            }
             if let Some(r) = &mut input_survey {
                 r.push(ch, x);
             }
@@ -766,7 +1024,7 @@ fn analyze(
         )?;
         let second_info =
             source_fault.check(validate_container(&mut stream, options, cancel, start))?;
-        if second_info != flac {
+        if second_info.flac != flac {
             return Err(Failure::Decode(
                 "FLAC STREAMINFO or audio offset changed between analysis passes".into(),
             ));
@@ -902,7 +1160,7 @@ fn analyze(
             )?;
             let third_info =
                 source_fault.check(validate_container(&mut stream, options, cancel, start))?;
-            if third_info != flac {
+            if third_info.flac != flac {
                 return Err(Failure::Decode(
                     "FLAC STREAMINFO or audio offset changed between analysis passes".into(),
                 ));
@@ -947,7 +1205,7 @@ fn analyze(
             &mut *decoder,
             &context,
             |frames, force| progress.frames(3, frames, Some(first.frames), force),
-            |ch, x, _| third_inputs.push(ch, x),
+            |ch, x, integer| third_inputs.push(ch, x, integer),
         ))?;
         if third.frames != first.frames
             || third.integer != first.integer
@@ -966,7 +1224,7 @@ fn analyze(
             flac_stream(format, &third, flac_info)?;
         }
         check_control(options, cancel, start)?;
-        let mut record = third_inputs.finish();
+        let mut record = third_inputs.finish(|| check_control(options, cancel, start))?;
         record.decoded_pcm_sha256 = first.pcm_hash.clone();
         record.pass_pcm_sha256 = vec![
             first.pcm_hash.clone(),
@@ -974,6 +1232,14 @@ fn analyze(
             third.pcm_hash,
         ];
         record.reached_end = first.reached_end;
+        record.header = crate::reference_spectral::header_observations(
+            first.frames as f64 / rate as f64,
+            first.reached_end,
+            params.n_frames.map(|n| n as f64 / rate as f64),
+            None,
+            None,
+            "",
+        );
         record.hash_sample_encoding = if first.integer == Some(true) {
             "s32le_msb_aligned"
         } else {
@@ -1140,6 +1406,31 @@ fn analyze(
     }
     if let Some(output) = inputs {
         *output = input_record;
+    }
+    if let Some(output) = spectrogram {
+        let coverage = report
+            .coverage
+            .as_ref()
+            .expect("successful native coverage");
+        *output = Some(match spectrogram_collector {
+            Some(collector) => collector
+                .finish(coverage, || check_control(options, cancel, start))
+                .unwrap_or_else(|error| SpectrogramArtifact::collector_failure(error, coverage)),
+            None => SpectrogramArtifact::collector_failure(
+                spectrogram_error.expect("failed spectrogram collector"),
+                coverage,
+            ),
+        });
+    }
+    if let Some(output) = spectrogram_presentation {
+        *output = Some(SpectrogramPresentation::from_packets(
+            report.coverage.as_ref().expect("successful coverage"),
+            rate,
+            first.complete_packet_bytes,
+            first.complete_packet_frames,
+            first.complete_packet_bytes == second.complete_packet_bytes
+                && first.complete_packet_frames == second.complete_packet_frames,
+        ));
     }
     report.status = FileStatus::Analyzed;
     Ok(())

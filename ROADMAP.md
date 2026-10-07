@@ -1,12 +1,17 @@
-# Audio Forensic: delivery and endgame roadmap
+# Audio Forensic delivery, Alfred integration and endgame roadmap
 
-Updated: **2026-10-05**. Owner: Bishal. App: **Alfred**. Current core: **0.26.0**.
+Updated: **2026-10-06**. Owner: Bishal. App: **Alfred**. Current core: **0.32.0**.
 
 ## Direction agreed with the owner
 
-Ship a useful offline Android analyzer after finishing a faithful Rust rewrite
-of the Python product. Continue improving detector reliability toward the
-endgame in a separate research track. The app does **not** wait for a perfect
+Finish the independent Audio Forensics Rust library/CLI, then build Alfred as
+a file/folder-first offline Android workspace. Audio Forensics is one feature
+alongside independently reachable Spectrogram and Audio Compare workflows.
+[ALFRED_ARCHITECTURE.md](ALFRED_ARCHITECTURE.md) defines shared ownership,
+future placeholders and the eventual separate Alfred repository. The remaining
+Tag Studio, Converter and Archival Tools are not current implementation scope.
+
+Continue improving detector reliability toward the endgame in a separate research track. The app does **not** wait for a perfect
 detector, calibrated probabilities, a representative corpus or MQA confirmation.
 
 The Python product combines DSP, structural/sample observations, empirical
@@ -29,11 +34,11 @@ not distinguish histories. It has no promised perfect-accuracy date.
 
 Open this repository and select the model shown for the task. Send:
 
-> Read AGENTS.md, HANDOFF.md, ROADMAP.md and the P04a card in ROADMAP_TASKS.md.
-> Complete task P04a, including its acceptance checks and durable updates.
+> Read AGENTS.md, HANDOFF.md, ROADMAP.md and the P07 card in ROADMAP_TASKS.md.
+> Complete task P07, including its acceptance checks and durable updates.
 > Preserve unrelated work. Do not start endgame work or expand the release scope.
 
-Replace **P04a** with any eligible task ID. The task card and shared execution
+Replace **P07** with any eligible task ID. The task card and shared execution
 contract supply the rest; no old conversation is required.
 
 For automatic continuation, send:
@@ -48,13 +53,16 @@ the entire roadmap. If a task spans sessions, resume the same ID and saved state
 
 ## Current dispatch
 
-- **Active task:** none; P04c completed 2026-10-05.
-- **Next delivery task:** **P04a — missing spectral/reference inputs (Astra)**.
+- **Active task:** none; P09 accepted 2026-10-06. No jobs running.
+- **Next delivery task:** **A01 — Alfred shared architecture and integration contract (Astra)**.
 - **Owner inputs received:** Redmi 13 4G, Android 16, APK/ADB available;
   FLAC/WAV/ALAC-M4A/DSD; detailed verdict, complete metadata and deep results;
   approximately 600–700 MB upper typical file size; Alfred via GitHub Releases.
   Consider Android 14/15 compatibility. U02/U05 continue alongside implementation.
-- **Next Sol task:** F01 or P06 when separately requested; A02 can follow A01 while core work continues.
+- **Deferred:** F02/DSD beyond the first standalone release and Alfred launch,
+  owner approved 2026-10-06 to conserve Astra budget. DSD is not shipped support.
+- **Next Sol task:** A02 after P09/A01; P07/P08 are complete.
+  Alfred begins at A01 after P09; A02 follows A01.
 - **Next endgame task when explicitly requested:** E01, the AAC trim work.
 - **Independent MQA work:** existing prototype/corpus at
   `C:\Users\Bishal\Documents\antigravity-dev\mqa`; E09 now READY for a
@@ -69,47 +77,68 @@ new required child packets discovered by P01; other implementation packets remai
 P02 is complete for the documented FLAC/WAV metadata adapters, with bounded raw
 text/duplicates, editable encoder/MQA observations, native-scope ReplayGain audit
 and separate schemas. See [P02 results](task-results/P02.md) and
-[container coverage/validation](METADATA_VALIDATION.md). Opaque ancillary
+[container coverage/validation](docs/validation/METADATA_VALIDATION.md). Opaque ancillary
 structures stay explicit; this does not claim all binary tag formats, P07's
 product workflow, or ALAC/DSD support.
 
 P03 is complete: separate version-1 reference phase/ceiling/silence/RMS-p5
 byproducts and native level/crest/fixed-delta mapping, preserving the two-pass
 native report and policy. See [P03 results](task-results/P03.md) and
-[byproduct validation](BYPRODUCT_VALIDATION.md). P03a is complete: bounded
+[byproduct validation](docs/validation/BYPRODUCT_VALIDATION.md). P03a is complete: bounded
 native-lane/overall astats, all 15 SoX stat keys and distinct drmeter values,
 correct linear/dB crest and legacy audit mappings. See
 [P03a results](task-results/P03a.md) and
-[tool-statistics validation](TOOL_STATISTICS_VALIDATION.md). P04c is complete:
+[tool-statistics validation](docs/validation/TOOL_STATISTICS_VALIDATION.md). P04c is complete:
 separate f32 basis/base/scatter/phase/segment/transform inputs, a third verified
 pass and bounded segment ring. See [P04c results](task-results/P04c.md) and
-[reference-input validation](REFERENCE_INPUTS_VALIDATION.md). P04a/P04b own the
-remaining spectral/source inputs and adaptive-wall dependencies. No P03b/P03c cards exist.
+[reference-input validation](docs/validation/REFERENCE_INPUTS_VALIDATION.md). P04a/P04b are complete in engine 0.27.0: version-2 spectral/source inputs and
+adaptive-wall dependencies, with [profile validation](docs/validation/REFERENCE_PROFILES_VALIDATION.md). No P03b/P03c cards exist.
+
+The owner-requested [P04 review](task-results/P04-review.md) on 2026-10-05 found
+no production correction needed and strengthened the third-pass PCM mutation
+regression. That review covered P04c. The subsequent P04a/P04b implementation is recorded
+separately in [P04a results](task-results/P04a.md) and [P04b results](task-results/P04b.md).
+
+P06 completed independently, now engine 0.30.0: optional same-two-pass mono/stereo
+mid spectrogram, at most 1280 × 513, explicit axes/prefix/hash, streaming power
+coarsening and offline RGB/create-new PPM rendering. Separate artifact/export
+status preserves successful measurements. The owner's follow-up adds complete
+Rust-rendered PNG: title/stream/FFT header including scoped audio bitrate,
+kHz/time axes/grid, ember-v1 dB legend and native-channel p95 cutoff overlays,
+antialiased embedded font and bounded 1600×900 / 2560×1440 default / 3840×2160
+RGB8 canvases with 300-dpi metadata. P07/A06 consume this image and own storage,
+sharing and workflow; composition/encoding stay in Rust. See
+[original P06 results](task-results/P06.md), [PNG results](task-results/P06-PNG.md) and the
+[A06 rendering/validation contract](docs/validation/SPECTROGRAM_VALIDATION.md). Native schema
+and policy stay unchanged; 80 follow-up focused tests, independent PNG/bitrate/
+frozen-data checks, visual QA, MSRV Clippy
+and Android target compilation passed. Current next delivery is A01; P09 accepted 0.32.0 and F02 is deferred.
 
 ## Release boundaries
 
 | Milestone | Required outcome | Does not require |
 | --- | --- | --- |
-| Faithful Rust core | Frozen Python feature/behavior contract, implemented required rows, traceable provisional reference assessment, documented deviations and passing scoped parity/regression | Better-than-Python detection, population calibration, MQA confirmation |
-| Internal Android alpha | Installable app; import, analysis, progress/cancel and readable results on a real device | Store launch or polished research claims |
+| Standalone Audio Forensics library/CLI (ends at P09) | Frozen Python feature/behavior contract, implemented required rows, traceable provisional reference assessment, documented deviations and passing scoped parity/regression | Better-than-Python detection, population calibration, MQA confirmation |
+| Alfred Android alpha (starts at A01) | Installable file/folder workspace, shared input/jobs and independently reachable Forensics, Spectrogram and Compare on a real device | Store launch or polished research claims |
 | Useful public beta | Core gate P09, device gate A07, owner acceptance U03, bounded storage/export, honest limitations and reproducible release artifacts | Completing any E task |
 | Stronger detector releases | Separately versioned methods/policies evaluated against appropriate fresh controls and reviewed histories | Rewriting the app each time |
 
-Required initial formats: **FLAC, WAV, ALAC in M4A, and DSD**, per the updated
-owner file. Current implementation remains WAV/FLAC; F01/F02 close the additional
-format gates. P01 froze mono/stereo DSF and uncompressed DFF at DSD64/128/256, with explicit
-88.2 kHz converted PCM analysis; see RELEASE_CONTRACT.md for exclusions. Other
-Python formats are later support, not additional release blockers.
-Do not conflate M4A with ALAC or native DSD with PCM derived from DSD. Mono/stereo
-is the existing core basis; unsupported modes remain explicit. Any unresolved
-required format scope must be recorded rather than quietly removed.
+Initial launch formats: **FLAC, WAV and ALAC in M4A**. The owner explicitly
+deferred **F02/DSD beyond the first standalone release and Alfred launch** on
+2026-10-06. DSD remains planned with P01's DSF/uncompressed-DFF, mono/stereo,
+DSD64/128/256 and 88.2 kHz converted-analysis contract intact for later execution.
+It is unavailable in initial shipped support, not a silently omitted completed
+parity row. P08/P09 record this named scope exclusion and require honest unsupported
+results; no DSD decoding, conversion or ancestry claim is permitted before F02.
+P07 can proceed without a new measurement schema for unimplemented DSD.
+See RELEASE_CONTRACT.md's launch-scope amendment; numerical methods stay unchanged.
 
 ### Faithful results without changing facts into probabilities
 
 The current measurement report keeps ancestry `INCONCLUSIVE` and evidence index
 `null`. It remains available unchanged to existing consumers.
 
-P01 defines, and P05 will implement, a separate versioned **reference assessment**: the pinned
+P01 defines, and completed P05 implements, a separate versioned **reference assessment**: the pinned
 Python's decision rules, scores, contributing/veto rules and interpretations,
 with their exact input scope and explicit uncalibrated status. A legacy score is
 not a probability or calibrated evidence index. User-facing text attributes
@@ -140,29 +169,46 @@ unless the card explicitly permits work against the frozen contract.
 | P03 | Python byproduct measurements: phase, clipping, silence, level mapping | Sol | P01 | DONE |
 | P03a | Bounded astats/SoX statistics and distinct DR output | Sol | P03 | DONE |
 | P04c | Reference basis, segment, scatter and transform adapters | Astra | P01 | DONE |
-| P04a | Missing spectral/reference inputs and declared geometry | Astra | P04c | READY |
-| P04b | Source-profile input parity and adapters | Astra | P03, P04a | TODO |
-| F01 | Offline ALAC/M4A decoding and exact PCM validation | Sol | P01 | TODO |
-| F02 | Native DSD input and explicit conversion/applicability | Astra | P01 | TODO |
-| P05 | Versioned Python-reference interpretation and rule trace | Astra | P02, P03, P04a, P04b, P04c | TODO |
-| P06 | Bounded spectrogram artifact and rendering contract | Sol | P01 | TODO |
-| P07 | CLI/report/comparison workflows using reference assessment | Sol | P05, P06, P03a | TODO |
-| P08 | Frozen differential suite and final core regression | Sol | P02–P07, F01, F02; required child tasks | TODO |
-| P09 | Core release review and finite acceptance decision | Astra | P08 | TODO |
-| A01 | Android boundary, lifecycle and build contract | Astra | P01 | TODO |
-| A02 | Android scaffold and reproducible native build pipeline | Sol | A01 | TODO |
-| A03 | Native bridge and linked generated-input smoke | Astra | A02 | TODO |
-| A04 | SAF import, seekable inputs and bounded staging | Sol | A03 | TODO |
-| A05 | Background lifecycle, progress, cancellation and queue UI | Sol | A04 | TODO |
-| A06 | Findings, spectrogram, history, comparison and export UI | Sol | A05, P07 | TODO |
-| A07 | Real-device lifecycle/resource correctness gate | Astra + owner | A06, P09, U01 | TODO |
-| A08 | Beta packaging, release notes and distribution handoff | Sol + owner | A07, U03 | TODO |
+| P04a | Missing spectral/reference inputs and declared geometry | Astra | P04c | DONE |
+| P04b | Source-profile input parity and adapters | Astra | P03, P04a | DONE |
+| F01 | Offline ALAC/M4A decoding and exact PCM validation | Sol | P01 | DONE |
+| F02 | Native DSD input and explicit conversion/applicability, later release | Astra | P01; named request | DEFERRED |
+| P05 | Versioned Python-reference interpretation and rule trace | Astra | P02, P03, P04a, P04b, P04c | DONE |
+| P06 | Bounded spectrogram artifact and rendering contract | Sol | P01 | DONE |
+| P07 | CLI/report/comparison workflows using reference assessment | Sol | P05, P06, P03a | DONE |
+| P08 | Frozen differential suite and final core regression | Sol | P02–P07, F01; required child tasks | DONE 2026-10-06 |
+| P09 | Core release review and finite acceptance decision | Astra | P08 | DONE — ACCEPT 2026-10-06 |
+| A01 | Alfred shared architecture and feature/native integration contract | Astra | P09 | TODO |
+| A02 | Alfred workspace scaffold and reproducible builds | Sol | A01 | TODO |
+| A03 | Audio Forensics native adapter and linked smoke | Astra | A02 | TODO |
+| A04 | Shared selection, SAF file/folder input and bounded staging | Sol | A02 | TODO |
+| A05 | Shared jobs, background lifecycle, progress/cancel and retention | Sol | A03, A04 | TODO |
+| A06 | Audio Forensics feature results/history/export integration | Sol | A05, P07 | TODO |
+| A06a | Initial slice of the independent Spectrogram feature, reusing P06 | Sol | A05, P06 | TODO |
+| A06b | Independently reachable Audio Compare workflow using P07 | Sol | A05, P07 | TODO |
+| A07 | Alfred real-device workspace/feature/resource gate | Astra + owner | A06, A06a, A06b, P09, U01 | TODO |
+| A08 | Alfred beta packaging and repository-boundary handoff | Sol + owner | A07, U03 | TODO |
 
-Default sequence: P02 → P03 → P03a → P04c → P04a → P04b → F01 → F02 → P05 → P06 → P07 → P08 → P09,
-then A01 → A08. To reduce waiting, A01/A02/A03 may start after their listed
-dependencies while core packets progress. A real-device smoke in A03 is useful
-early; the complete device gate remains A07. A01 may design against P01's frozen
-result contract without waiting for all policy implementation.
+Initial standalone delivery is complete: **P09 ACCEPT, engine 0.32.0**. F02 is
+deferred beyond the first release and Alfred launch; a named later request
+resumes it. The independent library/CLI decision is recorded in the release
+ledger; it does not imply publication or Android acceptance.
+
+Alfred development then begins: A01 → A02 → A03/A04 → A05 → A06/A06a/A06b →
+A07 → A08. A03 and A04 have independent responsibilities; sessions still run
+sequentially by default. The former permission to start A01–A03 before the core
+release is superseded by this boundary. All A tasks are planning only today.
+
+Shared infrastructure: A01/A02/A04/A05. Audio Forensics integration: A03/A06.
+Independent existing-functionality workflows: A06a/A06b. A07/A08 gate the Alfred
+application. A01 also defines long-term ownership/extraction boundaries for
+reusable spectrogram and comparison computation, rendering, contracts and tests.
+Reuse P06/P07 now without duplication/refactoring. Spectrogram's product ambition
+is a competitive viewing/exploration tool, broader than image generation;
+A06a is an initial slice. Later named requirements must define the interactive
+expansion and measurable competitive targets; those are not current launch gates.
+Tag Studio, Audio Converter and Archival Tools remain FUTURE
+placeholders in ALFRED_ARCHITECTURE.md, without executable tasks or launch gates.
 
 Separate sessions should run **sequentially by default**. Concurrent sessions
 need explicit ownership of disjoint files or suitable worktrees; two sessions
@@ -243,3 +289,11 @@ requirements from completed code. Preserve interrupted or failed attempts.
 Every task follows the shared execution contract in ROADMAP_TASKS.md. The
 earliest eligible delivery task is the default next action; an explicitly named
 task takes priority if its dependencies are satisfied.
+
+P08 acceptance: **271 passed, zero failed/ignored**, 30 mapped groups/34 rules,
+fresh generated workflow/format/schema/policy checks and 12 unsupported DSD
+controls. [Results](task-results/P08.md), [ledger](docs/validation/CORE_RELEASE_VALIDATION.md).
+P09 **ACCEPT**: unchanged frozen tree/binary and P08 receipts verified; fresh
+inventory/version/saved rendering/comparison passed. No production change or
+full regression rerun. [P09 results](task-results/P09.md) records accepted limits;
+next A01, no app work started or publication performed.

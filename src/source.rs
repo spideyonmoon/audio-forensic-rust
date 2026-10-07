@@ -35,6 +35,7 @@ pub(crate) struct GuardedSource {
     cancel: CancellationToken,
     deadline: Duration,
     start: Instant,
+    discovered_len: Option<u64>,
 }
 
 impl GuardedSource {
@@ -52,9 +53,16 @@ impl GuardedSource {
                 cancel,
                 deadline,
                 start,
+                discovered_len: None,
             },
             fault,
         )
+    }
+
+    /// A seek-to-end container preflight established this stable source extent.
+    /// MP4's locked reader requires a length even for seekable caller sources.
+    pub(crate) fn record_length(&mut self, bytes: u64) {
+        self.discovered_len = Some(bytes);
     }
 
     fn control(&self) -> io::Result<()> {
@@ -111,7 +119,7 @@ impl MediaSource for GuardedSource {
         self.inner.is_seekable()
     }
     fn byte_len(&self) -> Option<u64> {
-        self.inner.byte_len()
+        self.inner.byte_len().or(self.discovered_len)
     }
 }
 

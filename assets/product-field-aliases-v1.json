@@ -1,0 +1,2022 @@
+{
+  "AudioTags.title": {
+    "value_paths": [
+      "tag:title"
+    ],
+    "unit": "text",
+    "domain": "metadata",
+    "scope_paths": [],
+    "qualification": "Read-only editable text; named first retained entry, duplicates remain in entries.",
+    "status": "unavailable"
+  },
+  "AudioTags.album": {
+    "value_paths": [
+      "tag:album"
+    ],
+    "unit": "text",
+    "domain": "metadata",
+    "scope_paths": [],
+    "qualification": "Read-only editable text; named first retained entry, duplicates remain in entries.",
+    "status": "unavailable"
+  },
+  "AudioTags.date": {
+    "value_paths": [
+      "tag:date"
+    ],
+    "unit": "text",
+    "domain": "metadata",
+    "scope_paths": [],
+    "qualification": "Read-only editable text; named first retained entry, duplicates remain in entries.",
+    "status": "unavailable"
+  },
+  "AudioTags.album_artist": {
+    "value_paths": [
+      "tag:album_artist"
+    ],
+    "unit": "text",
+    "domain": "metadata",
+    "scope_paths": [],
+    "qualification": "Read-only editable text; named first retained entry, duplicates remain in entries.",
+    "status": "unavailable"
+  },
+  "AudioTags.artist": {
+    "value_paths": [
+      "tag:artist"
+    ],
+    "unit": "text",
+    "domain": "metadata",
+    "scope_paths": [],
+    "qualification": "Read-only editable text; named first retained entry, duplicates remain in entries.",
+    "status": "unavailable"
+  },
+  "AudioTags.bpm": {
+    "value_paths": [
+      "tag:bpm"
+    ],
+    "unit": "text",
+    "domain": "metadata",
+    "scope_paths": [],
+    "qualification": "Read-only editable text; named first retained entry, duplicates remain in entries.",
+    "status": "unavailable"
+  },
+  "AudioTags.comment_quality": {
+    "value_paths": [
+      "tag:comment_quality"
+    ],
+    "unit": "text",
+    "domain": "metadata",
+    "scope_paths": [],
+    "qualification": "Read-only editable text; named first retained entry, duplicates remain in entries.",
+    "status": "unavailable"
+  },
+  "AudioTags.comments": {
+    "value_paths": [
+      "tag:comments"
+    ],
+    "unit": "text",
+    "domain": "metadata",
+    "scope_paths": [],
+    "qualification": "Read-only editable text; named first retained entry, duplicates remain in entries.",
+    "status": "unavailable"
+  },
+  "AudioTags.replaygain_track_gain": {
+    "value_paths": [
+      "tag:replaygain_track_gain"
+    ],
+    "unit": "text",
+    "domain": "metadata",
+    "scope_paths": [],
+    "qualification": "Read-only editable text; named first retained entry, duplicates remain in entries.",
+    "status": "unavailable"
+  },
+  "AudioTags.replaygain_album_gain": {
+    "value_paths": [
+      "tag:replaygain_album_gain"
+    ],
+    "unit": "text",
+    "domain": "metadata",
+    "scope_paths": [],
+    "qualification": "Read-only editable text; named first retained entry, duplicates remain in entries.",
+    "status": "unavailable"
+  },
+  "AudioTags.other": {
+    "value_paths": [
+      "/metadata/entries"
+    ],
+    "unit": "tag entries",
+    "domain": "metadata",
+    "scope_paths": [],
+    "qualification": "Read-only editable text; named first retained entry, duplicates remain in entries.",
+    "status": "unavailable"
+  },
+  "AudioTechnical.bit_rate": {
+    "value_paths": [
+      "/metadata/technical/declared_bit_rate_bps"
+    ],
+    "unit": "bps",
+    "domain": "metadata",
+    "scope_paths": [],
+    "qualification": "Declared container fields, not decoded duration/bitrate; missing remains unavailable.",
+    "status": "unavailable"
+  },
+  "AudioTechnical.channels": {
+    "value_paths": [
+      "/metadata/technical/declared_channels"
+    ],
+    "unit": "channels",
+    "domain": "metadata",
+    "scope_paths": [],
+    "qualification": "Declared container fields, not decoded duration/bitrate; missing remains unavailable.",
+    "status": "unavailable"
+  },
+  "AudioTechnical.precision": {
+    "value_paths": [
+      "/metadata/technical/declared_precision_bits"
+    ],
+    "unit": "bits",
+    "domain": "metadata",
+    "scope_paths": [],
+    "qualification": "Declared container fields, not decoded duration/bitrate; missing remains unavailable.",
+    "status": "unavailable"
+  },
+  "AudioTechnical.sample_rate": {
+    "value_paths": [
+      "/metadata/technical/declared_sample_rate_hz"
+    ],
+    "unit": "Hz",
+    "domain": "metadata",
+    "scope_paths": [],
+    "qualification": "Declared container fields, not decoded duration/bitrate; missing remains unavailable.",
+    "status": "unavailable"
+  },
+  "AudioTechnical.sample_encoding": {
+    "value_paths": [
+      "/metadata/technical/sample_encoding"
+    ],
+    "unit": "text",
+    "domain": "metadata",
+    "scope_paths": [],
+    "qualification": "Declared container fields, not decoded duration/bitrate; missing remains unavailable.",
+    "status": "unavailable"
+  },
+  "AudioTechnical.duration": {
+    "value_paths": [
+      "/metadata/technical/declared_duration_seconds"
+    ],
+    "unit": "s",
+    "domain": "metadata",
+    "scope_paths": [],
+    "qualification": "Declared container fields, not decoded duration/bitrate; missing remains unavailable.",
+    "status": "unavailable"
+  },
+  "AudioTechnical.duration_sec": {
+    "value_paths": [
+      "/metadata/technical/declared_duration_seconds"
+    ],
+    "unit": "s",
+    "domain": "metadata",
+    "scope_paths": [],
+    "qualification": "Declared container fields, not decoded duration/bitrate; missing remains unavailable.",
+    "status": "unavailable"
+  },
+  "AudioTechnical.compression_mode": {
+    "value_paths": [
+      "/metadata/technical/compression_mode"
+    ],
+    "unit": "text",
+    "domain": "metadata",
+    "scope_paths": [],
+    "qualification": "Declared container fields, not decoded duration/bitrate; missing remains unavailable.",
+    "status": "unavailable"
+  },
+  "AudioTechnical.codec": {
+    "value_paths": [
+      "/metadata/technical/codec"
+    ],
+    "unit": "text",
+    "domain": "metadata",
+    "scope_paths": [],
+    "qualification": "Declared container fields, not decoded duration/bitrate; missing remains unavailable.",
+    "status": "unavailable"
+  },
+  "AudioTechnical.writing_library": {
+    "value_paths": [
+      "tag:writing_library"
+    ],
+    "unit": "text",
+    "domain": "metadata",
+    "scope_paths": [],
+    "qualification": "Declared container fields, not decoded duration/bitrate; missing remains unavailable.",
+    "status": "unavailable"
+  },
+  "AudioTechnical.format_profile": {
+    "value_paths": [
+      "tag:format_profile"
+    ],
+    "unit": "text",
+    "domain": "metadata",
+    "scope_paths": [],
+    "qualification": "Declared container fields, not decoded duration/bitrate; missing remains unavailable.",
+    "status": "unavailable"
+  },
+  "LoudnessProfile.peak_db": {
+    "value_paths": [
+      "/tool_statistics/measurements/legacy_loudness_profile/peak_db"
+    ],
+    "unit": "dBFS",
+    "domain": "native PCM / signed-maximum tool normalization",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/byproducts/native_levels",
+      "/tool_statistics/coverage"
+    ],
+    "qualification": "D04/D11: native meter and explicitly attributed tool/legacy fields; crest alias is raw linear, fixed deltas -16/-14.",
+    "status": "unavailable"
+  },
+  "LoudnessProfile.rms_db": {
+    "value_paths": [
+      "/tool_statistics/measurements/legacy_loudness_profile/rms_db"
+    ],
+    "unit": "dBFS",
+    "domain": "native PCM / signed-maximum tool normalization",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/byproducts/native_levels",
+      "/tool_statistics/coverage"
+    ],
+    "qualification": "D04/D11: native meter and explicitly attributed tool/legacy fields; crest alias is raw linear, fixed deltas -16/-14.",
+    "status": "unavailable"
+  },
+  "LoudnessProfile.rms_peak_db": {
+    "value_paths": [
+      "/tool_statistics/measurements/legacy_loudness_profile/rms_peak_db"
+    ],
+    "unit": "dBFS",
+    "domain": "native PCM / signed-maximum tool normalization",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/byproducts/native_levels",
+      "/tool_statistics/coverage"
+    ],
+    "qualification": "D04/D11: native meter and explicitly attributed tool/legacy fields; crest alias is raw linear, fixed deltas -16/-14.",
+    "status": "unavailable"
+  },
+  "LoudnessProfile.rms_trough_db": {
+    "value_paths": [
+      "/tool_statistics/measurements/legacy_loudness_profile/rms_trough_db"
+    ],
+    "unit": "dBFS",
+    "domain": "native PCM / signed-maximum tool normalization",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/byproducts/native_levels",
+      "/tool_statistics/coverage"
+    ],
+    "qualification": "D04/D11: native meter and explicitly attributed tool/legacy fields; crest alias is raw linear, fixed deltas -16/-14.",
+    "status": "unavailable"
+  },
+  "LoudnessProfile.noise_floor_db": {
+    "value_paths": [
+      "/tool_statistics/measurements/legacy_loudness_profile/noise_floor_db"
+    ],
+    "unit": "dBFS",
+    "domain": "native PCM / signed-maximum tool normalization",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/byproducts/native_levels",
+      "/tool_statistics/coverage"
+    ],
+    "qualification": "D04/D11: native meter and explicitly attributed tool/legacy fields; crest alias is raw linear, fixed deltas -16/-14.",
+    "status": "unavailable"
+  },
+  "LoudnessProfile.dynamic_range_db": {
+    "value_paths": [
+      "/tool_statistics/measurements/legacy_loudness_profile/dynamic_range_db"
+    ],
+    "unit": "dB",
+    "domain": "native PCM / signed-maximum tool normalization",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/byproducts/native_levels",
+      "/tool_statistics/coverage"
+    ],
+    "qualification": "D04/D11: native meter and explicitly attributed tool/legacy fields; crest alias is raw linear, fixed deltas -16/-14.",
+    "status": "unavailable"
+  },
+  "LoudnessProfile.crest_factor_db": {
+    "value_paths": [
+      "/tool_statistics/measurements/legacy_loudness_profile/crest_factor_db"
+    ],
+    "unit": "linear ratio (legacy mislabel)",
+    "domain": "native PCM / signed-maximum tool normalization",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/byproducts/native_levels",
+      "/tool_statistics/coverage"
+    ],
+    "qualification": "D04/D11: native meter and explicitly attributed tool/legacy fields; crest alias is raw linear, fixed deltas -16/-14.",
+    "status": "unavailable"
+  },
+  "LoudnessProfile.flat_factor": {
+    "value_paths": [
+      "/tool_statistics/measurements/legacy_loudness_profile/flat_factor"
+    ],
+    "unit": "dB (astats flat factor)",
+    "domain": "native PCM / signed-maximum tool normalization",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/byproducts/native_levels",
+      "/tool_statistics/coverage"
+    ],
+    "qualification": "D04/D11: native meter and explicitly attributed tool/legacy fields; crest alias is raw linear, fixed deltas -16/-14.",
+    "status": "unavailable"
+  },
+  "LoudnessProfile.peak_count": {
+    "value_paths": [
+      "/tool_statistics/measurements/legacy_loudness_profile/peak_count"
+    ],
+    "unit": "count",
+    "domain": "native PCM / signed-maximum tool normalization",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/byproducts/native_levels",
+      "/tool_statistics/coverage"
+    ],
+    "qualification": "D04/D11: native meter and explicitly attributed tool/legacy fields; crest alias is raw linear, fixed deltas -16/-14.",
+    "status": "unavailable"
+  },
+  "LoudnessProfile.sox_entropy": {
+    "value_paths": [
+      "/tool_statistics/measurements/legacy_loudness_profile/sox_entropy"
+    ],
+    "unit": "normalized entropy",
+    "domain": "native PCM / signed-maximum tool normalization",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/byproducts/native_levels",
+      "/tool_statistics/coverage"
+    ],
+    "qualification": "D04/D11: native meter and explicitly attributed tool/legacy fields; crest alias is raw linear, fixed deltas -16/-14.",
+    "status": "unavailable"
+  },
+  "LoudnessProfile.dc_offset": {
+    "value_paths": [
+      "/tool_statistics/measurements/legacy_loudness_profile/dc_offset"
+    ],
+    "unit": "normalized amplitude",
+    "domain": "native PCM / signed-maximum tool normalization",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/byproducts/native_levels",
+      "/tool_statistics/coverage"
+    ],
+    "qualification": "D04/D11: native meter and explicitly attributed tool/legacy fields; crest alias is raw linear, fixed deltas -16/-14.",
+    "status": "unavailable"
+  },
+  "LoudnessProfile.zero_crossings_rate": {
+    "value_paths": [
+      "/tool_statistics/measurements/legacy_loudness_profile/zero_crossings_rate"
+    ],
+    "unit": "crossings/sample",
+    "domain": "native PCM / signed-maximum tool normalization",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/byproducts/native_levels",
+      "/tool_statistics/coverage"
+    ],
+    "qualification": "D04/D11: native meter and explicitly attributed tool/legacy fields; crest alias is raw linear, fixed deltas -16/-14.",
+    "status": "unavailable"
+  },
+  "LoudnessProfile.lufs_integrated": {
+    "value_paths": [
+      "/byproducts/native_levels/integrated_lufs/value"
+    ],
+    "unit": "LUFS",
+    "domain": "native PCM / signed-maximum tool normalization",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/byproducts/native_levels",
+      "/tool_statistics/coverage"
+    ],
+    "qualification": "D04/D11: native meter and explicitly attributed tool/legacy fields; crest alias is raw linear, fixed deltas -16/-14.",
+    "status": "unavailable"
+  },
+  "LoudnessProfile.lufs_range": {
+    "value_paths": [
+      "/byproducts/native_levels/range_lu/value"
+    ],
+    "unit": "LU",
+    "domain": "native PCM / signed-maximum tool normalization",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/byproducts/native_levels",
+      "/tool_statistics/coverage"
+    ],
+    "qualification": "D04/D11: native meter and explicitly attributed tool/legacy fields; crest alias is raw linear, fixed deltas -16/-14.",
+    "status": "unavailable"
+  },
+  "LoudnessProfile.lufs_momentary_max": {
+    "value_paths": [
+      "/byproducts/native_levels/momentary_max_lufs/value"
+    ],
+    "unit": "LUFS",
+    "domain": "native PCM / signed-maximum tool normalization",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/byproducts/native_levels",
+      "/tool_statistics/coverage"
+    ],
+    "qualification": "D04/D11: native meter and explicitly attributed tool/legacy fields; crest alias is raw linear, fixed deltas -16/-14.",
+    "status": "unavailable"
+  },
+  "LoudnessProfile.lufs_shortterm_max": {
+    "value_paths": [
+      "/byproducts/native_levels/short_term_max_lufs/value"
+    ],
+    "unit": "LUFS",
+    "domain": "native PCM / signed-maximum tool normalization",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/byproducts/native_levels",
+      "/tool_statistics/coverage"
+    ],
+    "qualification": "D04/D11: native meter and explicitly attributed tool/legacy fields; crest alias is raw linear, fixed deltas -16/-14.",
+    "status": "unavailable"
+  },
+  "LoudnessProfile.apple_music_delta": {
+    "value_paths": [
+      "/byproducts/native_levels/fixed_minus16_delta_db/value"
+    ],
+    "unit": "dB",
+    "domain": "native PCM / signed-maximum tool normalization",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/byproducts/native_levels",
+      "/tool_statistics/coverage"
+    ],
+    "qualification": "D04/D11: native meter and explicitly attributed tool/legacy fields; crest alias is raw linear, fixed deltas -16/-14.",
+    "status": "unavailable"
+  },
+  "LoudnessProfile.spotify_delta": {
+    "value_paths": [
+      "/byproducts/native_levels/fixed_minus14_delta_db/value"
+    ],
+    "unit": "dB",
+    "domain": "native PCM / signed-maximum tool normalization",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/byproducts/native_levels",
+      "/tool_statistics/coverage"
+    ],
+    "qualification": "D04/D11: native meter and explicitly attributed tool/legacy fields; crest alias is raw linear, fixed deltas -16/-14.",
+    "status": "unavailable"
+  },
+  "LoudnessProfile.true_peak_dbtp": {
+    "value_paths": [
+      "/measurement_report/true_peak/0/estimated_peak_dbtp"
+    ],
+    "unit": "dBTP",
+    "domain": "native PCM / signed-maximum tool normalization",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/byproducts/native_levels",
+      "/tool_statistics/coverage"
+    ],
+    "qualification": "D04/D11: native meter and explicitly attributed tool/legacy fields; crest alias is raw linear, fixed deltas -16/-14.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.cutoff_hz": {
+    "value_paths": [
+      "/reference_assessment/features/cutoff/value"
+    ],
+    "unit": "Hz",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.cutoff_hz_str": {
+    "value_paths": [
+      "/reference_assessment/features/cutoff/value"
+    ],
+    "unit": "Hz",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.cutoff_variance": {
+    "value_paths": [
+      "/reference_assessment/features/variance/value"
+    ],
+    "unit": "Hz squared",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.cutoff_sharpness_db": {
+    "value_paths": [
+      "/reference_assessment/features/sharpness/value"
+    ],
+    "unit": "dB/bin",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.cliff_depth_db": {
+    "value_paths": [
+      "/reference_assessment/features/cliff/value"
+    ],
+    "unit": "dB relative",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.hf_energy_ratio": {
+    "value_paths": [
+      "/reference_assessment/features/hf/value"
+    ],
+    "unit": "magnitude ratio",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.banding_score": {
+    "value_paths": [
+      "/reference_assessment/features/banding/value"
+    ],
+    "unit": "ratio",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.nf_above_cutoff_db": {
+    "value_paths": [
+      "/reference_assessment/features/noise/value"
+    ],
+    "unit": "raw FFT magnitude dB",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.side_anomaly_score": {
+    "value_paths": [
+      "/reference_assessment/features/side/value"
+    ],
+    "unit": "ratio",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.entropy": {
+    "value_paths": [
+      "/reference_assessment/features/entropy/value"
+    ],
+    "unit": "bits",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.spectral_sparsity": {
+    "value_paths": [
+      "/reference_assessment/features/sparsity/value"
+    ],
+    "unit": "fraction",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.hf_envelope_correlation": {
+    "value_paths": [
+      "/reference_assessment/features/envelope/value"
+    ],
+    "unit": "Pearson coefficient",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.preecho_pct": {
+    "value_paths": [
+      "/reference_assessment/features/preecho/value"
+    ],
+    "unit": "percent",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.silence_ratio": {
+    "value_paths": [
+      "/reference_assessment/features/silence_ratio/value"
+    ],
+    "unit": "ratio",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.vinyl_clicks_per_min": {
+    "value_paths": [
+      "/reference_assessment/features/clicks/value"
+    ],
+    "unit": "candidates/minute",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.resample_src_rate": {
+    "value_paths": [
+      "/reference_assessment/features/resample/value"
+    ],
+    "unit": "Hz (zero is no hit)",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.auc_avg_bound_freq": {
+    "value_paths": [
+      "/reference_assessment/features/bound/value"
+    ],
+    "unit": "Hz",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.auc_prob_bound_freq": {
+    "value_paths": [
+      "/reference_assessment/features/mode/value"
+    ],
+    "unit": "Hz",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.auc_phase_entropy": {
+    "value_paths": [
+      "/reference_assessment/features/phase/value"
+    ],
+    "unit": "bits",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.mdct_quant_score": {
+    "value_paths": [
+      "/reference_assessment/features/aac/value"
+    ],
+    "unit": "ratio",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.vorbis_grid_score": {
+    "value_paths": [
+      "/reference_assessment/features/vorbis/value"
+    ],
+    "unit": "ratio",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.cutoff_variance_interp": {
+    "value_paths": [
+      "/reference_assessment/legacy_outputs/interpretations/variance"
+    ],
+    "unit": "audit text",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.cutoff_sharpness_interp": {
+    "value_paths": [
+      "/reference_assessment/legacy_outputs/interpretations/sharpness"
+    ],
+    "unit": "audit text",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.hf_energy_interp": {
+    "value_paths": [
+      "/reference_assessment/legacy_outputs/interpretations/hf"
+    ],
+    "unit": "audit text",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.banding_interp": {
+    "value_paths": [
+      "/reference_assessment/legacy_outputs/interpretations/banding"
+    ],
+    "unit": "audit text",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.nf_interp": {
+    "value_paths": [
+      "/reference_assessment/legacy_outputs/interpretations/noise"
+    ],
+    "unit": "audit text",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.side_interp": {
+    "value_paths": [
+      "/reference_assessment/legacy_outputs/interpretations/side"
+    ],
+    "unit": "audit text",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.entropy_interp": {
+    "value_paths": [
+      "/reference_assessment/legacy_outputs/interpretations/entropy"
+    ],
+    "unit": "audit text",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.sparsity_interp": {
+    "value_paths": [
+      "/reference_assessment/legacy_outputs/interpretations/sparsity"
+    ],
+    "unit": "audit text",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.hf_env_corr_interp": {
+    "value_paths": [
+      "/reference_assessment/legacy_outputs/interpretations/envelope"
+    ],
+    "unit": "audit text",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.auc_bound_interp": {
+    "value_paths": [
+      "/reference_assessment/legacy_outputs/interpretations/bound"
+    ],
+    "unit": "audit text",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.auc_phase_interp": {
+    "value_paths": [
+      "/reference_assessment/legacy_outputs/interpretations/phase"
+    ],
+    "unit": "audit text",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.mdct_quant_interp": {
+    "value_paths": [
+      "/reference_assessment/legacy_outputs/interpretations/aac"
+    ],
+    "unit": "audit text",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.lossy_score": {
+    "value_paths": [
+      "/reference_assessment/scores/lossy"
+    ],
+    "unit": "uncalibrated score",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.natural_score": {
+    "value_paths": [
+      "/reference_assessment/scores/natural"
+    ],
+    "unit": "uncalibrated score",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.net_score": {
+    "value_paths": [
+      "/reference_assessment/scores/net"
+    ],
+    "unit": "uncalibrated score",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.max_score": {
+    "value_paths": [
+      "/reference_assessment/scores/max"
+    ],
+    "unit": "uncalibrated score",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.raw_lossy_pct": {
+    "value_paths": [
+      "/reference_assessment/scores/raw_lossy_pct"
+    ],
+    "unit": "uncalibrated percent",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.main_score": {
+    "value_paths": [
+      "/reference_assessment/scores/main"
+    ],
+    "unit": "uncalibrated score",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.heuristic_score": {
+    "value_paths": [
+      "/reference_assessment/scores/heuristic"
+    ],
+    "unit": "uncalibrated score",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.lpf_detected": {
+    "value_paths": [
+      "/reference_inputs/spectral/lpf_detected"
+    ],
+    "unit": "boolean",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.lpf_cutoff_str": {
+    "value_paths": [
+      "/reference_inputs/spectral/lpf_legacy_label"
+    ],
+    "unit": "audit text",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.dsd_detected": {
+    "value_paths": [
+      "/reference_inputs/spectral/dsd_like_spectrum"
+    ],
+    "unit": "boolean spectral observation; no native DSD support",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.net_confidence_pct": {
+    "value_paths": [
+      "/reference_assessment/legacy_outputs/net_confidence_pct"
+    ],
+    "unit": "uncalibrated score (legacy alias, not confidence)",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.known_lossy_codec": {
+    "value_paths": [
+      "/reference_assessment/legacy_outputs/known_lossy_codec"
+    ],
+    "unit": "codec text; MQA override excluded",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.verdict_label": {
+    "value_paths": [
+      "/reference_assessment/reference_label"
+    ],
+    "unit": "audit label",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.primary_verdict": {
+    "value_paths": [
+      "/reference_assessment/legacy_outputs/primary_verdict"
+    ],
+    "unit": "audit text",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.evidence": {
+    "value_paths": [
+      "/reference_assessment/rules"
+    ],
+    "unit": "rule traces; effects/states/operands",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.natural_evidence": {
+    "value_paths": [
+      "/reference_assessment/rules"
+    ],
+    "unit": "rule traces; effects/states/operands",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.caveats": {
+    "value_paths": [
+      "/reference_assessment/caveats"
+    ],
+    "unit": "text list",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.aliasing_corr": {
+    "value_paths": [
+      "/measurement_report/resampling"
+    ],
+    "unit": "excluded mirroring claim; raw native observations",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.mp3_noise_pattern_detected": {
+    "value_paths": [
+      "/reference_inputs/spectral/comb_pattern"
+    ],
+    "unit": "boolean observation",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.cassette_score": {
+    "value_paths": [
+      "/reference_assessment/legacy_outputs/cassette_score"
+    ],
+    "unit": "uncalibrated score",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.vinyl_noise_detected": {
+    "value_paths": [
+      "/reference_assessment/source_candidates/1/matched"
+    ],
+    "unit": "boolean candidate",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.header_duration_mismatch": {
+    "value_paths": [
+      "/reference_inputs/header/duration_mismatch"
+    ],
+    "unit": "boolean integrity observation",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.header_bitrate_mismatch": {
+    "value_paths": [
+      "/reference_inputs/header/legacy_bitrate_mismatch"
+    ],
+    "unit": "boolean integrity observation",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.segment_walled": {
+    "value_paths": [
+      "/reference_inputs/segments/classic_vote",
+      "/reference_inputs/segments/probes",
+      "/reference_inputs/segments/adaptive_wall_hz"
+    ],
+    "unit": "scoped counts/votes, adaptive threshold and probes (D03)",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.segment_total": {
+    "value_paths": [
+      "/reference_inputs/segments/plan/requested_probes"
+    ],
+    "unit": "count",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.segment_wall_hz": {
+    "value_paths": [
+      "/reference_inputs/segments/adaptive_wall_hz/value"
+    ],
+    "unit": "Hz",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.segment_map": {
+    "value_paths": [
+      "/reference_inputs/segments/probes"
+    ],
+    "unit": "scoped probes",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.codec_fingerprint": {
+    "value_paths": [
+      "/reference_inputs/segments/nearest_reference_wall"
+    ],
+    "unit": "candidate observation",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.resample_detected": {
+    "value_paths": [
+      "/reference_inputs/spectral/ordered_resampling_hit"
+    ],
+    "unit": "candidate observation",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.fake_hires": {
+    "value_paths": [
+      "/reference_inputs/source/fake_hires_bandwidth_candidate"
+    ],
+    "unit": "boolean candidate",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.vorbis_grid_support": {
+    "value_paths": [
+      "/reference_inputs/vorbis_winner/supporting_probes"
+    ],
+    "unit": "count",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.vorbis_grid_tested": {
+    "value_paths": [
+      "/reference_inputs/vorbis_winner/tested_probes"
+    ],
+    "unit": "count",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.vorbis_grid_channel": {
+    "value_paths": [
+      "/reference_inputs/vorbis_winner/basis"
+    ],
+    "unit": "basis text",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.vorbis_grid_interp": {
+    "value_paths": [
+      "/reference_inputs/vorbis_winner/score"
+    ],
+    "unit": "availability/value/reason",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "SpectralAnalysis.scipy_available": {
+    "value_paths": [
+      "/reference_inputs"
+    ],
+    "unit": "native adapter availability (no SciPy runtime)",
+    "domain": "reference mono/mid/side; see referenced field domain",
+    "scope_paths": [
+      "/reference_inputs/basis",
+      "/reference_assessment/features"
+    ],
+    "qualification": "Uncalibrated pinned method; raw labels audit-only; D01–D12. D05 frequency mirroring and D06 MQA certainty excluded.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.spectral": {
+    "value_paths": [
+      "/reference_assessment"
+    ],
+    "unit": "reference method object",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.spectral_cutoff_hz": {
+    "value_paths": [
+      "/reference_assessment/features/cutoff/value"
+    ],
+    "unit": "Hz",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.spectral_cutoff_verdict": {
+    "value_paths": [
+      "/reference_assessment/display_summary"
+    ],
+    "unit": "qualified reference text",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.lpf_detected": {
+    "value_paths": [
+      "/reference_inputs/spectral/lpf_detected"
+    ],
+    "unit": "boolean",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.lpf_cutoff_hz": {
+    "value_paths": [
+      "/reference_inputs/spectral/lpf_last_bin_hz/value"
+    ],
+    "unit": "Hz",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.bit_depth_authentic": {
+    "value_paths": [
+      "/reference_assessment/depth_candidates",
+      "/reference_assessment/legacy_outputs/depth"
+    ],
+    "unit": "qualified candidates plus audit text",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.phase_correlation": {
+    "value_paths": [
+      "/byproducts/reference/phase/mean_correlation"
+    ],
+    "unit": "Pearson coefficient",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.phase_verdict": {
+    "value_paths": [
+      "/byproducts/reference/phase/legacy_verdict"
+    ],
+    "unit": "audit text",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.clipped_samples": {
+    "value_paths": [
+      "/byproducts/reference/ceiling_count/samples_at_or_above_threshold"
+    ],
+    "unit": "channel samples",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.clipping_verdict": {
+    "value_paths": [
+      "/byproducts/reference/ceiling_count/legacy_verdict"
+    ],
+    "unit": "audit text",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.silence_total_pct": {
+    "value_paths": [
+      "/byproducts/reference/silence/total_percent/value"
+    ],
+    "unit": "percent analyzed frames",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.silence_sections": {
+    "value_paths": [
+      "/byproducts/reference/silence/sections"
+    ],
+    "unit": "half-open native frame intervals",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.rg_stored": {
+    "value_paths": [
+      "/replaygain_audit/stored_raw"
+    ],
+    "unit": "text",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.rg_measured_lufs": {
+    "value_paths": [
+      "/replaygain_audit/measured_lufs"
+    ],
+    "unit": "LUFS",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.rg_delta": {
+    "value_paths": [
+      "/replaygain_audit/absolute_delta_db"
+    ],
+    "unit": "dB",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.rg_verdict": {
+    "value_paths": [
+      "/replaygain_audit/display_summary"
+    ],
+    "unit": "audit comparison",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.cassette_rip_detected": {
+    "value_paths": [
+      "/reference_assessment/source_candidates/0/matched"
+    ],
+    "unit": "boolean candidate",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.vinyl_rip_detected": {
+    "value_paths": [
+      "/reference_assessment/source_candidates/1/matched"
+    ],
+    "unit": "boolean candidate",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.mqa_detected": {
+    "value_paths": [
+      "/measurement_report/mqa"
+    ],
+    "unit": "signalling candidates; no confirmation",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.mqa_metadata_claimed": {
+    "value_paths": [
+      "/metadata/observations/mqa_metadata_claimed"
+    ],
+    "unit": "boolean editable text claim",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.mqa_studio": {
+    "value_paths": [
+      "/measurement_report/mqa/candidates/0/studio_flag"
+    ],
+    "unit": "unverified payload candidate",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.mqa_original_sample_rate": {
+    "value_paths": [
+      "/measurement_report/mqa/candidates/0/rate_field_hz"
+    ],
+    "unit": "Hz; unverified signalling",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.mqa_bit_plane": {
+    "value_paths": [
+      "/measurement_report/mqa/candidates/0/source_bit_plane"
+    ],
+    "unit": "bit plane",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.mqa_sync_sample": {
+    "value_paths": [
+      "/measurement_report/mqa/candidates/0/sync_end_frame"
+    ],
+    "unit": "native frame index",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.mqa_evidence": {
+    "value_paths": [
+      "/measurement_report/mqa"
+    ],
+    "unit": "scoped signalling observations",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.mqa_scan_status": {
+    "value_paths": [
+      "/measurement_report/mqa/status"
+    ],
+    "unit": "status",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.mqa_scan_error": {
+    "value_paths": [
+      "/measurement_report/diagnostics"
+    ],
+    "unit": "structured diagnostics",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.side_channel_analysis": {
+    "value_paths": [
+      "/reference_inputs/spectral/side_hf_ratio",
+      "/reference_inputs/spectral/side_anomaly"
+    ],
+    "unit": "ratios",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.header_integrity": {
+    "value_paths": [
+      "/reference_inputs/header"
+    ],
+    "unit": "integrity observations",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "AuthenticityReport.encoder_trace": {
+    "value_paths": [
+      "/metadata/observations"
+    ],
+    "unit": "editable encoder text observations",
+    "domain": "mixed; follow native/reference/metadata paths",
+    "scope_paths": [
+      "/measurement_report/coverage",
+      "/reference_inputs/basis",
+      "/byproducts/coverage",
+      "/replaygain_audit/loudness_interval"
+    ],
+    "qualification": "Candidate observations only. Raw diagnoses are qualified audits; original source/depth/MQA confirmation remain unverified.",
+    "status": "unavailable"
+  },
+  "ForensicReport.filepath": {
+    "value_paths": [
+      "/measurement_report/source"
+    ],
+    "unit": "display source",
+    "domain": "product / declarations / native and reference PCM",
+    "scope_paths": [
+      "/measurement_report/coverage"
+    ],
+    "qualification": "Versioned independent product; no calibrated authenticity/provenance claim.",
+    "status": "unavailable"
+  },
+  "ForensicReport.tags": {
+    "value_paths": [
+      "/metadata/entries",
+      "/metadata/named_tags"
+    ],
+    "unit": "raw/named text",
+    "domain": "product / declarations / native and reference PCM",
+    "scope_paths": [
+      "/measurement_report/coverage"
+    ],
+    "qualification": "Versioned independent product; no calibrated authenticity/provenance claim.",
+    "status": "unavailable"
+  },
+  "ForensicReport.technical": {
+    "value_paths": [
+      "/metadata/technical"
+    ],
+    "unit": "declared metadata",
+    "domain": "product / declarations / native and reference PCM",
+    "scope_paths": [
+      "/measurement_report/coverage"
+    ],
+    "qualification": "Versioned independent product; no calibrated authenticity/provenance claim.",
+    "status": "unavailable"
+  },
+  "ForensicReport.sox_stats": {
+    "value_paths": [
+      "/tool_statistics/measurements/sox"
+    ],
+    "unit": "scoped tool fields",
+    "domain": "product / declarations / native and reference PCM",
+    "scope_paths": [
+      "/measurement_report/coverage"
+    ],
+    "qualification": "Versioned independent product; no calibrated authenticity/provenance claim.",
+    "status": "unavailable"
+  },
+  "ForensicReport.loudness": {
+    "value_paths": [
+      "/byproducts/native_levels",
+      "/tool_statistics/measurements/legacy_loudness_profile"
+    ],
+    "unit": "native levels and tool audit",
+    "domain": "product / declarations / native and reference PCM",
+    "scope_paths": [
+      "/measurement_report/coverage"
+    ],
+    "qualification": "Versioned independent product; no calibrated authenticity/provenance claim.",
+    "status": "unavailable"
+  },
+  "ForensicReport.authenticity": {
+    "value_paths": [
+      "/reference_assessment",
+      "/measurement_report"
+    ],
+    "unit": "reference interpretation and unchanged native observations",
+    "domain": "product / declarations / native and reference PCM",
+    "scope_paths": [
+      "/measurement_report/coverage"
+    ],
+    "qualification": "Versioned independent product; no calibrated authenticity/provenance claim.",
+    "status": "unavailable"
+  },
+  "ForensicReport.dr_score": {
+    "value_paths": [
+      "/tool_statistics/measurements/dr/legacy_python_label",
+      "/tool_statistics/measurements/dr/overall_integer_label"
+    ],
+    "unit": "distinct legacy/overall DR labels",
+    "domain": "product / declarations / native and reference PCM",
+    "scope_paths": [
+      "/measurement_report/coverage"
+    ],
+    "qualification": "Versioned independent product; no calibrated authenticity/provenance claim.",
+    "status": "unavailable"
+  },
+  "ForensicReport.spectrogram_path": {
+    "value_paths": [
+      "/artifacts/exports"
+    ],
+    "unit": "export status/path/reason; no file existence guarantee for saved paths",
+    "domain": "product / declarations / native and reference PCM",
+    "scope_paths": [
+      "/measurement_report/coverage"
+    ],
+    "qualification": "Versioned independent product; no calibrated authenticity/provenance claim.",
+    "status": "unavailable"
+  },
+  "ForensicReport.analysis_seconds": {
+    "value_paths": [
+      "/analysis_seconds"
+    ],
+    "unit": "wall-clock s; includes worker wait; no ETA",
+    "domain": "product / declarations / native and reference PCM",
+    "scope_paths": [
+      "/measurement_report/coverage"
+    ],
+    "qualification": "Versioned independent product; no calibrated authenticity/provenance claim.",
+    "status": "unavailable"
+  },
+  "MQADetection.detected": {
+    "value_paths": [
+      "/measurement_report/mqa"
+    ],
+    "unit": "signalling candidates; no confirmation",
+    "domain": "native integer PCM signalling / metadata",
+    "scope_paths": [
+      "/measurement_report/mqa"
+    ],
+    "qualification": "D06: signalling and payload candidates only; excluded certainty/100 override. Missing candidate payload remains unavailable.",
+    "status": "unavailable"
+  },
+  "MQADetection.metadata_claimed": {
+    "value_paths": [
+      "/metadata/observations/mqa_metadata_claimed"
+    ],
+    "unit": "boolean editable text claim",
+    "domain": "native integer PCM signalling / metadata",
+    "scope_paths": [
+      "/measurement_report/mqa"
+    ],
+    "qualification": "D06: signalling and payload candidates only; excluded certainty/100 override. Missing candidate payload remains unavailable.",
+    "status": "unavailable"
+  },
+  "MQADetection.studio": {
+    "value_paths": [
+      "/measurement_report/mqa/candidates/0/studio_flag"
+    ],
+    "unit": "unverified payload candidate",
+    "domain": "native integer PCM signalling / metadata",
+    "scope_paths": [
+      "/measurement_report/mqa"
+    ],
+    "qualification": "D06: signalling and payload candidates only; excluded certainty/100 override. Missing candidate payload remains unavailable.",
+    "status": "unavailable"
+  },
+  "MQADetection.original_sample_rate": {
+    "value_paths": [
+      "/measurement_report/mqa/candidates/0/rate_field_hz"
+    ],
+    "unit": "Hz; unverified signalling",
+    "domain": "native integer PCM signalling / metadata",
+    "scope_paths": [
+      "/measurement_report/mqa"
+    ],
+    "qualification": "D06: signalling and payload candidates only; excluded certainty/100 override. Missing candidate payload remains unavailable.",
+    "status": "unavailable"
+  },
+  "MQADetection.bit_plane": {
+    "value_paths": [
+      "/measurement_report/mqa/candidates/0/source_bit_plane"
+    ],
+    "unit": "bit plane",
+    "domain": "native integer PCM signalling / metadata",
+    "scope_paths": [
+      "/measurement_report/mqa"
+    ],
+    "qualification": "D06: signalling and payload candidates only; excluded certainty/100 override. Missing candidate payload remains unavailable.",
+    "status": "unavailable"
+  },
+  "MQADetection.sync_sample": {
+    "value_paths": [
+      "/measurement_report/mqa/candidates/0/sync_end_frame"
+    ],
+    "unit": "native frame index",
+    "domain": "native integer PCM signalling / metadata",
+    "scope_paths": [
+      "/measurement_report/mqa"
+    ],
+    "qualification": "D06: signalling and payload candidates only; excluded certainty/100 override. Missing candidate payload remains unavailable.",
+    "status": "unavailable"
+  },
+  "MQADetection.error": {
+    "value_paths": [
+      "/measurement_report/diagnostics"
+    ],
+    "unit": "structured diagnostics",
+    "domain": "native integer PCM signalling / metadata",
+    "scope_paths": [
+      "/measurement_report/mqa"
+    ],
+    "qualification": "D06: signalling and payload candidates only; excluded certainty/100 override. Missing candidate payload remains unavailable.",
+    "status": "unavailable"
+  }
+}

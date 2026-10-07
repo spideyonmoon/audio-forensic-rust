@@ -1,9 +1,45 @@
-# Alfred faithful-release contract v1
+# Audio Forensics faithful-release contract v1
 
 Frozen by P01 on 2026-10-05. This is a delivery specification, **not implemented
 support or a passed release gate**. Engine at the P01 freeze was 0.22.0. The source
 inventory, row owners and acceptance oracles are in [PYTHON_PARITY.md](PYTHON_PARITY.md).
+Subsequent acceptance: [P09 accepted scoped engine 0.32.0 on 2026-10-06](docs/validation/CORE_RELEASE_VALIDATION.md#p09-decision--accept-2026-10-06),
+including the launch-scope amendment below. That decision does not change the
+frozen numerical contract or authorize publication.
 The pinned reference is `c6ecce2296256b516709d87088896d1be913908c`.
+
+## Product-boundary clarification — 2026-10-06
+
+This frozen numerical/format/workflow contract belongs to standalone Audio
+Forensics and its Alfred feature integration, not to Alfred as a whole. P09 ends
+standalone delivery; A01 begins Alfred afterward. Spectrogram and Audio Compare
+remain required existing-functionality workflows, independently reachable in
+Alfred (A06a/A06b). These are initial integration slices, not the full Alfred
+Spectrogram/Compare product requirements. Spectrogram's broader viewing and
+exploration ambition is not limited to image generation. A01 defines long-term
+ownership of reusable P06/P07 code/contracts at Alfred extraction; reuse existing
+implementations now without duplication/refactoring. Expanded requirements are
+future work and do not change this frozen initial contract or launch acceptance.
+Tag Studio, Converter and Archival Tools remain future scope.
+See ALFRED_ARCHITECTURE.md. Completed evidence and D01–D12 are unchanged.
+P07 uses `audio-forensic-product-v1` (replacing the proposed `alfred-product-v1`
+identifier); it names a forensic product envelope, never a universal
+Alfred workspace/result schema. P07 documented that final host-neutral identifier
+and consumer dispatch in docs/PRODUCT_REPORT.md.
+
+## Initial-launch scope amendment — 2026-10-06
+
+Owner approved deferring F02/DSD beyond the first standalone release and Alfred
+launch to conserve Astra budget. Initial required analysis formats are FLAC,
+WAV and ALAC/M4A. P07 → P08 → P09 closes that release; F02 is not an initial
+core/app gate. P08/P09 must identify native DSD parity as deferred and verify
+honest unsupported outcomes, never claim conversion/DSD support.
+
+This is delivery scope revision 2 of the P01 contract. It does not change
+`contract_version=1` in completed reference methods, numerical tolerances,
+rule semantics, schemas or historical acceptance. The future DSD specification
+below remains frozen for a later named F02 packet and its own release acceptance.
+DSD-like observations in PCM remain implemented and are distinct from native DSD.
 
 ## Release scope
 
@@ -20,19 +56,19 @@ release for owner-authorized publication. No E-task is a beta dependency.
 | WAV | Existing validated RIFF little-endian PCM 8/16/24/32, float32/64, supported extensible precision/masks; mono/stereo, 8–384 kHz | RF64/BW64, RIFX, compressed WAV, surround and unsupported extensible layouts; retain WAV_FORMAT_VALIDATION.md conditions |
 | FLAC | Native FLAC, mono/stereo, 8–384 kHz, required 16/24-bit integer precision; retain existing additional accepted precision plus framing/CRC/MD5 and unknown-total behavior | Ogg FLAC, multichannel and decoder-unsupported precision/block geometry; do not infer support from the extension |
 | ALAC/M4A (F01) | Unencrypted nonfragmented ISO BMFF/M4A carrying actual ALAC; mono/stereo 16/24-bit; 8–384 kHz; seekable app source; moov before or after mdat | AAC/Opus in M4A, DRM, fragmented MP4, other precision/layouts, unrelated video/multiple-audio selection ambiguity |
-| DSD (F02) | DSF and uncompressed DSDIFF/DFF; mono/stereo; DSD64 2,822,400, DSD128 5,644,800 and DSD256 11,289,600 bits/s/channel; native bit order/packing and channel layout verified | DST-compressed DFF, SACD ISO, DoP, DSD512+, 48-kHz-family DSD rates, multichannel; distinct diagnostics |
+| DSD (F02, deferred beyond launch) | DSF and uncompressed DSDIFF/DFF; mono/stereo; DSD64 2,822,400, DSD128 5,644,800 and DSD256 11,289,600 bits/s/channel; native bit order/packing and channel layout verified | DST-compressed DFF, SACD ISO, DoP, DSD512+, 48-kHz-family DSD rates, multichannel; distinct diagnostics |
 
 The DSD scope is the P01 engineering selection implementing the owner's broad
 DSD requirement; it is not a claim that the owner supplied examples at each rate.
-F02 must deliver all six container/rate combinations and both channel counts or
-record a release blocker. Other Python formats (MP3, AAC, Ogg/Vorbis, Opus, WMA,
+For its later DSD release, F02 must deliver all six container/rate combinations
+and both channel counts or record a blocker for that release. Other Python formats (MP3, AAC, Ogg/Vorbis, Opus, WMA,
 APE, WavPack, AIFF, standalone ALAC and arbitrary FFmpeg containers) are later
 decoder work, not implicit beta gates. Identification/metadata may succeed on an
 unsupported codec, but no successful audio analysis or invented reference score
 may follow. File-size support must include a 700 MiB generated input without
 whole-file memory buffering; A01 sets staging/storage quotas, A07 tests them.
 
-DSD analysis uses explicit converted floating PCM at **88,200 Hz**, preserving
+Future F02 DSD analysis uses explicit converted floating PCM at **88,200 Hz**, preserving
 native mono/stereo. F02 freezes and versions the filter coefficients, gain,
 decimation stages, delay compensation, startup/tail treatment and independent
 oracle before implementation acceptance. This algorithm choice belongs to F02;
@@ -51,8 +87,8 @@ PCM file are separate from a natively parsed DSD stream.
    WAV/FLAC clients (`schema_version=0.18.0`, `observations-only-v18`), with
    ancestry `INCONCLUSIVE` and evidence index `null`. Existing `assess_evidence`
    version 1 remains the unscored grouping layer, not the new assessment.
-2. New optional product output is a separately versioned envelope. Proposed
-   schema ID `alfred-product-v1`; required members: `product_schema_version`,
+2. New optional product output is a separately versioned envelope. Implemented P07
+   schema ID `audio-forensic-product-v1`; required members: `product_schema_version`,
    `engine_version`, `contract_version`, `measurement_report`, `metadata`,
    `reference_inputs`, `reference_assessment`, `artifacts`, `diagnostics`.
    Unknown versions are rejected explicitly. Existing `--json` semantics stay;
@@ -160,8 +196,19 @@ labeled, with an antiphase warning and native measurements still available.
 Use streaming linear-power averaging into time buckets (coarsen/merge buckets
 when duration is unknown); display dB with a declared reference/floor, not a
 claim of SoX pixel parity. Test tone frequency within one bin and event position
-within one output bucket. Pixel colors/typography can differ. PNG/export is
-app-owned and collision-safe; do not overwrite a neighboring user's image.
+within one output bucket. Pixel colors/typography can differ. The owner's
+2026-10-06 P06 follow-up requires a complete Rust-rendered lossless PNG canvas:
+title/filename, codec/rate/depth/encoded audio bitrate/channels and FFT header,
+kHz through exact Nyquist and M:SS through analyzed end, ticks/subtle guides,
+ember-v1 0 to −140 dB legend and labeled native-channel p95 cutoff overlay.
+Missing bitrate/cutoff remains unavailable, prefix/mid scope is visible, and
+distinct native cutoffs are never averaged into a mid value. Presentation
+version 1 is separate from unchanged spectral artifact v1/numerical geometry.
+Use bounded 1600×900 / 2560×1440 default / 3840×2160 RGB8 canvases, antialiased
+embedded font and 300-dpi metadata. Higher pixel count does not add measured
+frequency/time detail. P07/A06 own path/storage/share workflows and consume the
+Rust PNG; this revises the earlier app-owned composition/encoding decision.
+Exports are collision-safe; do not overwrite a neighboring user's image.
 No artifact failure may masquerade as an existing path or erase a valid report.
 
 P07 provides ordinary text, metadata-only (actually no audio decode), mixed-success

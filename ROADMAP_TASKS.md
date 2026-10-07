@@ -1,6 +1,6 @@
 # Executable roadmap task cards
 
-Updated **2026-10-05**. Read [ROADMAP.md](ROADMAP.md) for order/status and
+Updated **2026-10-06**. Read [ROADMAP.md](ROADMAP.md) for order/status and
 [OWNER_CHECKLIST.md](OWNER_CHECKLIST.md) for the owner's current requirements.
 Sol = GPT-6.1 Sol; Astra = GPT-6 Astra. Assignments are recommendations.
 
@@ -97,7 +97,7 @@ precision full-scale counts. Follow D02/D04 and typed availability.
 ## P03a — bounded tool statistics and DR
 
 **Status: DONE (2026-10-05).** See [P03a results](task-results/P03a.md) and
-[tool-statistics validation](TOOL_STATISTICS_VALIDATION.md).
+[tool-statistics validation](docs/validation/TOOL_STATISTICS_VALIDATION.md).
 
 **Sol; after P03.** P01 discovered required outputs without numerical equivalents
 in the core. Own PYTHON_PARITY G04/G06: FFmpeg astats RMS peak/trough, noise floor,
@@ -136,6 +136,8 @@ intervals and deviation IDs; P05 cannot consume a native lookalike by accident.
 
 ## P04a — missing spectral inputs
 
+**DONE 2026-10-05, engine 0.27.0.** See `task-results/P04a.md` and `REFERENCE_PROFILES_VALIDATION.md`.
+
 **Astra; after P04c.** Inspect Python `_banding_score`, `_side_channel_anomaly`,
 `_lpf_scan`, `_dsd_scan`, `_score`, `_resample_check` and Rust DSP/detectors.
 Implement the missing P01 reference-input rows with bounded storage, explicit
@@ -152,6 +154,8 @@ resampling-candidate adapter and fake-hires bandwidth inputs. Header issues do
 not add ancestry points (D07); no extension proves a codec. Use P04c's basis.
 
 ## P04b — source-profile inputs
+
+**DONE 2026-10-05, engine 0.27.0.** See `task-results/P04b.md` and `REFERENCE_PROFILES_VALIDATION.md`.
 
 **Astra; after P03/P04a.** Read Python `_silence_and_vinyl`, `_cassette_source`,
 `_psychoacoustic_artifacts`, `_noise_floor_profile`, sparsity/envelope methods;
@@ -173,7 +177,8 @@ not silently become clear zeros or “no artifact” evidence.
 
 ## F01 — ALAC in M4A
 
-**Sol; after P01.** Add offline ALAC/M4A decoding, bounded container metadata,
+**Sol; DONE 2026-10-06, engine 0.28.0.** See [F01 results](task-results/F01.md)
+and [ALAC validation](docs/validation/ALAC_VALIDATION.md). After P01. Add offline ALAC/M4A decoding, bounded container metadata,
 source seeking and format applicability through the existing analysis API.
 Read current decode/container/source contracts and inspect decoder support before
 adding dependencies. Detect the actual codec: M4A containing AAC is not ALAC.
@@ -189,6 +194,11 @@ mono/stereo matrix, including moov before/after mdat. Preserve old measurement
 schema; use versioned dispatch if new format fields require an extension.
 
 ## F02 — DSD input and declared conversion
+
+**DEFERRED 2026-10-06 by owner beyond initial release and Alfred launch.**
+Resume only on a named later request. The scope below remains the future F02
+acceptance contract; inability to deliver it blocks that later DSD release, not
+P08/P09 or initial Alfred gates.
 
 **Astra; after P01.** Implement the frozen DSF/DFF/rate scope with bounded parsing
 and explicit DSD-to-PCM analysis semantics. Record original DSD format/rate,
@@ -212,6 +222,9 @@ specific unsupported results, not PCM fallback.
 
 ## P05 — reference interpretation, verdict and rule trace
 
+**DONE 2026-10-06, engine 0.31.0.** See [P05 results](task-results/P05.md) and
+[assessment validation](docs/validation/REFERENCE_ASSESSMENT_VALIDATION.md).
+
 **Astra; after P02/P03/P04a/P04b/P04c.** Read Python `_score`, `_verdict`, `analyse`,
 `_bit_depth_verdict`, source-profile decisions and comparison inputs.
 Implement the separate versioned reference assessment specified in P01: scores,
@@ -233,13 +246,23 @@ source/depth interpretations merely because research validation is unfinished.
 
 ## P06 — spectrogram
 
-**Sol; after P01.** Read Python `generate_spectrogram` and Rust STFT geometry.
+**Sol; DONE 2026-10-06**, engine 0.30.0 including the owner-requested calibrated
+PNG follow-up. See `task-results/P06.md`, `task-results/P06-PNG.md` and
+`SPECTROGRAM_VALIDATION.md` for implementation, actual checks and the A06
+rendering contract. Original task: after P01, read Python `generate_spectrogram` and Rust STFT geometry.
 Implement bounded spectrogram data/artifacts with time/frequency axes, units,
 channel basis, prefix scope and defined reduction for long/high-rate files.
 Rendering must work offline without shelling out to FFmpeg/SoX in the app.
 **Done:** tones, silence and time-limited events appear at expected positions;
 dimensions/memory stay bounded, cancellation works, and the artifact contract is
 documented for A06. No full-file spectrogram allocation based on duration headers.
+
+The follow-up makes composition/PNG engine-owned: filename or title; codec,
+rate, depth, complete-packet audio bitrate, channels and FFT header; kHz/Nyquist
+and M:SS ticks/grid; ember-v1 0 to −140 dB bar; labeled native-channel p95
+markers. Default 2560×1440, bounded maximum 3840×2160; offline antialiased font,
+300-dpi lossless RGB8 PNG, explicit prefix/mid warning and collision-safe path.
+P07/A06 reuse this canvas rather than recreating calibration in a UI wrapper.
 
 P01 implementation constraints:
 
@@ -249,12 +272,18 @@ status separate from report success and preserve the shared prefix.
 
 ## P07 — report, batch and comparison workflows
 
+**DONE 2026-10-06, engine 0.32.0.** [Packet results](task-results/P07.md),
+[workflow validation](docs/validation/PRODUCT_WORKFLOW_VALIDATION.md) and
+[user/library guide](docs/PRODUCT_REPORT.md) record the implemented scope,
+exact checks and bounded saved/comparison/export limitations.
+
 **Sol; after P05/P06/P03a.** Read Python `print_report`, `_report_to_dict`, batch and
 comparison functions; current CLI/evidence layer and P01 result contract.
 Expose reference verdict, full metadata, measurements, candidate source/depth
 interpretations, spectrogram links and diagnostics. Add the required comparison
 workflow with deterministic ordering and stated reference criteria; ranking is
-not proof of perceptual quality. Preserve existing machine JSON consumers.
+not proof of perceptual quality. Preserve existing machine JSON consumers. This is the independent library/CLI
+product workflow, not Alfred navigation or a general Audio Compare redesign.
 **Done:** saved-report, mixed-success batch, absent-field and comparison fixtures
 pass; native channels, units, unknowns and scopes remain visible. Documentation
 shows ordinary user workflows and distinguishes reference from validated claims.
@@ -265,10 +294,18 @@ Complete PYTHON_PARITY W01–W08/W10, including actual no-decode info, directory
 batch, fast alias, saved product rendering and separately versioned product JSON.
 Preserve all mapped fields/aliases with status/domain/unit/scope and raw tag
 access; no legacy certainty text in an unqualified headline.
+For spectrogram export, call P06 `write_png_new` with caller-selected new paths,
+retain optional saved `presentation`/title and expose preset selection. Do not
+redraw axes/legend or infer unavailable bitrate/cutoff in the CLI.
 
 ## P08 — differential acceptance and regression
 
-**Sol; after P02–P07/F01/F02 and any required P01 child tasks.** Use PYTHON_PARITY.md
+**DONE 2026-10-06, engine 0.32.0.** [Packet results](task-results/P08.md),
+[acceptance ledger](docs/validation/CORE_RELEASE_VALIDATION.md). 271 Rust tests,
+zero failed/ignored; frozen generated differential/schema/workflow checks passed.
+F02 native DSD deferred, structured unsupported controls passed. P09 subsequently accepted 0.32.0.
+
+**Sol; after P02–P07/F01 and any required P01 child tasks.** Use PYTHON_PARITY.md
 to assemble a finite generated differential suite; compare exact decoding and
 documented DSP/rule tolerances. Include format applicability and failed inputs.
 Freeze code/fixtures before the final appropriate Rust regression, Clippy,
@@ -281,107 +318,188 @@ P01 implementation constraints:
 
 P03a and P04c are required P01 child packets. Run the P01 inventory checker
 before assembling the differential suite; inventories do not replace numerical
-checks. Cover every required group/rule/workflow and schema/version transition.
+checks. Cover every initial-release group/rule/workflow and schema/version transition.
+Record native DSD rows as explicitly deferred F02, not passed or unexplained
+missing parity. Check structured unsupported DSD behavior; defer conversion
+oracles/new DSD schema acceptance until F02.
 Do not use private recordings as public fixtures or re-open locked controls.
 
-## P09 — core release gate
+## P09 — standalone Audio Forensics release gate
 
-**Astra; after P08.** Review required parity rows, interpretation wording,
+**DONE — ACCEPT 2026-10-06, engine 0.32.0.** [Packet results](task-results/P09.md),
+[decision and limitations](docs/validation/CORE_RELEASE_VALIDATION.md#p09-decision--accept-2026-10-06).
+Frozen P08 code/evidence verified; no production blocker or change. Next A01.
+
+**Astra; after P08.** This ends initial standalone delivery, before Alfred A01.
+Accept the independent FLAC/WAV/ALAC library/CLI without Android linking, APK
+or device gates. Document the owner-approved F02 deferral; DSD is unavailable
+until its later gate, not an initial rejection reason.
+Review required parity rows, interpretation wording,
 format boundaries and final evidence. Check new code risks, not every already
 closed parser experiment. Fix concrete release blockers and rerun affected checks.
 **Done:** written accept/reject decision in CORE_RELEASE_VALIDATION.md with
 version, supported scope and explicit limitations. New research questions become
 E tasks and cannot silently block a faithful, correctly described release.
 
-## A01 — Android integration contract
+## A01 — Alfred shared architecture and integration contract
 
-**Astra; after P01.** Read CORE_INTEGRATION.md, JOB_VALIDATION.md, source/progress
-API and result contract. Produce `ANDROID_CONTRACT.md`: choose bridge mechanism,
-opaque handle ownership, JSON/data representation, thread/cancel/result lifecycle,
-URI staging limits, history limits, ABI/build strategy and resource acceptance.
-Plan Android 14–16 compatibility and Redmi 13 4G/Android 16 physical testing;
-verify SDK/NDK/API choices from current official Android documentation at execution.
-**Done:** implementation-ready interfaces and tests for A02–A07, including safe
-close/poll/cancel races and process death. Keep unsafe FFI, if necessary, confined
-to a separately reviewed boundary rather than weakening the safe analysis core.
+**Astra; after P09.** Alfred development begins here, after the standalone core
+acceptance. Read ALFRED_ARCHITECTURE.md, CORE_INTEGRATION.md, JOB_VALIDATION.md
+and the release/result contract. Produce `ANDROID_CONTRACT.md` separating shared
+workspace/selection, input ownership/staging, capability routing, jobs/lifecycle,
+retention/export and feature adapters. Entry is a file/folder workspace, not a
+forensic report. Support one/many tracks and bounded folder enumeration.
+Freeze only initial integration interfaces: identity/source leases, capability
+outcomes, job progress/cancel/completion, versioned feature payload/artifact
+ownership and host failures. Choose bridge mechanism, opaque native ownership,
+exact JSON integers, ABI/build strategy, safe close/poll/cancel races, process-death
+behavior, staging/history/queue limits and resource budgets. Preserve core
+worker admission, ALAC unwind/panic boundary and P04 memory constraints.
 
-P01 implementation constraints:
+Use a separate app subtree/native adapter now, with one-way dependency on the
+independent Rust library. Document build independence and eventual extraction of
+Alfred to its own repository; choose dependency packaging without source copying.
+A01 must define the long-term ownership boundary for reusable P06 spectrogram
+and P07 comparison functionality when Alfred moves repositories. Produce a
+matrix for computation, rendering, versioned contracts, tests and consumers;
+decide core-retained versus Alfred-owned responsibilities and any justified
+future host-neutral component. Document extraction steps and standalone CLI/host
+compatibility, with one-way dependencies. Current reuse does not make these
+features conceptually part of Forensics. Do not duplicate/refactor them now or
+preselect a new crate simply to satisfy this planning requirement.
+Record Spectrogram as a broader competitive viewing/exploration feature, with
+A06a only its initial slice. Fuller requirements and comparison expansion remain
+future packets, not detailed APIs or implicit launch requirements.
+Do not design detailed APIs for Tag Studio, Converter or Archival Tools.
+Plan Android 14–16/Redmi 13 4G testing; verify SDK/NDK/API choices against current
+official documentation during execution. Required formats, 700 MiB import and
+fidelity remain the release contract's. DSD is deferred beyond launch; reserve
+feature payload version dispatch without designing/implementing F02 now.
+**Done:** implementation-ready shared seams and initial feature contracts for
+A02–A07, extraction plan with explicit spectrogram/comparison ownership decisions,
+standalone-consumer compatibility, resource/lifecycle tests and unresolved product
+choices recorded. Unsafe FFI stays outside the safe analysis core.
 
-Design against RELEASE_CONTRACT v1 result layers and required formats, including
-700 MiB import and DSD converted-domain descriptors. A01 owns concrete ABI,
-staging/history/queue limits and resource budgets; this does not authorize
-changing the frozen fidelity scope.
+## A02 — Alfred workspace scaffold and builds
 
-## A02 — Alfred scaffold and builds
-
-**Sol; after A01.** Create the Android project, offline screens/navigation,
-native build integration and pinned reproducible tool versions. Use **Alfred**;
+**Sol; after A01.** Create the separate Android application subtree, offline
+workspace/navigation and pinned reproducible native builds. Open to selection;
+route applicable operations without requiring a forensic report. Add feature
+boundaries for Forensics, Spectrogram and Compare. Future tools remain documented
+placeholders, not working buttons or implemented features. Use Alfred and a
 development application ID until owner finalizes it. No accounts/network service.
-GitHub Actions may be prepared, preserving the source-only publishing rules.
-**Done:** local debug APK builds, native library is packaged for the declared
-ABI, build instructions are repeatable, and missing SDK/NDK prerequisites are
-explicit. Tool installation requiring approval is not silently bypassed.
+**Done:** debug APK builds, native library packaging/build instructions repeat,
+app consumes the core explicitly, and the core library/CLI still builds independently.
+Missing SDK/NDK prerequisites remain explicit; no silent approval bypass.
 
-## A03 — native bridge
+## A03 — Audio Forensics native adapter
 
-**Astra; after A02.** Implement A01's ownership contract around AnalysisJob:
-start, latest progress, cancel, consume result, close and structured bridge errors.
-Preserve exact report integers and version dispatch. Keep Android UI threads free
-of decoding and blocking waits; never allow panics across the native boundary.
-**Done:** actual NDK link plus packaged native-load/generated-input smoke;
-stale handles, repeated close/cancel/poll and resource release tests pass. State
-whether evidence is emulator or physical device; compilation alone is insufficient.
+**Astra; after A02.** Implement A01's app-owned bridge to the existing Rust
+source/job/result APIs and P07 product layers. Keep feature semantics in the
+Forensics adapter and scheduling/lifecycle transport in shared Alfred services.
+Start, progress, cancel, consume, close and structured errors preserve ownership,
+exact integers and version dispatch. Preserve optional reference/spectrogram
+paths; if the existing AnalysisJob result shape needs an adapter, keep that
+adapter app-owned rather than imposing Alfred state on the portable core.
+UI threads never decode or block; no panic crosses the boundary.
+**Done:** NDK linking, packaged native-load/generated-input smoke, stale handles,
+repeated close/cancel/poll and release tests pass. Label emulator/physical evidence;
+Android target compilation alone is insufficient.
 
-## A04 — file import and staging
+## A04 — shared workspace selection, input and staging
 
-**Sol; after A03.** Implement Android document-picker/URI access, source ownership,
-permission expiry handling and bounded staging for nonseekable providers using
-A01 limits. Display actual codec support, including ALAC versus AAC in M4A.
-**Done:** seekable/nonseekable, denied/revoked/missing input, insufficient disk,
-cancel-during-copy and large-file paths behave explicitly; temporary files and
-handles are released. No whole-audio memory buffering or unrestricted-storage
-permission merely to read a user-selected document.
+**Sol; after A02.** Implement shared SAF file/folder picker/workspace, one/many
+track selection, bounded folder enumeration, URI grants, source acquisition and
+staging for nonseekable providers under A01 limits. Features receive owned input
+access, not independent import systems. Route only applicable installed operations;
+selection count and actual codec checks include ALAC versus AAC in M4A. Capability
+checks do not require a forensic report and unsupported content stays explicit.
+**Done:** single/multiple/folder selection and routing, seekable/nonseekable,
+denied/revoked/missing inputs, disk pressure, copy cancellation and large files
+behave explicitly; handles/temporary files release correctly. No whole-audio
+buffering or unrestricted-storage permission merely to read selected documents.
 
-## A05 — analysis lifecycle
+## A05 — shared jobs, lifecycle and local retention
 
-**Sol; after A04.** Implement the agreed background execution/notification model,
-single active job, bounded queue if specified, progress and cancellation UI.
-Handle rotation, backgrounding, screen-off and process recreation; never show
-completion merely because a decode pass ended. Use fresh jobs/tokens on retry.
-**Done:** automated lifecycle/state tests and emulator smoke pass; stale callbacks
-cannot update a new job, teardown does not block UI, and interrupted work is
-reported honestly. Physical behavior is checked again in A07.
+**Sol; after A03/A04.** Implement A01 background execution/notifications,
+job identities, bounded conservative admission/queue, progress/cancellation,
+rotation, background/screen-off and process recreation. Feature adapters supply
+work and versioned results; shared services do not assume every operation is an
+analysis or ends in AnalysisReport. Preserve core worker limits; no new concurrent
+DSP scheduling. Retry uses fresh tokens/sources. Bound local result/artifact
+storage, version dispatch, deletion and explicit export/share infrastructure.
+**Done:** lifecycle/state tests and emulator smoke pass; stale callbacks cannot
+update new jobs, teardown does not block UI, decode completion is not job success,
+and interrupted work is honest. Storage ownership/cleanup and failure controls
+pass; A07 checks physical behavior.
 
-## A06 — detailed results and local workflows
+## A06 — Audio Forensics feature integration
 
-**Sol; after A05/P07.** Implement Alfred's verdict/reference assessment screen
-plus all metadata, expandable measurements, detector scopes/caveats, spectrogram,
-history, comparison and explicit share/export. Reuse Rust policy, never recode
-scoring in Kotlin. Bound stored data and provide deletion; no implicit uploads.
-**Done:** UI fixtures cover success and every failure/abstention/version state;
-nulls are not zero, large integers survive storage/export, and the owner can
-inspect essentially all supported information rather than a verdict-only screen.
+**Sol; after A05/P07.** Integrate the Forensics operation from the Alfred workspace:
+qualified reference verdict, complete read-only metadata, expandable measurements,
+detector scopes/caveats, forensic history and report export/share. Reuse Rust policy;
+no Kotlin scoring. Use shared input/jobs/storage. Link to separate Spectrogram and
+Compare workflows; neither belongs exclusively inside this results screen.
+Current metadata exposure is not Tag Studio editing.
+**Done:** fixtures cover success/failure/abstention/version states, nulls are not
+zero, large integers survive storage/export and all supported forensic information
+remains inspectable. Artifact failure does not erase successful measurements.
 
-## A07 — physical-device gate
+## A06a — initial Spectrogram feature integration using P06
 
-**Astra + owner; after A06/P09/U01.** Test the APK on the Redmi 13 4G/Android 16
-and cover Android 14/15 with available devices/emulators, labeling evidence.
-Exercise import/all required formats, approximately 600–700 MB input handling,
-cancel/retry, rotation, background/screen-off, process death, storage pressure,
-thermal/runtime/memory behavior and result parity on generated controls.
-**Done:** `ANDROID_VALIDATION.md` records actual device/build/results against
-A01 budgets; concrete blockers fixed/retested. If no phone is available, save
-the ready APK/checklist and mark the device portion BLOCKED_INPUT, not passed.
+**Sol; after A05/P06.** This is the initial delivery slice of Alfred's broader
+Spectrogram viewing/exploration feature, not its complete product scope. Follow
+A01's ownership/extraction boundary. Add a first-class workspace operation using existing Rust
+P06 source collection/canvas/PNG. It opens without first viewing a forensic report,
+even if its backend reuses the existing two-pass analysis. Use shared source/jobs,
+retention and explicit export/share. Preserve title/preset, hash/interval, native
+channel/mid warnings, axes/calibration, optional presentation and separate artifact
+failure. Do not redraw the Rust canvas or require a new spectral-only core API.
+**Done:** direct workspace reachability, generated artifact/display/export, old
+presentation handling and failure/cancellation controls pass. P06 numerics stay
+unchanged; no duplication/refactoring or new DSP scope in this packet. Completion
+does not establish a full interactive viewer or competitive parity; later named
+requirements/implementation packets own that expansion.
 
-## A08 — GitHub beta handoff
+## A06b — independent Audio Compare workflow
 
-**Sol + owner; after A07/U03.** Prepare versioned release build, hashes, notices,
-supported formats/OS versions, known limitations, install/update instructions and
-GitHub Release draft text. Finalize package identity and owner-held signing plan
-before public distribution. Audit artifacts for private evidence/recordings.
-**Done:** reproducible installable release candidate and owner acceptance/signing
-instructions are ready. Actual public publication requires explicit authorization;
-record prepared versus published separately. No store project is required.
+**Sol; after A05/P07.** Add a first-class multi-selection workspace operation
+using P07's versioned comparison of variants of one track, including saved results
+where applicable. Acquire inputs/run needed jobs through shared infrastructure;
+no prerequisite forensic results screen. Follow A01's long-term reusable
+comparison ownership boundary; initial code residence does not make Audio Compare
+a Forensics subfeature. Preserve explicit reference tuple,
+compatible method/domain/coverage checks, ordering/nulls and ranking caveats.
+Broader comparison requirements are unfrozen; do not invent perceptual metrics,
+sample alignment or unlike-track rankings.
+**Done:** independent routing, selection constraints, mixed/absent/incompatible
+results, ties and all-unavailable cases match P07; export/storage use shared seams.
+
+## A07 — Alfred physical-device gate
+
+**Astra + owner; after A06/A06a/A06b/P09/U01.** Test Redmi 13 4G/Android 16;
+label Android 14/15 device/emulator evidence. Exercise shared file/multiple/folder
+selection and operation routing, each initial workflow, required formats,
+600–700 MB inputs, cancel/retry, rotation, background/screen-off, process death,
+storage pressure and runtime/thermal/memory behavior. Compare generated forensic
+results, spectrogram artifacts and reference comparisons with accepted core outputs.
+**Done:** ANDROID_VALIDATION.md records actual build/device/results against A01
+budgets and repaired blockers. No available phone means saved ready APK/checklist
+and BLOCKED_INPUT device portion, never a passed device gate. Future tools and
+endgame research are not acceptance dependencies.
+
+## A08 — Alfred beta and repository-boundary handoff
+
+**Sol + owner; after A07/U03.** Prepare reproducible release candidate, hashes,
+notices, supported formats/OS, install/update instructions and GitHub Release
+text describing Alfred's implemented features and future placeholders honestly.
+Finalize package identity and owner-held signing before distribution; audit for
+private evidence. Record separate library and app versions/dependency, independent
+core build and extraction readiness/remaining move work. The actual repository
+move occurs once Alfred has taken shape; no fixed date or beta gate is assumed.
+**Done:** installable candidate, owner acceptance/signing instructions and clear
+app/core handoff ready. Actual publication requires explicit authorization;
+prepared and published are recorded separately. No store project required.
 
 ## E01 — AAC phase robustness
 

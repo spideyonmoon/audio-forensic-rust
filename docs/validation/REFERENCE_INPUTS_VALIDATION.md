@@ -1,3 +1,11 @@
+# Current extension — 2026-10-05
+
+P04a/P04b are complete in engine 0.27.0, extending the separate API to inputs
+version 2. See `REFERENCE_PROFILES_VALIDATION.md` and `schemas/reference-inputs-2.schema.json`.
+P04c numerical methods/native measurements remain unchanged. The historical v1
+schema and frozen controls below are preserved; adaptive-wall dependencies now
+consume explicit reference resampling/filtered void inputs.
+
 # P04c reference inputs — 2026-10-05
 
 Pinned source: `c6ecce2296256b516709d87088896d1be913908c`, Python file
@@ -140,3 +148,23 @@ private recording analysis, calibration, new format work, endgame encoder
 research, commit/push/upload or external backup. Local ignored receipts are
 not Git history or a source backup. Existing unrelated dirty/untracked work,
 owner checklist, private recordings and pinned reference must stay intact.
+
+## Follow-up review — 2026-10-05
+
+Owner-requested review of all completed P04 work found no production-code defect
+requiring correction. P04c is complete; P04a/P04b remain separate pending
+packets. See `task-results/P04-review.md` for inspected scope and actual checks.
+
+The existing third-pass mutation test corrupted a WAV header, so it did not
+exercise the PCM hash mismatch after a successful decode. The expanded test
+also changes one finite f32 mantissa bit at frame 40000 only on pass 3, preserving
+the header, decoded count and PCM kind. It requires the exact diagnostic
+`Source changed on reference input pass` and null reference inputs. The original
+malformed-input and deadline cases remain. Optimized Rust 1.85/no-CLI lib/API
+run passed **50 tests (46 + 4)**, including this additional case; no oracle,
+tolerance, production method or engine version changed. The separate schema
+reproduction and parity inventory checks passed. The full regression, streaming
+corpus and Android/device checks were not rerun for this test-only correction.
+Focused Rust 1.85 no-CLI lib/API Clippy with warnings denied and formatting
+verification also passed. Initial local toolchain/linker environment failures
+were resolved without production changes; details are in the review record.

@@ -18,8 +18,8 @@ use crate::{
 use rustfft::num_complex::Complex32;
 use serde::{Deserialize, Serialize};
 
-pub const REFERENCE_INPUT_VERSION: u32 = 1;
-pub const REFERENCE_INPUT_METHOD: &str = "python-c6ecce2-p04c-f32-v1";
+pub const REFERENCE_INPUT_VERSION: u32 = 2;
+pub const REFERENCE_INPUT_METHOD: &str = "python-c6ecce2-p04abc-f32-v2";
 const BINS: usize = WINDOW / 2 + 1;
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -29,7 +29,7 @@ pub struct InputValue {
     pub unavailable_reason: Option<String>,
 }
 impl InputValue {
-    fn new(value: Option<f64>, unit: &str, reason: &str) -> Self {
+    pub(crate) fn new(value: Option<f64>, unit: &str, reason: &str) -> Self {
         let value = value.filter(|x| x.is_finite());
         Self {
             value,
@@ -134,6 +134,9 @@ pub struct SegmentVote {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct ReferenceInputs {
+    pub header: crate::reference_spectral::HeaderObservations,
+    pub spectral: crate::reference_spectral::SpectralInputs,
+    pub source: crate::reference_source::SourceInputs,
     pub version: u32,
     pub method: String,
     pub reference_commit: String,
@@ -259,6 +262,8 @@ impl ReferenceSurvey {
             },
             stft: StreamingStft::new(),
             base: BaseStats::new(self.rate, self.spectral_peak),
+            maxima: vec![0.0; BINS],
+            quiet: crate::detectors::noise_floor::FloorSurvey::new(self.rate),
             physical: StructureStats::new(self.rate),
             phase: LegacyPhase::new(self.rate),
             aac: self.aac.into_collector(frames),
@@ -290,6 +295,8 @@ pub(crate) struct ReferenceSecond {
     frame: Frame,
     stft: StreamingStft,
     base: BaseStats,
+    maxima: Vec<f32>,
+    quiet: crate::detectors::noise_floor::FloorSurvey,
     physical: StructureStats,
     phase: LegacyPhase,
     aac: AacCollector,
@@ -300,7 +307,13 @@ pub(crate) struct ReferenceSecond {
 impl ReferenceSecond {
     pub fn push(&mut self, ch: usize, x: f64) {
         self.aac.push(ch, x);
+        let native_mid = if self.frame.channels == 1 {
+            x
+        } else {
+            (self.frame.left + x) * 0.5
+        };
         if let Some((mid, side)) = self.frame.push(ch, x) {
+            self.quiet.push(native_mid);
             if let Some(side) = side {
                 // Pinned Vorbis widens BEFORE reconstructing, unlike P03 Pearson.
                 self.vorbis.push(0, f64::from(mid) + f64::from(side));
@@ -310,6 +323,11 @@ impl ReferenceSecond {
             }
             self.stft.push_spectrum(mid, |m, s| {
                 let active = self.base.push(m);
+                if active {
+                    for (p, x) in self.maxima.iter_mut().zip(m) {
+                        *p = p.max(*x);
+                    }
+                }
                 self.physical.push(m, s, active);
                 self.phase.push(s, active);
             });
@@ -323,7 +341,13 @@ impl ReferenceSecond {
         let aac = self.aac.finish(&mut control)?;
         let vorbis = self.vorbis.finish(&mut control)?;
         let base = self.base.finish();
+        let channels = self.frame.channels;
         let count = base.active_frames;
+        let spectral = crate::reference_spectral::SpectralCollector::new(
+            self.rate,
+            base.cutoff_p95_hz.value,
+            self.maxima,
+        );
         Ok(ReferenceThird {
             rate: self.rate,
             frames: self.frames,
@@ -332,6 +356,15 @@ impl ReferenceSecond {
             peak: self.peak,
             active: 0,
             scatter: ScatterStats::new(self.rate, count),
+            spectral,
+            source: crate::reference_source::SourceCollector::new(self.rate, self.frames),
+            quiet: self.quiet.into_collector(0, self.frames),
+            side_stft: StreamingStft::new(),
+            side_mags: vec![0.0; BINS],
+            stft_index: 0,
+            position: 0,
+            bit_counts: vec![[0; 33]; channels],
+            integer_only: true,
             segments: ReferenceSegments::new(self.frames, self.rate),
             base,
             physical: self.physical.finish(0),
@@ -351,6 +384,15 @@ pub(crate) struct ReferenceThird {
     peak: f32,
     active: u64,
     scatter: ScatterStats,
+    spectral: crate::reference_spectral::SpectralCollector,
+    source: crate::reference_source::SourceCollector,
+    quiet: crate::detectors::noise_floor::FloorCollector,
+    side_stft: StreamingStft,
+    side_mags: Vec<f32>,
+    stft_index: u64,
+    position: u64,
+    bit_counts: Vec<[u64; 33]>,
+    integer_only: bool,
     segments: ReferenceSegments,
     base: BaseInputs,
     physical: SpectralStructureAnalysis,
@@ -360,12 +402,38 @@ pub(crate) struct ReferenceThird {
     vorbis: Vec<VorbisAnalysis>,
 }
 impl ReferenceThird {
-    pub fn push(&mut self, ch: usize, x: f64) {
-        if let Some((mid, _)) = self.frame.push(ch, x) {
+    pub fn push(&mut self, ch: usize, x: f64, integer: Option<i32>) {
+        if self.position < self.rate as u64 * 30 {
+            if let Some(word) = integer {
+                if word != 0 {
+                    self.bit_counts[ch][word.trailing_zeros() as usize] += 1;
+                }
+            } else {
+                self.integer_only = false;
+            }
+        }
+        let native_mid = if self.frame.channels == 1 {
+            x
+        } else {
+            (self.frame.left + x) * 0.5
+        };
+        if let Some((mid, side)) = self.frame.push(ch, x) {
+            self.position += 1;
+            self.quiet.push(native_mid);
+            self.source.push(mid);
+            if let Some(side) = side {
+                self.side_stft
+                    .push(side, |m| self.side_mags.copy_from_slice(m));
+            }
             self.segments.push(mid);
             self.stft.push(mid, |m| {
+                if side.is_some() && self.frames >= 8192 && self.stft_index % 4 == 0 {
+                    self.spectral.side(m, &self.side_mags);
+                }
+                self.stft_index += 1;
                 let peak = m.iter().copied().fold(0.0, f32::max);
                 if peak > (self.peak + 1e-12) * 1e-3 {
+                    self.spectral.push(m);
                     if self.active % self.scatter.stride == 0 {
                         self.scatter.push(m);
                     }
@@ -374,7 +442,10 @@ impl ReferenceThird {
             });
         }
     }
-    pub fn finish(self) -> ReferenceInputs {
+    pub fn finish(
+        self,
+        control: impl FnMut() -> Result<(), Failure>,
+    ) -> Result<ReferenceInputs, Failure> {
         let cutoff = self.base.cutoff_p95_hz.value;
         let cliff = self.base.cliff_depth_db.value;
         let nearest = reference_fingerprint(cutoff, self.rate);
@@ -383,7 +454,41 @@ impl ReferenceThird {
         let classic_vote = segment_vote(&probes, 16500.0);
         let aac_winner = aac_winner(&self.aac, self.frames);
         let vorbis_winner = vorbis_winner(&self.vorbis, self.frame.channels, self.frames);
-        ReferenceInputs {
+        let spectral = self.spectral.finish();
+        let bits = self.bit_counts.iter().map(|counts| {
+            let nonzero: u64 = counts.iter().sum(); let mut sum = 0;
+            let v = if self.integer_only && nonzero >= 500 { counts.iter().position(|n| {sum += n; sum >= 8.max(nonzero/10000)}).map(|i|(32-i) as f64) } else {None};
+            InputValue::new(v,"bits","Requires 500 nonzero exact integer samples in first 30s; float conversion is not inferred")
+        }).collect();
+        let source = self
+            .source
+            .finish(cutoff, cliff, self.quiet.finish(), bits, control)?;
+        let resample_wall = if spectral.resampling.candidates.is_empty()
+            || spectral.resampling.candidates.iter().any(|c| c.eligible)
+        {
+            Some(
+                spectral
+                    .ordered_resampling_hit
+                    .as_ref()
+                    .is_some_and(|h| h.mode == "wall"),
+            )
+        } else {
+            None
+        };
+        let void_verified = source.void_profile.rms_dbfs.value;
+        let adaptive =
+            adaptive_segment_wall(cutoff, cliff, void_verified, resample_wall, self.rate);
+        Ok(ReferenceInputs {
+            header: crate::reference_spectral::header_observations(
+                self.frames as f64 / self.rate as f64,
+                false,
+                None,
+                None,
+                None,
+                "",
+            ),
+            spectral,
+            source,
             version: REFERENCE_INPUT_VERSION,
             method: REFERENCE_INPUT_METHOD.into(),
             reference_commit: "c6ecce2296256b516709d87088896d1be913908c".into(),
@@ -404,14 +509,14 @@ impl ReferenceThird {
                 probes,
                 classic_wall_hz: 16500.0,
                 classic_vote,
-                adaptive_wall_hz: adaptive_segment_wall(cutoff, cliff, None, None, self.rate),
+                adaptive_wall_hz: adaptive,
                 nearest_reference_wall: nearest,
             },
             aac_winner,
             aac_bases: self.aac,
             vorbis_winner,
             vorbis_reconstructed_channels: self.vorbis,
-        }
+        })
     }
 }
 

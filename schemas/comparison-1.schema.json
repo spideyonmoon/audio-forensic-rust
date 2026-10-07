@@ -1,0 +1,199 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:audio-forensic:comparison:1",
+  "$defs": {
+    "ComparisonReport": {
+      "type": "object",
+      "properties": {
+        "comparison_schema_version": {
+          "const": "audio-forensic-comparison-v1"
+        },
+        "method_id": {
+          "const": "python-c6ecce2-reference-tuple-v1"
+        },
+        "status": {
+          "enum": [
+            "available",
+            "unavailable",
+            "incompatible"
+          ]
+        },
+        "winner_input_index": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 18446744073709551615
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "criteria": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "caveats": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ranking": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/ComparisonEntry"
+          }
+        }
+      },
+      "required": [
+        "comparison_schema_version",
+        "method_id",
+        "status",
+        "winner_input_index",
+        "criteria",
+        "caveats",
+        "ranking"
+      ],
+      "additionalProperties": false
+    },
+    "ComparisonEntry": {
+      "type": "object",
+      "properties": {
+        "input_index": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 18446744073709551615
+        },
+        "source": {
+          "type": "string"
+        },
+        "rank": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 18446744073709551615
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "winner": {
+          "type": "boolean"
+        },
+        "key": {
+          "$ref": "#/$defs/ComparisonKey"
+        },
+        "missing_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "input_index",
+        "source",
+        "rank",
+        "winner",
+        "key",
+        "missing_fields"
+      ],
+      "additionalProperties": false
+    },
+    "ComparisonKey": {
+      "type": "object",
+      "properties": {
+        "available": {
+          "type": "boolean"
+        },
+        "main_score": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": -2147483648,
+              "maximum": 2147483647
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "rate_history_flag": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "cutoff_hz": {
+          "anyOf": [
+            {
+              "type": "number",
+              "minimum": -1.7976931348623157e+308,
+              "maximum": 1.7976931348623157e+308
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "depth_category": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 255
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "legacy_dr_integer": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": -2147483648,
+              "maximum": 2147483647
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "precision_times_rate": {
+          "anyOf": [
+            {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 18446744073709551615
+            },
+            {
+              "type": "null"
+            }
+          ]
+        }
+      },
+      "required": [
+        "available",
+        "main_score",
+        "rate_history_flag",
+        "cutoff_hz",
+        "depth_category",
+        "legacy_dr_integer",
+        "precision_times_rate"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "$ref": "#/$defs/ComparisonReport"
+}

@@ -1,0 +1,245 @@
+{
+  "cases": [
+    {
+      "main": 0,
+      "resample": 0,
+      "fake": false,
+      "label": "GENUINE",
+      "text": "✓  No strong lossy indicators detected — source history unverified"
+    },
+    {
+      "main": 0,
+      "resample": 44100,
+      "fake": false,
+      "label": "SUSPICIOUS",
+      "text": "⚠  Sample-rate counterfeit — upsampled from 44.1 kHz (fake hi-res)"
+    },
+    {
+      "main": 0,
+      "resample": 0,
+      "fake": true,
+      "label": "SUSPICIOUS",
+      "text": "⚠  Fake hi-res — 96 kHz container but bandwidth ends at 20.0 kHz (upsampled)"
+    },
+    {
+      "main": 10,
+      "resample": 0,
+      "fake": false,
+      "label": "GENUINE",
+      "text": "✓  No strong lossy indicators detected — source history unverified"
+    },
+    {
+      "main": 10,
+      "resample": 44100,
+      "fake": false,
+      "label": "SUSPICIOUS",
+      "text": "⚠  Sample-rate counterfeit — upsampled from 44.1 kHz (fake hi-res)"
+    },
+    {
+      "main": 10,
+      "resample": 0,
+      "fake": true,
+      "label": "SUSPICIOUS",
+      "text": "⚠  Fake hi-res — 96 kHz container but bandwidth ends at 20.0 kHz (upsampled)"
+    },
+    {
+      "main": 11,
+      "resample": 0,
+      "fake": false,
+      "label": "LIKELY_GENUINE",
+      "text": "✓  Consistent with genuine lossless source"
+    },
+    {
+      "main": 11,
+      "resample": 44100,
+      "fake": false,
+      "label": "SUSPICIOUS",
+      "text": "⚠  Sample-rate counterfeit — upsampled from 44.1 kHz (fake hi-res)"
+    },
+    {
+      "main": 11,
+      "resample": 0,
+      "fake": true,
+      "label": "SUSPICIOUS",
+      "text": "⚠  Fake hi-res — 96 kHz container but bandwidth ends at 20.0 kHz (upsampled)"
+    },
+    {
+      "main": 30,
+      "resample": 0,
+      "fake": false,
+      "label": "LIKELY_GENUINE",
+      "text": "✓  Consistent with genuine lossless source"
+    },
+    {
+      "main": 30,
+      "resample": 44100,
+      "fake": false,
+      "label": "SUSPICIOUS",
+      "text": "⚠  Sample-rate counterfeit — upsampled from 44.1 kHz (fake hi-res)"
+    },
+    {
+      "main": 30,
+      "resample": 0,
+      "fake": true,
+      "label": "SUSPICIOUS",
+      "text": "⚠  Fake hi-res — 96 kHz container but bandwidth ends at 20.0 kHz (upsampled)"
+    },
+    {
+      "main": 31,
+      "resample": 0,
+      "fake": false,
+      "label": "CAUTION",
+      "text": "~  Minor spectral quirks — possibly legitimate"
+    },
+    {
+      "main": 31,
+      "resample": 44100,
+      "fake": false,
+      "label": "SUSPICIOUS",
+      "text": "⚠  Sample-rate counterfeit — upsampled from 44.1 kHz (fake hi-res)"
+    },
+    {
+      "main": 31,
+      "resample": 0,
+      "fake": true,
+      "label": "SUSPICIOUS",
+      "text": "⚠  Fake hi-res — 96 kHz container but bandwidth ends at 20.0 kHz (upsampled)"
+    },
+    {
+      "main": 54,
+      "resample": 0,
+      "fake": false,
+      "label": "CAUTION",
+      "text": "~  Minor spectral quirks — possibly legitimate"
+    },
+    {
+      "main": 54,
+      "resample": 44100,
+      "fake": false,
+      "label": "SUSPICIOUS",
+      "text": "⚠  Sample-rate counterfeit — upsampled from 44.1 kHz (fake hi-res)"
+    },
+    {
+      "main": 54,
+      "resample": 0,
+      "fake": true,
+      "label": "SUSPICIOUS",
+      "text": "⚠  Fake hi-res — 96 kHz container but bandwidth ends at 20.0 kHz (upsampled)"
+    },
+    {
+      "main": 55,
+      "resample": 0,
+      "fake": false,
+      "label": "SUSPICIOUS",
+      "text": "⚠  Strong lossy indicators — probable transcode"
+    },
+    {
+      "main": 55,
+      "resample": 44100,
+      "fake": false,
+      "label": "SUSPICIOUS",
+      "text": "⚠  Sample-rate counterfeit — upsampled from 44.1 kHz (fake hi-res)"
+    },
+    {
+      "main": 55,
+      "resample": 0,
+      "fake": true,
+      "label": "SUSPICIOUS",
+      "text": "⚠  Fake hi-res — 96 kHz container but bandwidth ends at 20.0 kHz (upsampled)"
+    },
+    {
+      "main": 85,
+      "resample": 0,
+      "fake": false,
+      "label": "SUSPICIOUS",
+      "text": "⚠  Strong lossy indicators — probable transcode"
+    },
+    {
+      "main": 85,
+      "resample": 44100,
+      "fake": false,
+      "label": "SUSPICIOUS",
+      "text": "⚠  Sample-rate counterfeit — upsampled from 44.1 kHz (fake hi-res)"
+    },
+    {
+      "main": 85,
+      "resample": 0,
+      "fake": true,
+      "label": "SUSPICIOUS",
+      "text": "⚠  Fake hi-res — 96 kHz container but bandwidth ends at 20.0 kHz (upsampled)"
+    },
+    {
+      "main": 86,
+      "resample": 0,
+      "fake": false,
+      "label": "LIKELY_LOSSY",
+      "text": "✗  Lossy transcode detected — fake lossless (high certainty)"
+    },
+    {
+      "main": 86,
+      "resample": 44100,
+      "fake": false,
+      "label": "LIKELY_LOSSY",
+      "text": "✗  Lossy transcode detected — fake lossless (high certainty)"
+    },
+    {
+      "main": 86,
+      "resample": 0,
+      "fake": true,
+      "label": "LIKELY_LOSSY",
+      "text": "✗  Lossy transcode detected — fake lossless (high certainty)"
+    },
+    {
+      "main": 100,
+      "resample": 0,
+      "fake": false,
+      "label": "LIKELY_LOSSY",
+      "text": "✗  Lossy transcode detected — fake lossless (high certainty)"
+    },
+    {
+      "main": 100,
+      "resample": 44100,
+      "fake": false,
+      "label": "LIKELY_LOSSY",
+      "text": "✗  Lossy transcode detected — fake lossless (high certainty)"
+    },
+    {
+      "main": 100,
+      "resample": 0,
+      "fake": true,
+      "label": "LIKELY_LOSSY",
+      "text": "✗  Lossy transcode detected — fake lossless (high certainty)"
+    }
+  ],
+  "rounding": [
+    0,
+    3,
+    6,
+    10,
+    13,
+    16,
+    19,
+    22,
+    26,
+    29,
+    32,
+    35,
+    39,
+    42,
+    45
+  ],
+  "net7": {
+    "lossy": 7,
+    "natural": 0,
+    "net": 7,
+    "max": 14,
+    "main": 22,
+    "heuristic": 22,
+    "raw_lossy_pct": 50.0,
+    "label": "LIKELY_GENUINE",
+    "text": "✓  Consistent with genuine lossless source",
+    "cassette": 30,
+    "cassette_hiss": false,
+    "vinyl": false
+  }
+}

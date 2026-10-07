@@ -71,9 +71,10 @@ def check() -> None:
     for task, dependencies, _ in board:
         assert task in task_ids and task not in graph, task
         graph[task] = re.findall(r"\b(?:P|F|A)\d+[a-z]?\b", dependencies)
-    # The board abbreviates this acceptance gate as P02–P07 plus child tasks.
+    # Initial launch excludes owner-deferred F02; its future scope stays mapped.
+    # The board abbreviates this gate as P02–P07 plus required child tasks.
     graph["P08"] = ["P02", "P03", "P03a", "P04a", "P04b", "P04c",
-                    "P05", "P06", "P07", "F01", "F02"]
+                    "P05", "P06", "P07", "F01"]
     def visit(task, path):
         assert task in graph, ("missing board dependency", task)
         assert task not in path, ("dependency cycle", path, task)

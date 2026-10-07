@@ -1,0 +1,22 @@
+{
+  "file": "seek-long.m4a",
+  "frames": 100000,
+  "rate": 48000,
+  "bits": 24,
+  "channels": 2,
+  "pcm_sha256": "38fccac67658ad144343dc9e42525565d5daa36b2d87ead545e29b9b3589f299",
+  "file_sha256": "86497cbe11190b0cddac9ca7525b605321e3574232e328a43a958aacabc71b1a",
+  "encoder_command": [
+    "ffmpeg",
+    "-v",
+    "error",
+    "-nostdin",
+    "-y",
+    "-i",
+    "C:\\Users\\Bishal\\AppData\\Local\\Temp\\tmptx4kiaim\\seek.wav",
+    "-c:a",
+    "alac",
+    "tests\\fixtures\\alac\\seek-long.m4a"
+  ],
+  "ffmpeg": "ffmpeg version 7.1.1-full_build-www.gyan.dev Copyright (c) 2000-2025 the FFmpeg developers"
+}

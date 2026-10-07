@@ -85,6 +85,34 @@ def check(actual,e):
         assert raw['legacy_walled_probes']==wall and raw['active_probes']==total and raw['legacy_majority']==majority
 
 
+
+def check_profiles(actual,audio,rate):
+    from audio_forensic import calculate_autocorrelation,calculate_temporal_variance
+    r=actual['reference_inputs'];p=r['source'];mid=audio[:,0] if audio.shape[1]==1 else (audio[:,0]+audio[:,1])/np.float32(2)
+    eng=SpectralEngine(Path('generated.wav'),rate,channels=audio.shape[1]);frames=eng._compute_frames(mid);active=frames[eng._active_frame_mask(frames)];bins=eng._freq_bins()
+    s=r['spectral'];cut=r['base']['cutoff_p95_hz']['value']
+    if len(active)>=4:
+        if s['banding']['value'] is not None:near(s['banding']['value'],eng._banding_score(active,bins,cut),.001,'banding')
+        if s['sparsity']['value'] is not None:near(s['sparsity']['value'],eng._spectral_sparsity(active,bins,cut),.001,'sparsity')
+        if s['envelope_correlation']['value'] is not None:near(s['envelope_correlation']['value'],eng._ultrasonic_envelope_correlation(active,bins),.001,'envelope')
+        assert s['lpf_detected']==bool(eng._lpf_scan(active,bins)[0])
+        if audio.shape[1]==2 and s['side_anomaly']['value'] is not None:
+            side=(audio[:,0]-audio[:,1])/np.float32(2)
+            near(s['side_anomaly']['value'],eng._side_channel_anomaly(frames,side,bins),.001,'side anomaly')
+    assert p['captured_interval']['end_frame']==min(len(mid),180*rate)
+    assert p['cassette_profile']['interval']['end_frame']==min(len(mid),60*rate)
+    assert p['effective_bits_interval']['end_frame']==min(len(mid),30*rate)
+    for field,cap in [('void_profile',180),('cassette_profile',60),('vinyl_profile',180)]:
+        v=p[field]
+        if v['rms_dbfs']['value'] is None:continue
+        y=eng._fft_band_extract(mid[:cap*rate],v['lower_hz'],v['upper_hz'])
+        near(v['rms_dbfs']['value'],20*np.log10(float(np.sqrt(np.mean(y*y)))+1e-12),.05,field+' RMS')
+        near(v['std_dbfs']['value'],20*np.log10(float(np.std(y))+1e-12),.05,field+' std')
+        if v['absolute_lag_correlation']['value'] is not None:near(v['absolute_lag_correlation']['value'],calculate_autocorrelation(y,v['lag_frames']),.003,field+' lag')
+        if v['temporal_rms_std_db']['value'] is not None:near(v['temporal_rms_std_db']['value'],calculate_temporal_variance(y,rate),.05,field+' temporal')
+    assert p['quiet_profile']['complete_blocks']<=300
+    assert all(v['value'] is None for v in p['effective_bits_by_channel']) # generated float WAV
+
 if __name__=='__main__':
     parser=argparse.ArgumentParser();parser.add_argument('--freeze',action='store_true');parser.add_argument('--reader');args=parser.parse_args()
     WORK.mkdir(parents=True,exist_ok=True)
@@ -94,7 +122,7 @@ if __name__=='__main__':
         ORACLE.write_text(json.dumps(out,indent=2,allow_nan=False)+'\n',encoding='utf-8');print('Frozen streaming oracle')
     if args.reader:
         from validate_report_schema import offline_validator,validate_report
-        v=offline_validator(json.loads((ROOT/'schemas/reference-inputs-1.schema.json').read_text(encoding='utf-8')))
+        v=offline_validator(json.loads((ROOT/'schemas/reference-inputs-2.schema.json').read_text(encoding='utf-8')))
         native=offline_validator(json.loads((ROOT/'schemas/analysis-report-0.18.0.schema.json').read_text(encoding='utf-8')))
         cases=json.loads(ORACLE.read_text(encoding='utf-8'))['cases']
         summary=[]
@@ -103,7 +131,7 @@ if __name__=='__main__':
             path=WORK/f'{name}.wav';write_wav(path,audio,rate)
             result=subprocess.run([str(Path(args.reader).resolve()),str(path)],capture_output=True,text=True,timeout=300,check=True)
             actual=json.loads(result.stdout);(WORK/f'{name}.json').write_text(result.stdout,encoding='utf-8')
-            v.validate(actual);validate_report(actual['measurement'],native);check(actual,case)
+            v.validate(actual);validate_report(actual['measurement'],native);check(actual,case);check_profiles(actual,audio,rate)
             summary.append({'name':name,'passed':True,'frames':len(audio),'active':actual['reference_inputs']['base']['active_frames'],
                 'stride':actual['reference_inputs']['scatter']['sampling_stride']})
             # Schema rejection controls: forbid native lookalikes, wrong methods,
@@ -111,7 +139,7 @@ if __name__=='__main__':
             from copy import deepcopy
             mutations=[]
             bad=deepcopy(actual);bad['reference_inputs']['method']='native-channel-observations';mutations.append(bad)
-            bad=deepcopy(actual);bad['reference_inputs']['version']=2;mutations.append(bad)
+            bad=deepcopy(actual);bad['reference_inputs']['version']=1;mutations.append(bad)
             bad=deepcopy(actual);bad['reference_inputs']['processing_passes']=2;mutations.append(bad)
             bad=deepcopy(actual);bad['reference_inputs']['base']['cutoff_p95_hz'].update(value=None,unavailable_reason=None);mutations.append(bad)
             bad=deepcopy(actual);bad['measurement']['status']='cancelled';mutations.append(bad)

@@ -1,11 +1,47 @@
 # Rust port decisions
 
-## Current delivery priority — 2026-10-05
+## Current delivery priority — 2026-10-06
+
+Validation records now live under `docs/validation/`; see its README index for
+bare historical filenames used below. Host guidance is `docs/CORE_INTEGRATION.md`.
+
+Product correction: finish the standalone Audio Forensics library/CLI through
+P07/P08/P09, then begin Alfred at A01. Alfred is a file/folder-first Android
+workspace consuming this independent library, initially co-located and later
+extracted to its own repository. Shared input/jobs/navigation/storage are app
+infrastructure; Forensics is one feature. Spectrogram and Compare are independent
+features reusing P06/P07 now without duplication/refactoring. Spectrogram's
+broader competitive viewing/exploration scope is not exhausted by P06 images;
+A06a is its initial slice. A01 must define long-term reusable spectrogram and
+comparison ownership/contracts/tests when Alfred moves repositories, preserving
+independent core consumers. Future expansion needs named requirements packets.
+No other feature implementation is authorized now.
+See ALFRED_ARCHITECTURE.md and revised A cards; earlier application assumptions
+are superseded, historical validation remains intact.
+
+P05 in engine 0.31.0 implements a separate reference assessment v1 from bound
+P04 v2 inputs: all 34 rule rows, source/depth candidates, selective vetoes,
+Python rounding, excluded D05/D06/D07 effects and missing-input propagation.
+The pure saved-result API preserves native measurement JSON. Exact boundary
+parsing uses serde_json float_roundtrip. See REFERENCE_ASSESSMENT_VALIDATION.md
+and task-results/P05.md for evidence and the rejected/corrected oracle history.
+P07 implements product reporting/comparison in 0.32.0. P08 acceptance is complete:
+271 Rust tests and finite differential/schema/workflow/unsupported-DSD controls
+passed; see docs/validation/CORE_RELEASE_VALIDATION.md and task-results/P08.md.
+P09 accepted the scoped standalone 0.32.0 library/CLI on 2026-10-06 after
+verifying the unchanged frozen tree/binary and P08 receipts and reviewing product,
+policy and host/resource risks. Fresh inventory/version/saved-render/comparison
+checks passed; no production change or repeated full regression. See
+task-results/P09.md and the release ledger for accepted limits. Next is A01;
+no Android implementation or publication is implied.
+
 
 Follow `ROADMAP.md` and `ROADMAP_TASKS.md`: faithful rewrite and offline Alfred
 Android app first, endgame improvements separately. Android is now authorized;
-older deferral entries are historical. Required formats are FLAC/WAV, ALAC/M4A
-and DSD. P01 freezes numerical/output fidelity and deviations; P05 implements a
+older deferral entries are historical. Initial required formats are FLAC/WAV and ALAC/M4A. The owner explicitly
+deferred F02/DSD beyond the first release and Alfred launch on 2026-10-06.
+The frozen DSD scope remains a later requirement, not shipped support.
+P01 freezes numerical/output fidelity and deviations; P05 implements a
 separate uncalibrated reference assessment, keeping measurement ancestry/index
 unchanged. P01 is complete: `PYTHON_PARITY.md` maps 155 fields/139 methods and
 `RELEASE_CONTRACT.md` v1 freezes domains, tolerances, deviations and format scope.
@@ -39,7 +75,41 @@ source/controls precede Rust implementation; undefined tails/windows and upstrea
 queue quirks are explicit. Overall DR labels differ from Python's first channel
 label; retain both with attribution for P05/P07. See TOOL_STATISTICS_VALIDATION.md.
 P03/P03a acceptance is complete; see task-results/P03.md and task-results/P03a.md.
-P04c is complete in engine 0.26.0; next delivery task: P04a, then P04b.
+P04a/P04b are implemented in engine 0.27.0; reference-input schema v2 adds
+spectral/header/source-profile adapters and closes adaptive-wall dependencies.
+See REFERENCE_PROFILES_VALIDATION.md for pinned comparisons, deviations and
+384kHz storage bounds. Native measurement schema/policy remains unchanged.
+F01 in engine 0.28.0 adds offline native ALAC in M4A to the existing APIs,
+16/24-bit mono/stereo at 8–384 kHz, with both moov layouts. Bounded preflight
+checks native cookies and table/mdat geometry before the locked MP4 reader;
+unknown source length is discovered by seeking to end. P02 metadata version 1
+exposes ilst/freeform text, numeric tags and artwork/opaque descriptors. Native
+measurement schema/policy stays unchanged; AAC/DRM/fragmentation/ambiguous tracks
+remain unsupported. ALAC has no embedded PCM checksum; exact independent and
+cross-pass PCM hashes are separate checks. See ALAC_VALIDATION.md and
+task-results/F01.md for actual acceptance results and explicit limits.
+F01 acceptance completed 2026-10-06: exact generated PCM, bounded metadata,
+structured source/failure controls, no-CLI/MSRV and Android target checks passed.
+Android linking and device validation remain separate gates.
+Next delivery task: A01; P09 accepted 0.32.0 and F02/DSD remains deferred beyond first release/launch.
+P06 completed 2026-10-06 after separate request: engine 0.29.0 adds bounded optional
+same-two-pass spectrogram collection and offline rendering, artifact v1/method
+`hann1024-power-pair-merge-v1`. Hann1024/hop512 replaces Python's SoX pixels,
+with explicit mono/stereo-mid basis, power normalization, scope and time-bucket
+coarsening. Native measurement schema/policy is unchanged; artifact/export
+failure is separate. See SPECTROGRAM_VALIDATION.md for A06 axes/resource/export
+contract and actual acceptance results. The owner requested a follow-up in
+engine **0.30.0**: composition and lossless PNG encoding now belong to Rust,
+with embedded antialiased text, full stream/FFT header including same-pass
+scoped bitrate, calibrated frequency/time ticks/grid, ember-v1 dB legend and
+native-channel p95 overlays. Bounded canvases are 1600×900 / 2560×1440 default /
+3840×2160, 300-dpi metadata. Pixel quality changes do not alter v1 spectral data
+or FFT precision. P07/A06 reuse the engine image and own workflow/storage/sharing.
+See `task-results/P06-PNG.md`. This supersedes the original app-owned PNG decision.
+Focused final-source Rust checks passed 78 tests across two runs; serialized
+generated full/prefix/schema/hash/raster controls, MSRV Clippy with/without CLI
+and Android target compilation passed. Android linking/device checks remain
+separate. Next default delivery task is A01; P09 accepted 0.32.0 and F02 is deferred.
 The owner supplied independent MQA work during P01; see `task-results/P01-MQA.md`.
 E09 reviews that existing prototype/evidence and does not block the app.
 
@@ -56,8 +126,8 @@ probes and transform winner/support adapters preserve native report/API values.
 Actual pinned Vorbis reconstructs L/R after widening f32 M/S. The opt-in third
 pass verifies the same PCM/prefix/source; ordinary APIs remain two-pass. Segment
 PCM uses a two-second ring rather than a full track or all requested clips.
-Adaptive-wall dependencies await P04a/P04b; no STFT noise substitute or ancestry
-score is added. Read REFERENCE_INPUTS_VALIDATION.md and task-results/P04c.md.
+In 0.27.0 adaptive-wall dependencies consume P04a/P04b inputs; no STFT noise
+substitute or ancestry score is added. Read REFERENCE_INPUTS_VALIDATION.md and task-results/P04c.md.
 
 ## Python reference
 
@@ -458,14 +528,16 @@ calibrated ancestry/source profiles before displaying supported measurements.
 Those claims retain their separate corpus gates. Further hardening is follow-up
 work unless a concrete defect blocks the documented measurement scope.
 
-After the core gates pass, add Kotlin bindings and the UI: file selection,
-background analysis, progress/cancellation, findings and local report storage.
+After P09, follow A01–A08 for Alfred shared workspace/input/jobs and separate
+feature adapters. The Android app consumes the core; its home is selection and
+applicable operations, with Forensics, Spectrogram and Compare independently
+reachable. Keep Kotlin/native adapters and local app storage outside the core.
 Then validate on actual Android hardware for memory, runtime, lifecycle and
 thermal behavior. Desktop benchmarks cannot establish phone performance.
 
 ## Collection
 
-See [TEST_CORPUS.md](TEST_CORPUS.md) for the shopping list and collection notes.
+See [TEST_CORPUS.md](docs/TEST_CORPUS.md) for the shopping list and collection notes.
 Begin with a small development collection; do not wait for a large corpus to
 start engineering. Reserve unseen source groups before detector tuning begins.
 
@@ -473,3 +545,18 @@ Validation references:
 
 - [Grouped evaluation](https://scikit-learn.org/stable/modules/cross_validation.html#cross-validation-iterators-for-grouped-data)
 - [Avoiding test-data leakage](https://scikit-learn.org/stable/common_pitfalls.html#data-leakage)
+
+## P07 product workflows — 2026-10-06
+
+Engine 0.32.0 exposes `audio-forensic-product-v1` and comparison v1, keeping
+measurement schema/policy/ancestry unchanged. Combined collectors share one
+source/worker/deadline and three verified PCM passes; native APIs stay two-pass.
+Actual no-decode metadata info, deterministic mixed batch, prefix/fast, saved
+rendering, all 155 field aliases and collision-safe P06 PNG workflow are
+implemented. Comparison uses the pinned qualified tuple; unlike versions,
+reference domains or duration/EOF coverage have no winner. Product/info limits
+are 32 inputs/results and saved documents 64 MiB; exports retain 32 attempts.
+See [workflows](docs/PRODUCT_REPORT.md), task-results/P07.md and
+docs/validation/PRODUCT_WORKFLOW_VALIDATION.md for checks and limitations.
+The former proposed `alfred-product-v1` is not emitted; this independent feature
+envelope contains no Alfred shared workspace/job/storage state.

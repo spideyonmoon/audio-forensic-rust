@@ -28,7 +28,9 @@ agreement or full-file checksum integrity. Blocking I/O remains cooperative.
 These are finite supported text adapters, not a claim to decode every possible
 ancillary/binary metadata structure. Opaque structures make text searches
 incomplete; their descriptors prevent silently presenting a complete negative.
-M4A/DSF/DFF and other unsupported signatures return structured unsupported now.
+F01 extends version 1 to bounded M4A ilst/freeform metadata; see
+[ALAC validation](ALAC_VALIDATION.md) for current support and limits. DSF/DFF
+remain F02. The P02 checks below are historical WAV/FLAC checks.
 Actual native codec comes from the signature/format header, regardless of name.
 
 `named_tags` refers to raw entry indices for title, album, date, album artist,
