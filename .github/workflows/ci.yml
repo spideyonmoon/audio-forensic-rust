@@ -1,5 +1,9 @@
 name: Rust core
-on: [push, pull_request]
+on:
+  push:
+    paths-ignore: ['apps/alfred/**', '**/*.md', '.github/workflows/alfred-android.yml']
+  pull_request:
+    paths-ignore: ['apps/alfred/**', '**/*.md', '.github/workflows/alfred-android.yml']
 jobs:
   test:
     strategy:

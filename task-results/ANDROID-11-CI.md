@@ -18,3 +18,18 @@ Initial Bash syntax check hit sandbox process denial; authorized retry recorded
 below. No local Gradle/Cargo rebuild, core regression or phone test was run.
 
 Remote build/emulator results and publication status will be recorded below.
+
+Bash syntax passed on authorized retry. Isolated source-only staging and staged
+whitespace passed; no ignored build/audio/evidence paths were staged. Commit is
+on local `codex/android11-ci`; current checkout and normal staging area preserved.
+GitHub rejected push because the OAuth token lacks `workflow` scope. No branch
+was published and no CI job was started. `gh auth refresh -h github.com -s workflow`
+is awaiting owner browser device authorization. After authorization, push this
+branch and inspect the Alfred Android compatibility run, repairing any failures.
+No Android 11 build/runtime success is claimed yet.
+
+Owner completed workflow authorization; branch publication succeeded. First
+Actions run 37631085115 failed before compilation: setup-android requested the
+retired SDK `tools` package. Explicit `platform-tools` configuration repairs
+that setup; retry pending. The redundant unchanged-core run was canceled;
+core CI now ignores app-only/documentation changes. No private audio uploaded.

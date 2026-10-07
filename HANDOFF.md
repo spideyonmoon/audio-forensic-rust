@@ -20,6 +20,13 @@ phone checks run. Remote CI dispatch/results are pending in
 core/private evidence is untouched. Next: publish source-only compatibility
 branch, inspect Actions builds/matrix and repair failures before A03.
 
+Publication attempted: local `codex/android11-ci` contains the source-only app,
+contract and workflow; normal index/checkout unchanged. GitHub rejected the push
+because the OAuth login lacks `workflow` scope. No remote CI is running. A
+`gh auth refresh -h github.com -s workflow` process is awaiting owner browser
+authorization; retry push after authorization. Bash syntax passed on authorized
+retry; staged whitespace passed. CI compilation/lint/emulator remain unverified.
+
 ## A02 completion — 2026-10-07
 
 Owner requested complete A02. Five-module Compose scaffold and separate native
