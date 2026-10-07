@@ -1,7 +1,8 @@
-"""CI scaffold install/start/JNI smoke only; no analysis or device acceptance."""
+"""CI workspace and generated-input JNI acceptance; not physical acceptance."""
 from pathlib import Path
 import subprocess
 import time
+import json
 import xml.etree.ElementTree as ET
 
 
@@ -40,5 +41,19 @@ try:
     else:
         raise AssertionError("Workspace/JNI bootstrap did not become ready")
     (output / "device.txt").write_text(adb("shell", "getprop"))
+    adb("shell", "am", "start", "-W", "-n", "dev.alfred.workspace.debug/dev.alfred.workspace.NativeSmokeActivity")
+    deadline = time.monotonic() + 180
+    while time.monotonic() < deadline:
+        try:
+            receipt = adb("shell", "run-as", "dev.alfred.workspace.debug", "cat", "files/native-smoke.json")
+            parsed = json.loads(receipt)
+        except (subprocess.CalledProcessError, json.JSONDecodeError):
+            time.sleep(2)
+            continue
+        (output / "native-smoke.json").write_text(receipt)
+        assert parsed["passed"], parsed
+        break
+    else:
+        raise AssertionError("Generated-input JNI smoke timed out")
 finally:
     (output / "logcat.txt").write_text(adb("logcat", "-d"))

@@ -180,7 +180,7 @@ unless the card explicitly permits work against the frozen contract.
 | P09 | Core release review and finite acceptance decision | Astra | P08 | DONE — ACCEPT 2026-10-06 |
 | A01 | Alfred shared architecture and feature/native integration contract | Astra | P09 | DONE 2026-10-07 |
 | A02 | Alfred workspace scaffold and reproducible builds | Sol | A01 | DONE 2026-10-07 |
-| A03 | Audio Forensics native adapter and linked smoke | Astra | A02 | TODO |
+| A03 | Audio Forensics native adapter and linked smoke | Astra | A02 | IN_PROGRESS |
 | A04 | Shared selection, SAF file/folder input and bounded staging | Sol | A02 | TODO |
 | A05 | Shared jobs, background lifecycle, progress/cancel and retention | Sol | A03, A04 | TODO |
 | A06 | Audio Forensics feature results/history/export integration | Sol | A05, P07 | TODO |

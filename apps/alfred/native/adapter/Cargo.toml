@@ -8,7 +8,11 @@ publish = false
 
 [lib]
 name = "alfred_native"
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 audio-forensic = { path = "../../../..", default-features = false }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+sha2 = "0.10"
+jni = "=0.21.1"

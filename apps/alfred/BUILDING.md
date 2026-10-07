@@ -1,6 +1,6 @@
 # Alfred scaffold builds
 
-A02 development scaffold, **0.1.0-a02**, development ID
+A03 development adapter, **0.1.0-a03**, development ID
 `dev.alfred.workspace.debug`. Android 11–16: min 30, compile/target 36.
 The installable scaffold supplies selection and independent feature routes;
 it does not yet analyze audio, enumerate folders or persist grants/results.
@@ -70,8 +70,8 @@ Build driver links API 30 arm64 with the exact NDK clang and explicit 16 KiB ELF
 alignment, retains panic=unwind and packages uncompressed native code. APK
 verification inspects every `.so`, all ELF LOAD segments and actual ZIP offsets,
 then runs zipalign and apksigner. Missing native code fails preBuild. The bridge
-only exposes a caught-unwind version bootstrap; native load/runtime, handles,
-exact JSON and generated-input smoke belong to A03/A07.
+exposes caught-unwind worker handles and exact JSON transport;
+see [native adapter](NATIVE_ADAPTER.md) for ownership and generated-input checks.
 
 Output: `app/build/outputs/apk/debug/app-debug.apk`, with `alignment.json` beside it.
 `build/receipts/build.json` records core HEAD, dirty paths, toolchain, Cargo hashes
@@ -96,7 +96,7 @@ receipts, retained seven days. No private audio is used or uploaded.
 
 The emulator matrix covers API 30–36 (Android 11–16, including Android 12L),
 with two concurrent emulators. It checks install, workspace rendering and JNI
-bootstrap success; analysis/SAF/jobs are still later packets. These are x86_64
+generated-input product/metadata/PNG acceptance; SAF/jobs remain later packets. These are x86_64
 emulator checks, not ARM64 phone or 16 KiB runtime acceptance. A07 still measures
 physical memory/background behavior. Common admission limits remain unchanged;
 no Hot 11S-specific chunking or throttling is introduced.

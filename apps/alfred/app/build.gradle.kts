@@ -16,7 +16,7 @@ android {
         minSdk = 30
         targetSdk = 36
         versionCode = 1
-        versionName = "0.1.0-a02"
+        versionName = "0.1.0-a03"
         ndk { abiFilters += nativeAbi }
     }
     signingConfigs.getByName("debug") {
@@ -28,6 +28,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
     sourceSets["main"].jniLibs.srcDir(layout.buildDirectory.dir("generated/jniLibs"))
+    sourceSets["debug"].assets.srcDir(layout.buildDirectory.dir("generated/smokeAssets"))
     packaging { jniLibs.useLegacyPackaging = false }
 }
 kotlin { compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) } }
@@ -41,6 +42,14 @@ val requireNative by tasks.registering {
     }
 }
 tasks.named("preBuild") { dependsOn(requireNative) }
+// Public generated signals only. This harness/activity is absent from release.
+val smokeAssets by tasks.registering(Copy::class) {
+    from(rootProject.file("../../tests/fixtures")) {
+        include("noise16.wav", "noise16.flac", "alac/8000-16-1-tail.m4a")
+    }
+    into(layout.buildDirectory.dir("generated/smokeAssets"))
+}
+tasks.matching { it.name == "mergeDebugAssets" }.configureEach { dependsOn(smokeAssets) }
 dependencies {
     implementation(project(":shared"))
     implementation(project(":feature-forensics"))
