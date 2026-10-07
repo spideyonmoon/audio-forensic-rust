@@ -51,6 +51,12 @@ jobs:
           name: alfred-lint
           path: apps/alfred/app/build/reports/lint-results-debug.*
           retention-days: 7
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: alfred-dependency-verification
+          path: apps/alfred/build/reports/dependency-verification/
+          retention-days: 7
   emulator:
     needs: build
     runs-on: ubuntu-24.04

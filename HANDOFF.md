@@ -27,6 +27,16 @@ because the OAuth login lacks `workflow` scope. No remote CI is running. A
 authorization; retry push after authorization. Bash syntax passed on authorized
 retry; staged whitespace passed. CI compilation/lint/emulator remain unverified.
 
+Latest CI: authorization completed and branch pushed. First run 37631085115
+failed on retired SDK `tools`; fixed explicit platform-tools. Retry 37632592927
+linked API-30 ARM64 native code, then failed strict verification on three missing
+Maven metadata pins. Exact upstream files/SHA1 reviewed and SHA256 added, preserving
+all existing pins. Next retry pending; no APK/emulator success yet. Existing A02
+APK verifier regression passed without rebuilding. Core CI 37632592799 passed;
+filters now avoid app-only repeats. Owner raised concern about large diff: audit
+confirmed root core/schema/tests/examples/manifests unchanged; most additions were
+previously untracked A01/A02 scaffold and lock/checksum records, not new DSP work.
+
 ## A02 completion — 2026-10-07
 
 Owner requested complete A02. Five-module Compose scaffold and separate native

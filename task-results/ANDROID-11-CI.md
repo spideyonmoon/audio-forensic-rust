@@ -33,3 +33,12 @@ Actions run 37631085115 failed before compilation: setup-android requested the
 retired SDK `tools` package. Explicit `platform-tools` configuration repairs
 that setup; retry pending. The redundant unchanged-core run was canceled;
 core CI now ignores app-only/documentation changes. No private audio uploaded.
+
+Retry 37632592927 linked ARM64 API-30 native code, then stopped before APK
+assembly on three missing Gradle metadata pins (Guava parent 33.3.1-jre POM,
+JUnit BOM 5.10.2 module, coroutines BOM 1.8.0 POM). Downloaded those exact
+metadata files from Maven Central and matched its published SHA1 before adding
+their SHA256 entries individually. Existing checksums/dependency versions were
+not replaced and strict verification stays enabled. Retry pending. Cross-platform
+APK verifier regression passed on the existing API-34 A02 APK; this does not
+validate the new API-30 APK. Unchanged-core CI run 37632592799 passed.
