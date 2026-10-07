@@ -8,6 +8,7 @@ override it. Validation documents are indexed [under docs](../docs/validation/RE
 - [A01](A01.md)
 - [A01 focused review](A01-review.md)
 - [A02](A02.md)
+- [A03](A03.md)
 - [Android 11 compatibility and CI](ANDROID-11-CI.md)
 - [F01](F01.md)
 - [P01-MQA](P01-MQA.md)

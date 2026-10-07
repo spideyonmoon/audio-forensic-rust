@@ -1,5 +1,22 @@
 # Rust port decisions
 
+## A03 native adapter — 2026-10-08
+
+The app-owned `apps/alfred/native/adapter` now provides JNI byte-array transport,
+one serial cancellable worker, exact payload descriptors and atomic attempt
+publication around the unchanged core probe/product/Spectrogram/Compare APIs.
+Kotlin preserves integer tokens as BigInteger, decimal tokens as BigDecimal and
+original payload bytes. Shared source/storage/history ownership remains A04/A05;
+this does not make the scaffold a complete analysis UI. See
+[adapter contract details](apps/alfred/NATIVE_ADAPTER.md) and
+[A03 checks/current acceptance](task-results/A03.md).
+
+Product admission checks native rate, capture frames, padded FFT and silence
+scratch against the reservation. Full high-rate requests conservatively require
+an explicit prefix even for a header-declared short file, since that declaration
+does not bound actual decoded frames. The accepted core semantics are unchanged;
+A07 still measures physical memory/runtime and validates engineering margins.
+
 ## Android compatibility amendment — 2026-10-07
 
 Owner authorized Android 11–16 (min/native API 30, compile/target 36), including

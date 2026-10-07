@@ -1,5 +1,46 @@
 # Android integration validation
 
+## A03 adapter — 2026-10-08, Android acceptance pending
+
+Implemented only in `apps/alfred/`: one serial worker and nonreused handle
+registry, JNI byte-array controls, exact Kotlin parser/control executor, complete
+probe/product/Spectrogram payload persistence, saved comparison/rendering and
+checked resource admission. The core source, Cargo files, schemas and generated
+fixtures are unchanged. Source: [adapter guide](../../apps/alfred/NATIVE_ADAPTER.md).
+
+Windows Rust 1.85 final focused suite: **8 passed**, zero failed/ignored. The
+two registry tests deterministically exercise source Drop blocked after close,
+busy admission until release, stale tokens, repeated poll/cancel/close, injected
+spawn failure, panic recovery and token exhaustion. Six integration tests cover
+WAV/FLAC/ALAC exact existing PCM hashes, product and all PNG preset paths,
+saved comparison/rendering, AAC-in-M4A marker/DSD unsupported behavior, complete
+120,040-byte retained metadata text via a descriptor, u64-max/null, malformed
+and future versions, reservation limits, changed source, cleanup and PNG failure
+preserving an analyzed report. No oracle was regenerated. Kotlin offline
+compilation, all-target Clippy with warnings denied, formatting, Python smoke
+syntax and frozen-tree/whitespace checks passed.
+
+Product full-scope admission conservatively assumes the 180-second capture at
+the probed native rate even when a header claims a shorter duration. A declaration
+does not enforce an allocation bound if actual PCM is longer. High-rate full
+requests therefore require an explicit prefix; no silent shortening occurs.
+The rate/FFT/frame bound and 512 MiB additional margin are engineering limits,
+not measured physical RSS. Metadata-only probe remains available. A07 measures
+the admitted cases. Shared storage reservation, snapshot/reader lease deletion,
+orphan cleanup and retained input-item mapping are explicit A04/A05 seams.
+
+Initial CI 37643823844 passed Linux host tests, then was intentionally cancelled
+for the final probe-reason/future-version corrections. Subsequent run 37671795459 passed both NDK ABI links, APK build/lint and native
+alignment/signature checks. API 30/31 loaded JNI but the generated-input harness
+failed because debug fixtures were missing. Explicit producer dependencies and
+an APK fixture-byte check now guard this; local asset merge/lint-model generation
+passed with all three files. Final source ce037d3 is under CI 37673381546;
+packaged generated-input runtime acceptance remains pending. A04 is independently
+eligible after A02.
+Exact commands, initial failures and local evidence: [A03](../../task-results/A03.md).
+Physical phone, 16 KiB runtime, SAF/background/history and release acceptance
+remain later gates; no private audio was uploaded.
+
 ## Android 11 compatibility amendment — 2026-10-07
 
 Owner expanded planned support to Android 11–16/API 30–36 and requested GitHub

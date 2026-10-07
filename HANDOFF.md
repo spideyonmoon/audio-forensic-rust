@@ -1,8 +1,49 @@
 # Start here: Audio Forensic Rust
 
-Updated **2026-10-07**. This is the current continuation point. Historical milestone
+Updated **2026-10-08**. This is the current continuation point. Historical milestone
 entries and exact older check totals are preserved in
 [the handoff archive](docs/history/HANDOFF_20261006.md); newer decisions here win.
+
+## A03 handoff — 2026-10-08
+
+**Implementation finished; packaged generated-input runtime acceptance PENDING.**
+Owner wants to move to a cheaper/new A04 thread and conserve usage. Do not repeat
+completed core audits/build matrices. A04 depends on A02 and can proceed while
+this last A03 CI gate completes. A03 must not be marked DONE without runtime success.
+
+Current branch: `codex/a03-native-adapter`. Source through **ce037d3** is committed
+and pushed with explicit owner authorization. Final CI is running:
+https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37673381546.
+Next action: inspect that run, specifically packaged JNI generated-input results.
+If green, mark A03 DONE and advance normal dispatch to A04; otherwise inspect the
+failed job/artifact and fix only the reproducer. No local build remains running.
+
+Implemented: serial native worker/handles, cancellation/source-release admission,
+JNI byte arrays, exact Kotlin JSON/control executor, complete metadata/product/
+Spectrogram payloads, saved compare/render, atomic manifests and memory limits.
+**8 focused Rust tests, all-target Clippy, Kotlin compilation and Android lint
+passed.** Prior run 37671795459 passed both NDK ABI links, APK build/lint and
+ELF/ZIP/signature checks. API 30/31 loaded JNI but failed the debug harness because
+its generated fixtures were absent from the APK. That run was cancelled; the
+fix explicitly schedules asset/lint consumers and adds exact packaged-fixture
+verification. Local merge/lint-model generation passed and all three fixtures
+are present (`target/a03/assets-final.log`). Runtime after this fix is pending.
+
+Earlier failures: Windows default linker (existing gcc/lld shim fixed), PNG
+flush access (fixed, report retained on PNG failure), one Clippy finding (fixed),
+Gradle asset producer/lint dependency (fixed), API-31-only debug handle conversion
+(replaced with checked API-30 conversion). No core or oracle changes. Details:
+[task record](task-results/A03.md), [adapter guide](apps/alfred/NATIVE_ADAPTER.md),
+[validation](docs/validation/ANDROID_INTEGRATION_VALIDATION.md).
+
+Prior-run APKs/receipts are local `target/a03/ci-artifacts/`; they predate the final
+fixture fix and are NOT final acceptance APKs. Original logs and failed API-30
+receipt are under `target/a03/`. These ignored files are not a source backup.
+Core source/Cargo/schema/fixtures, pinned reference and private recordings remain
+unchanged. Original cleanup edits below and in task-results/README.md remain local
+and outside A03 commits. No physical/16 KiB runtime, SAF/jobs/history/UI or release
+acceptance is claimed. Native storage reservations and orphan/lease cleanup are
+explicit A04/A05 integration responsibilities.
 
 ## Main synchronization — 2026-10-07
 
@@ -117,7 +158,7 @@ At that earlier A01 handoff A02 was next. A02 is now complete; A03 is next.
 
 ## Current task and delivery boundary
 
-- Active task: **none**. A02 completed 2026-10-07; A03 is next. No jobs running.
+- Active task: **A03 runtime acceptance pending**; see current entry and CI run above.
 - Next default delivery task: **A03 — Audio Forensics native adapter (Astra)**.
 - **F02/DSD DEFERRED beyond the first standalone release and Alfred launch**,
   owner approved 2026-10-06 to conserve Astra budget. Its frozen DSF/DFF,

@@ -53,7 +53,7 @@ the entire roadmap. If a task spans sessions, resume the same ID and saved state
 
 ## Current dispatch
 
-- **Active task:** none; A02 completed 2026-10-07. No jobs running.
+- **Active task:** A03 implementation complete; generated-input runtime acceptance pending.
 - **Next delivery task:** **A03 — Audio Forensics native adapter and linked smoke (Astra)**.
 - **Owner inputs received:** Redmi 13 4G, Android 16, APK/ADB available;
   FLAC/WAV/ALAC-M4A/DSD; detailed verdict, complete metadata and deep results;
@@ -67,7 +67,7 @@ the entire roadmap. If a task spans sessions, resume the same ID and saved state
 - **Independent MQA work:** existing prototype/corpus at
   `C:\Users\Bishal\Documents\antigravity-dev\mqa`; E09 now READY for a
   named review, not a beta gate. See `task-results/P01-MQA.md`.
-- **Running jobs:** none.
+- **Running jobs:** Android CI 37673381546 on `codex/a03-native-adapter`.
 
 P01 is a completed specification packet, not a completed port. Its frozen
 [parity map](PYTHON_PARITY.md) and [release contract](RELEASE_CONTRACT.md) own

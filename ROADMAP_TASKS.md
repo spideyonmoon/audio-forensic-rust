@@ -398,6 +398,9 @@ Missing SDK/NDK prerequisites remain explicit; no silent approval bypass.
 
 ## A03 — Audio Forensics native adapter
 
+**Status: IN_PROGRESS.** Implementation and local checks passed;
+final Android CI acceptance is tracked in [A03 results](task-results/A03.md).
+
 **Astra; after A02.** Implement A01's app-owned bridge to the existing Rust
 source/job/result APIs and P07 product layers. Keep feature semantics in the
 Forensics adapter and scheduling/lifecycle transport in shared Alfred services.
