@@ -155,6 +155,18 @@ fn saved_product(s: &crate::transport::SavedInput) -> Result<ProductReport> {
     let bytes = storage::load(&s.root, &s.payload)?;
     let text =
         std::str::from_utf8(&bytes).map_err(|_| fail("invalid_request", "Payload is not UTF-8"))?;
+    #[derive(serde::Deserialize)]
+    struct Version {
+        product_schema_version: String,
+    }
+    let version: Version = serde_json::from_str(text)
+        .map_err(|_| fail("invalid_request", "Invalid saved product header"))?;
+    if version.product_schema_version != "audio-forensic-product-v1" {
+        return Err(fail(
+            "unsupported_version",
+            "Unsupported saved product version",
+        ));
+    }
     let mut products = read_product_json(text)
         .map_err(|_| fail("invalid_request", "Invalid saved product binding"))?;
     if products.len() != 1 {
@@ -244,7 +256,11 @@ pub fn run(s: &State) -> Result<Value> {
                 &options(s, start)?,
                 &s.cancel,
             );
-            summary = json!({"status":metadata.status,"technical":technical(&metadata.technical)});
+            let reason = metadata
+                .diagnostics
+                .first()
+                .map(|d| fail(&d.code, &d.message));
+            summary = json!({"status":metadata.status,"technical":technical(&metadata.technical),"reason":reason.map(|e| json!({"code":e.code,"message":e.message}))});
             if r.kind == "probe" {
                 drop(file);
                 payload = out.json("metadata.json", "metadata", "1", &metadata)?;

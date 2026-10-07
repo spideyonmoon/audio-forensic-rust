@@ -226,6 +226,11 @@ fn unsupported_dsd_aac_and_storage_rejections() {
         let r = request(&t.0, &path, Some("forensics"));
         let p = read(&t.0, &run(&b, &r));
         assert_eq!(p["measurement_report"]["status"], "unsupported");
+        let probe = run(&b, &request(&t.0, &path, None));
+        let reason = probe["result"]["summary"]["reason"]["message"]
+            .as_str()
+            .unwrap();
+        assert!(!reason.is_empty() && reason.len() <= 4096);
     }
     assert!(storage::child(&t.0, "../outside").is_err());
     assert!(storage::child(&t.0, "/outside").is_err());
@@ -233,6 +238,23 @@ fn unsupported_dsd_aac_and_storage_rejections() {
     r["reserved_output_bytes"] = json!(1);
     assert_eq!(run(&b, &r)["error"]["code"], "storage_full");
     assert!(!t.0.join(r["attempt_id"].as_str().unwrap()).exists());
+}
+
+#[test]
+fn future_saved_product_dispatch_preserves_original_bytes() {
+    let t = Temp::new();
+    let b = Bridge::default();
+    let original =
+        br#"{"product_schema_version":"audio-forensic-product-v99","future":18446744073709551615}"#;
+    fs::write(t.0.join("future.json"), original).unwrap();
+    let saved = json!({"root":t.0,"payload":{"kind":"product","version":"audio-forensic-product-v1","path":"future.json","bytes":original.len(),"sha256":format!("{:x}",Sha256::digest(original))}});
+    let mut r = request(&t.0, &fixture("noise16.wav"), Some("compare"));
+    r["leases"] = json!([]);
+    r["saved"] = json!([saved, saved]);
+    r["item_ids"] = json!([id(8), id(9)]);
+    r["same_track_asserted"] = json!(true);
+    assert_eq!(run(&b, &r)["error"]["code"], "unsupported_version");
+    assert_eq!(fs::read(t.0.join("future.json")).unwrap(), original);
 }
 
 #[test]
