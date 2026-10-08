@@ -33,6 +33,9 @@ public class SafFingerTap extends UiAutomatorTestCase {
         MotionEvent event = MotionEvent.obtain(down, SystemClock.uptimeMillis(), action, 1,
             new MotionEvent.PointerProperties[] {pointer}, new MotionEvent.PointerCoords[] {coordinates},
             0, 0, 1, 1, 0, 0, InputDevice.SOURCE_TOUCHSCREEN, 0);
+        // Match API-30's shell input sender: virtual pointer events explicitly
+        // target the default display instead of retaining an invalid display ID.
+        MotionEvent.class.getMethod("setDisplayId", int.class).invoke(event, 0);
         try {
             if (!((Boolean) inject.invoke(bridge, event, true))) throw new AssertionError("Finger injection failed");
         } finally { event.recycle(); }

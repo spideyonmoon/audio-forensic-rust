@@ -60,8 +60,6 @@ def run(output: Path):
             result = adb("shell", "uiautomator", "runtest", finger_jar, "-c", "dev.alfred.test.SafFingerTap#testTap",
                          "-e", "x", x, "-e", "y", y, "-e", "long", str(long).lower())
             assert "OK (1 test)" in result, result
-            if not long:
-                adb("shell", "input", "keyevent", "66")
             return
         if long:
             adb("shell", "input", "swipe", x, y, x, y, "1000")
