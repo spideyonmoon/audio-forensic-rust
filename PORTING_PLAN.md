@@ -1,5 +1,15 @@
 # Rust port decisions
 
+## A05 shared jobs — 2026-10-08
+
+Implemented feature-neutral serial foreground jobs, fresh persisted attempts,
+bounded progress/cancellation, rotation/process recovery, result quotas/leases,
+grant ownership and explicit export/share. Both ABI builds and A05 generated
+lifecycle/storage checks passed on Android 11–16. Whole-pipeline closure is
+pending owner disposition of later Android-14 picker automation after rotation;
+no jobs running. Feature execution/results stay A06/a/b and physical resource
+acceptance stays A07. [A05 evidence](task-results/A05.md).
+
 ## A04 shared input — 2026-10-08
 
 DONE. Shared SAF identities/grants, bounded enumeration/staging and native capability checks passed both ABI builds and runtime controls API 30–36, automated picker API 31–36 and owner manual Hot 11S/Android-11 picker checks. Real-file ALAC diagnosis required a narrow unreleased core preflight correction for all-zero dependency tables and generic 16-bit sample-entry fields with 24-bit cookies. Eight ALAC tests, Clippy, exact private one-second PCM checks and replacement Android/core CI passed. Owner approved closure without waiting for the replacement-APK physical ALAC retest; that retest was not run. No DSP/scoring/schema/dependency changes. Next A05. [A04 details](task-results/A04.md).

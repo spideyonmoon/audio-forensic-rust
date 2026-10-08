@@ -67,7 +67,7 @@ the entire roadmap. If a task spans sessions, resume the same ID and saved state
 - **Independent MQA work:** existing prototype/corpus at
   `C:\Users\Bishal\Documents\antigravity-dev\mqa`; E09 now READY for a
   named review, not a beta gate. See `task-results/P01-MQA.md`.
-- **Running jobs:** none; focused A05 commit/push/CI is owner-authorized.
+- **Running jobs:** none. A05 API 30–36 checks pass; owner choice pending for later API-34 picker-harness failure.
 
 P01 is a completed specification packet, not a completed port. Its frozen
 [parity map](PYTHON_PARITY.md) and [release contract](RELEASE_CONTRACT.md) own

@@ -12,8 +12,16 @@ dependency, application-context singleton, conservative usable-space and KTX
 style suggestions). Final generated-harness Kotlin compilation and Python syntax
 passed. Initial share-Intent return-type and misplaced harness-block compile
 errors were repaired. Exact logs/state: [A05 packet](../../task-results/A05.md).
-Heavy both-ABI build and Android 11–16 runtime are pending; no A05 acceptance is
-claimed yet. The generated harness covers lifecycle/state/storage failures and
+Both ABI build/packaging/lint passed on source 774eb74 in CI 37773573203. A05's
+generated lifecycle/storage checks passed on every API 30–36 across that run and
+verified-APK retries 37775318484/37776142916. Rotation/background/screen-off,
+delayed cancel/queue/retry, actual copy/native/finalization kill and durable
+manifest recovery passed; API 35/36 actual platform timeouts passed. Later API-34
+picker automation remains failed after rotation; latest log shows its swipe
+triggered Home. The owner was asked for a bounded next step, with no running jobs.
+Whole-pipeline/A05 closure is pending owner disposition, not a claimed full green
+run. The initial API-33 control-receipt failure did not reproduce; original
+Activity diagnostics were not collected. The generated harness covers failures and
 actual copy/native/finalization kill; A07 physical/16-KiB/resource gates remain.
 
 No core/native Rust, scoring, fixtures or private audio changes. Owner cleanup

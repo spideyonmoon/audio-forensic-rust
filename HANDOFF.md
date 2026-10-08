@@ -11,16 +11,31 @@ bounded queues/latest progress, cancellation/retry, ViewModel rotation, owned-gr
 ledger, result reservation/history/eviction/leases, original-byte version dispatch,
 SAF export and FileProvider sharing are implemented locally. Generated lifecycle/
 storage harness is added to Android CI. Core/native Rust/DSP/private audio and
-owner cleanup edits are preserved; no commits/pushes or remote jobs yet.
+owner cleanup edits are preserved. Owner authorized push; source `774eb74` is on
+`codex/a05-shared-jobs`, with harness-only correction `c01687e`.
 
 Offline app Kotlin/shared lint passed after two repaired compile defects. Final
 follow-up compile/lint and export-harness compile passed; logs
 `target/a05-pre-ci.log` and `target/a05-harness-compile.log`. No local job running. Python syntax
-and whitespace passed. Both-ABI build and Android 11–16 lifecycle runtime are
-**not yet run**; A05 remains incomplete. See [A05 record](task-results/A05.md).
+and whitespace passed. Both ABI builds/lint/packaging passed in CI 37773573203.
+APIs 30–32 passed entirely; A05 lifecycle passed 34–36 (including 35/36 timeout),
+then picker UI failed after leftover rotation/off-screen grant text. API 33's
+missing control receipt needs the captured Activity error. A05 remains incomplete.
+See [A05 record](task-results/A05.md).
 Final service compile also passed (`target/a05-service-final.log`). Explicit
 Owner authorized the focused A05 commit/push and CI on 2026-10-08.
-Next: commit only A05 and dispatch/inspect GitHub Android CI.
+Retry 37775318484 passed APIs 33/35/36 entirely; API 34 passed A05 but its landscape
+picker still selected an obscured provider label behind the drawer. Harness-only
+`a4a508c` selects within/scrolls roots_list and uses visible scroll bounds.
+API-34-only retry 37776142916 failed only the later picker navigation; its A05
+receipt confirms all lifecycle/storage checks passed again. A05 checks have passed
+on **every API 30–36**. Latest log shows the harness roots-list swipe triggered
+system Home; no app fatal exception found. Stopped further retries and asked
+owner: recommend run picker before lifecycle rotation tests, then retry API 34
+once; alternatives are landscape investigation or explicit closure with picker
+regression pending. **Waiting for choice; no jobs running.** No heavy build or
+accepted API repeats. First API-33 failure did not reproduce; original Activity
+receipt was not collected, so its underlying reason remains unknown.
 Do not stage owner cleanup changes; no private inputs are in this packet.
 
 ## A04 COMPLETE — 2026-10-08
@@ -252,7 +267,7 @@ At that earlier A01 handoff A02 was next. A02 is now complete; A03 is next.
 
 ## Current task and delivery boundary
 
-- Active task: **A05 IN PROGRESS**, locally implemented; owner authorized push/CI. No jobs running.
+- Active task: **A05 IN PROGRESS**; all A05 API checks pass, waiting for owner disposition of API-34 picker-harness regression. No jobs running.
 - Next default delivery task: **A05 — shared jobs, lifecycle and local retention (Sol)**.
 - **F02/DSD DEFERRED beyond the first standalone release and Alfred launch**,
   owner approved 2026-10-06 to conserve Astra budget. Its frozen DSF/DFF,
