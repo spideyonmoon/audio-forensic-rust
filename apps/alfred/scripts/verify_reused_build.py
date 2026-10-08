@@ -26,7 +26,9 @@ def verify(directory, if_unchanged=False):
     revision = revisions.pop()
     # Only documentation and runtime-harness scripts may differ. Build scripts,
     # Gradle pins, Kotlin, native/core source and fixture assets must be identical.
-    paths = [".", ":(exclude)**/*.md", ":(exclude).github/workflows/*",
+    # **/*.md did not exclude root-level Markdown on the CI Git version.
+    # Both scopes are documentation; Kotlin/native/packaging remain compared.
+    paths = [".", ":(exclude,glob)*.md", ":(exclude)**/*.md", ":(exclude).github/workflows/*",
              ":(exclude)apps/alfred/scripts/emulator-smoke.py",
              ":(exclude)apps/alfred/scripts/jobs-smoke.py",
              ":(exclude)apps/alfred/scripts/saf-ui-smoke.py",
