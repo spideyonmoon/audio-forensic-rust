@@ -21,9 +21,16 @@ changed after that verified APK build. APK-reuse guard passed and correctly
 refused changed compiled source in 37740958885. Seven emulators run in parallel;
 harness-only retries skip full builds and can select affected APIs.
 
-Next concrete action: replace speculative pointer injection with a deterministic
-API-30 picker test, distinguish automation failure from actual document activation,
-then close A04 and point to A05. Do not repeat ABI builds or API 31–36 checks
+Owner-supplied screenshots now show successful single/multiple selection and
+completed six-item folder-subset checks with persisted read access. Four FLACs
+are supported; two M4As labelled ALAC in filenames are unsupported (actual codec
+not verified). Device model/OS are not shown. Details are in the A04 record.
+No screenshots, private file names or audio were committed.
+
+Next concrete action: confirm the manual tester's phone model and Android version;
+if Android 11, use the manual picker evidence to close that interaction blocker.
+Establish actual codec/geometry for unsupported M4As before calling them an ALAC
+regression. Do not repeat speculative pointer helpers, ABI builds or API 31–36 checks
 unless compiled source changes. A05 owns jobs/history,
 quota/orphan recovery and lifecycle; feature execution stays A06/a/b. Existing
 owner cleanup edits stay uncommitted. Core/private audio are unchanged. Local
