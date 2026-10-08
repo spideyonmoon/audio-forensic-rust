@@ -1,6 +1,6 @@
 # Android integration validation
 
-## A05 implementation — 2026-10-08
+## A05 acceptance — 2026-10-08
 
 Shared service/jobs, durable attempts/manifest recovery, bounded queue/progress,
 cancel/retry, ViewModel rotation, disk reservation/history/grant leases and explicit
@@ -12,17 +12,20 @@ dependency, application-context singleton, conservative usable-space and KTX
 style suggestions). Final generated-harness Kotlin compilation and Python syntax
 passed. Initial share-Intent return-type and misplaced harness-block compile
 errors were repaired. Exact logs/state: [A05 packet](../../task-results/A05.md).
-Both ABI build/packaging/lint passed on source 774eb74 in CI 37773573203. A05's
-generated lifecycle/storage checks passed on every API 30–36 across that run and
-verified-APK retries 37775318484/37776142916. Rotation/background/screen-off,
-delayed cancel/queue/retry, actual copy/native/finalization kill and durable
-manifest recovery passed; API 35/36 actual platform timeouts passed. Later API-34
-picker automation remains failed after rotation; latest log shows its swipe
-triggered Home. The owner was asked for a bounded next step, with no running jobs.
-Whole-pipeline/A05 closure is pending owner disposition, not a claimed full green
-run. The initial API-33 control-receipt failure did not reproduce; original
-Activity diagnostics were not collected. The generated harness covers failures and
-actual copy/native/finalization kill; A07 physical/16-KiB/resource gates remain.
+Both ABI build/packaging/lint passed on source 774eb74 in CI 37773573203.
+Entire emulator jobs passed API 30–32 there and API 33/35/36 in hash/source-bound
+retry 37775318484. Final API-34 retry
+[37777694067](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37777694067)
+passed all suites on harness 851bdb1, running picker before lifecycle rotation
+with every check retained. A05 is DONE; no jobs running; next A06. Acceptance
+spans these runs. API-30 picker evidence remains A04 manual Hot 11S coverage.
+Rotation/background/screen-off, delayed cancel/queue/retry, real copy/native/
+finalization kill and manifest recovery passed; API 35/36 platform timeouts passed.
+Earlier picker harness failures and the root-Markdown reuse-guard correction are
+recorded in the A05 packet. Guard regression checks excluded documentation while
+rejecting compiled-source changes. The initial API-33 missing control receipt did
+not reproduce; original Activity diagnostics were not collected and cause remains
+unknown. A07 physical/16-KiB/resource gates remain unrun.
 
 No core/native Rust, scoring, fixtures or private audio changes. Owner cleanup
 work remains separate. Local ignored logs are not Git history or backups.

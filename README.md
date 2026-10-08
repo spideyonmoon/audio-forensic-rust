@@ -17,7 +17,7 @@ Engine **0.32.0** · Rust **1.85+** · MIT
 | Reference assessment | Versioned pinned-Python scores, rule traces and qualified candidate interpretations |
 | Spectrogram | Bounded offline data and complete calibrated Rust PNG canvas |
 | DSD | **Deferred beyond the first release and Alfred launch**; no shipped DSD analysis |
-| Alfred Android app | A01–A04 accepted; A05 jobs/lifecycle/retention implemented with Android 11–16 scoped checks passed; final closure pending a later Android-14 picker-harness regression |
+| Alfred Android app | A01–A05 complete; both ABI builds and Android 11–16 generated runtime checks accepted; next A06 results/history/export |
 
 The measurement report keeps ancestry `INCONCLUSIVE` and evidence index `null`.
 Reference scores are uncalibrated method outputs, not probabilities or proof of
@@ -60,8 +60,8 @@ CLI options, exit codes, precision and numerical conventions.
 
 ## Delivery and Alfred
 
-**Standalone 0.32.0 accepted at P09 (2026-10-06). A01–A04 complete.
-Next: A05 (Sol)**, shared jobs, lifecycle and retention under the
+**Standalone 0.32.0 accepted at P09 (2026-10-06). A01–A05 complete.
+Next: A06 (Sol)**, Forensics results/history/export under the
 [Android integration contract](ANDROID_CONTRACT.md).
 The owner deferred F02/DSD on 2026-10-06 to conserve Astra budget; its frozen
 future format/conversion contract remains planned.

@@ -4,39 +4,41 @@ Updated **2026-10-08**. This is the current continuation point. Historical miles
 entries and exact older check totals are preserved in
 [the handoff archive](docs/history/HANDOFF_20261006.md); newer decisions here win.
 
-## A05 IN PROGRESS — 2026-10-08
+## A05 COMPLETE — 2026-10-08
 
-User requested complete A05. Shared feature-neutral jobs/service, durable attempts,
-bounded queues/latest progress, cancellation/retry, ViewModel rotation, owned-grant
-ledger, result reservation/history/eviction/leases, original-byte version dispatch,
-SAF export and FileProvider sharing are implemented locally. Generated lifecycle/
-storage harness is added to Android CI. Core/native Rust/DSP/private audio and
-owner cleanup edits are preserved. Owner authorized push; source `774eb74` is on
-`codex/a05-shared-jobs`, with harness-only correction `c01687e`.
+**DONE. Next delivery task: A06. No jobs running.** Shared feature-neutral
+jobs/service, durable attempts, bounded queues/latest progress, cancellation/retry,
+ViewModel rotation, owned-grant ledger, result reservations/history/eviction/leases,
+original-byte version dispatch, SAF export and FileProvider sharing are complete.
+Core/native Rust/DSP/private audio and owner cleanup edits are preserved.
 
-Offline app Kotlin/shared lint passed after two repaired compile defects. Final
-follow-up compile/lint and export-harness compile passed; logs
-`target/a05-pre-ci.log` and `target/a05-harness-compile.log`. No local job running. Python syntax
-and whitespace passed. Both ABI builds/lint/packaging passed in CI 37773573203.
-APIs 30–32 passed entirely; A05 lifecycle passed 34–36 (including 35/36 timeout),
-then picker UI failed after leftover rotation/off-screen grant text. API 33's
-missing control receipt needs the captured Activity error. A05 remains incomplete.
-See [A05 record](task-results/A05.md).
-Final service compile also passed (`target/a05-service-final.log`). Explicit
-Owner authorized the focused A05 commit/push and CI on 2026-10-08.
-Retry 37775318484 passed APIs 33/35/36 entirely; API 34 passed A05 but its landscape
-picker still selected an obscured provider label behind the drawer. Harness-only
-`a4a508c` selects within/scrolls roots_list and uses visible scroll bounds.
-API-34-only retry 37776142916 failed only the later picker navigation; its A05
-receipt confirms all lifecycle/storage checks passed again. A05 checks have passed
-on **every API 30–36**. Latest log shows the harness roots-list swipe triggered
-system Home; no app fatal exception found. Stopped further retries and asked
-owner: recommend run picker before lifecycle rotation tests, then retry API 34
-once; alternatives are landscape investigation or explicit closure with picker
-regression pending. **Waiting for choice; no jobs running.** No heavy build or
-accepted API repeats. First API-33 failure did not reproduce; original Activity
-receipt was not collected, so its underlying reason remains unknown.
-Do not stage owner cleanup changes; no private inputs are in this packet.
+Compiled source `774eb74` on `codex/a05-shared-jobs` passed both ABI builds,
+native host controls, lint, generated fixtures, alignment and signatures in
+[37773573203](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37773573203).
+Entire emulator jobs passed API 30–32 there and API 33/35/36 in verified-APK
+retry [37775318484](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37775318484).
+Final API-34 retry
+[37777694067](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37777694067)
+succeeded on harness `851bdb1`: single/multiple/folder picker checks run before
+lifecycle rotation tests, retaining every check and the same hash/source-bound APK.
+Acceptance spans these runs, not one seven-API green run. API-30 picker evidence
+remains A04's manual Hot 11S coverage, not automated picker acceptance.
+
+Generated lifecycle/storage coverage passed Android 11–16: 23 controls,
+rotation/background/screen-off, copy/native/finalization process kill, committed
+result recovery, denied notifications/background starts, and real API-35/36
+mediaProcessing timeout. Local Kotlin/lint, Python syntax and whitespace passed;
+0 lint errors/8 warnings. Exact receipts, initial failures and bounded harness
+repairs are in [A05 record](task-results/A05.md). First API-33 missing receipt did
+not reproduce; its original cause remains unknown. Retry 37777363103 stopped
+before emulators because the reuse guard falsely included root Markdown; explicit
+Git regression checks confirmed the correction excludes docs while rejecting
+compiled-source changes. No tests were omitted or app rebuild required.
+
+Next: A06 Forensics results/history/export using the completed shared APIs and
+ANDROID_CONTRACT.md. A06/a/b feature screens and A07 physical/16-KiB/RSS/thermal
+acceptance remain unrun. Preserve unrelated owner cleanup changes unstaged.
+Ignored target receipts are local evidence, not Git history or external backups.
 
 ## A04 COMPLETE — 2026-10-08
 
@@ -267,8 +269,8 @@ At that earlier A01 handoff A02 was next. A02 is now complete; A03 is next.
 
 ## Current task and delivery boundary
 
-- Active task: **A05 IN PROGRESS**; all A05 API checks pass, waiting for owner disposition of API-34 picker-harness regression. No jobs running.
-- Next default delivery task: **A05 — shared jobs, lifecycle and local retention (Sol)**.
+- Active task: none; **A05 DONE 2026-10-08**. No jobs running.
+- Next default delivery task: **A06 — Audio Forensics results/history/export (Sol)**.
 - **F02/DSD DEFERRED beyond the first standalone release and Alfred launch**,
   owner approved 2026-10-06 to conserve Astra budget. Its frozen DSF/DFF,
   DSD64/128/256, mono/stereo and 88.2 kHz conversion contract remains for later.
@@ -372,8 +374,8 @@ these are local files, not Git history or an external backup. Prior milestone
 receipts remain where originally recorded (including target/p06-msrv and
 accepted P05/P06/F01 receipts). U05 external backup remains owner work.
 
-Next concrete action: **A05**, shared jobs/lifecycle/retention under
-ANDROID_CONTRACT.md. A04 input/staging, compatibility fix and CI acceptance are
+Next concrete action: **A06**, Audio Forensics results/history/export under
+ANDROID_CONTRACT.md. A05 shared jobs/lifecycle/retention and CI acceptance are
 complete. Consume existing product APIs without changing core/DSP
 semantics; preserve shared memory admission and use GitHub Actions for heavy checks.
 Keep P06/P07 reuse unchanged. P09 details

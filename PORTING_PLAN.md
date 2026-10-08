@@ -2,13 +2,13 @@
 
 ## A05 shared jobs — 2026-10-08
 
-Implemented feature-neutral serial foreground jobs, fresh persisted attempts,
+DONE. Implemented feature-neutral serial foreground jobs, fresh persisted attempts,
 bounded progress/cancellation, rotation/process recovery, result quotas/leases,
 grant ownership and explicit export/share. Both ABI builds and A05 generated
-lifecycle/storage checks passed on Android 11–16. Whole-pipeline closure is
-pending owner disposition of later Android-14 picker automation after rotation;
-no jobs running. Feature execution/results stay A06/a/b and physical resource
-acceptance stays A07. [A05 evidence](task-results/A05.md).
+lifecycle/storage checks passed on Android 11–16 across source-bound runs. Final
+API-34 verified-APK retry 37777694067 passed picker before lifecycle, retaining
+every check. No jobs running; next A06. Feature execution/results stay A06/a/b;
+physical resource acceptance stays A07. [A05 evidence](task-results/A05.md).
 
 ## A04 shared input — 2026-10-08
 
@@ -42,7 +42,7 @@ Primary phone ABI stays ARM64; x86_64 is a separate CI emulator artifact.
 Shared memory admission/frame limits stay unchanged; no device-specific chunking
 or throttling. Build/emulator evidence is separate from physical A07 acceptance.
 See [compatibility packet](task-results/ANDROID-11-CI.md).
-P09/A01/A02/A03/A04 are complete; A05 shared jobs/lifecycle/retention is next.
+P09/A01–A05 are complete; A06 Forensics results/history/export is next.
 
 ## Current delivery priority — 2026-10-06
 
@@ -79,8 +79,8 @@ checks passed; no production change or repeated full regression. See
 task-results/P09.md and the release ledger for accepted limits. A01 completed
 2026-10-07: ANDROID_CONTRACT.md freezes app-owned JNI, shared input/jobs/storage,
 conservative native-rate resource admission and extraction with P06/P07 backends
-retained here. A02 scaffold, A03 native adapter and A04 shared input acceptance are complete; next A05. No
-device acceptance is implied.
+retained here. A02 scaffold, A03 native adapter, A04 shared input and A05
+jobs/retention acceptance are complete; next A06. No device acceptance is implied.
 
 
 Follow `ROADMAP.md` and `ROADMAP_TASKS.md`: faithful rewrite and offline Alfred

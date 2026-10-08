@@ -430,6 +430,11 @@ buffering or unrestricted-storage permission merely to read selected documents.
 
 ## A05 — shared jobs, lifecycle and local retention
 
+**Status: DONE 2026-10-08.** Both ABI builds and Android 11–16 generated
+lifecycle/storage acceptance passed across verified-APK runs. Final API-34 run
+37777694067 passed picker before lifecycle with every check retained.
+[Evidence](task-results/A05.md). Physical acceptance remains A07.
+
 **Sol; after A03/A04.** Implement A01 background execution/notifications,
 job identities, bounded conservative admission/queue, progress/cancellation,
 rotation, background/screen-off and process recreation. Feature adapters supply
