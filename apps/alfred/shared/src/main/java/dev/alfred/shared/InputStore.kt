@@ -71,6 +71,7 @@ class InputStore(private val directory: File, private val freeBytes: () -> Long 
         const val PROBE_OUTPUT = 64L * 1024 * 1024
         const val BUFFER_BYTES = 256 * 1024
         private val activeDirectories = mutableSetOf<String>()
+        @Volatile internal var resultReservations = 0L
     }
     private var occupied = false
     private var slotKey: String? = null
@@ -94,7 +95,7 @@ class InputStore(private val directory: File, private val freeBytes: () -> Long 
         slotKey = null; occupied = false
     }
     fun admitWrite(bytes: Long) {
-        if (freeBytes() < DISK_MARGIN + PROBE_OUTPUT + bytes) throw InputFailure("storage_full")
+        if (freeBytes() < DISK_MARGIN + maxOf(PROBE_OUTPUT, resultReservations) + bytes) throw InputFailure("storage_full")
     }
     fun acquire(attempt: String, declaredBytes: Long?, cancellation: InputCancellation,
                 expectedHash: String? = null, open: () -> InputStream): OwnedInput {

@@ -1,5 +1,24 @@
 # Android integration validation
 
+## A05 implementation — 2026-10-08
+
+Shared service/jobs, durable attempts/manifest recovery, bounded queue/progress,
+cancel/retry, ViewModel rotation, disk reservation/history/grant leases and explicit
+SAF export/FileProvider sharing are implemented. Integration API and lifecycle
+ownership: [shared jobs](../../apps/alfred/SHARED_JOBS.md).
+
+Offline app Kotlin/shared lint passed with 0 lint errors/8 warnings (pinned
+dependency, application-context singleton, conservative usable-space and KTX
+style suggestions). Final generated-harness Kotlin compilation and Python syntax
+passed. Initial share-Intent return-type and misplaced harness-block compile
+errors were repaired. Exact logs/state: [A05 packet](../../task-results/A05.md).
+Heavy both-ABI build and Android 11–16 runtime are pending; no A05 acceptance is
+claimed yet. The generated harness covers lifecycle/state/storage failures and
+actual copy/native/finalization kill; A07 physical/16-KiB/resource gates remain.
+
+No core/native Rust, scoring, fixtures or private audio changes. Owner cleanup
+work remains separate. Local ignored logs are not Git history or backups.
+
 ## A04 accepted — 2026-10-08
 
 Replacement source `cf542ab` passed [Android CI 37765269431](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37765269431)

@@ -19,7 +19,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,19 +40,48 @@ import dev.alfred.spectrogram.SpectrogramScreen
 import dev.alfred.spectrogram.spectrogramOperation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.delay
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModelProvider
+import dev.alfred.shared.SharedJobs
+import dev.alfred.shared.JobRecord
+import androidx.activity.result.contract.ActivityResultContracts
+import android.Manifest
+import android.os.Build
+import android.content.pm.PackageManager
+
+class WorkspaceModel(application: android.app.Application) : AndroidViewModel(application) {
+    val workspace = mutableStateOf(WorkspaceState())
+    val jobs = SharedJobs.get(application)
+    val inputs = WorkspaceInput(application) { workspace.value = it }
+    override fun onCleared() { inputs.close() }
+}
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        val model = ViewModelProvider(this)[WorkspaceModel::class.java]
         setContent {
             MaterialTheme {
-                var workspace by remember { mutableStateOf(WorkspaceState()) }
+                val workspace by model.workspace
                 var checked by remember { mutableStateOf<Set<String>>(emptySet()) }
                 var route by remember { mutableStateOf<String?>(null) }
                 var nativeStatus by remember { mutableStateOf("Loading native host…") }
-                val inputs = remember { WorkspaceInput(applicationContext) { workspace = it } }
-                DisposableEffect(inputs) { onDispose { inputs.close() } }
+                val inputs = model.inputs
+                var jobs by remember { mutableStateOf<List<JobRecord>>(emptyList()) }
+                var progress by remember { mutableStateOf<dev.alfred.shared.JobProgress?>(null) }
+                var notificationAllowed by remember { mutableStateOf(Build.VERSION.SDK_INT < 33 || checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) }
+                val notifications = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { notificationAllowed = it }
+                LaunchedEffect(model.jobs) {
+                    while (true) {
+                        if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
+                            jobs = model.jobs.snapshot(); progress = model.jobs.progressSnapshot()
+                        }
+                        delay(250)
+                    }
+                }
                 LaunchedEffect(Unit) { nativeStatus = withContext(Dispatchers.IO) { NativeBootstrap.load() } }
                 val files = rememberLauncherForActivityResult(SafPicker()) { result ->
                     if (result != null) { route = null; checked = emptySet(); inputs.select(result) }
@@ -69,6 +97,16 @@ class MainActivity : ComponentActivity() {
                     Column(Modifier.fillMaxSize().padding(insets).verticalScroll(rememberScrollState()).padding(20.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Text("Alfred", style = MaterialTheme.typography.headlineLarge)
+                        if (model.jobs.releaseUnconfirmed()) Text("Native release could not be confirmed. Work is blocked to protect its files; force-stop Alfred before reopening it.")
+                        if (!notificationAllowed) {
+                            Text("Notifications are denied. Started operations can continue; return here to cancel and inspect progress.")
+                            Button(onClick = { if (Build.VERSION.SDK_INT >= 33) notifications.launch(Manifest.permission.POST_NOTIFICATIONS) }) { Text("Allow job notifications") }
+                        }
+                        jobs.filter { !it.terminal }.forEach { job ->
+                            Text("${job.feature} · ${job.state}${if (job.cancelRequested) " · cancellation requested" else ""}")
+                            if (progress?.attemptId == job.attemptId) Text("${progress?.phase} · pass ${progress?.pass ?: "unknown"} · ${progress?.frames ?: "unknown"} frames / ${progress?.expectedFrames ?: "unknown"}")
+                            Button(onClick = { model.jobs.cancel(job.attemptId) }) { Text("Cancel operation") }
+                        }
                         if (route != null) TextButton(onClick = { route = null }) { Text("Back to workspace") }
                         val count = workspace.selection?.items?.size ?: 0
                         when (route) {

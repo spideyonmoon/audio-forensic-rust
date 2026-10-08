@@ -63,24 +63,67 @@ fun boundedName(value: String): String {
  * are never revoked by selection replacement. Release after provider copy exits.
  */
 class SafSelection(private val resolver: ContentResolver) : AutoCloseable {
+    companion object {
+        private val ownedGrants = mutableMapOf<Uri, Int>()
+        private var ledger: java.io.File? = null
+        private fun journal() { ledger?.let { atomicJson(it, org.json.JSONObject().put("version", 1)
+            .put("uris", org.json.JSONArray(ownedGrants.keys.map { uri -> uri.toString() }))) } }
+        internal fun recoverGrants(context: Context) = synchronized(ownedGrants) {
+            check(ownedGrants.isEmpty())
+            ledger = java.io.File(context.filesDir, "owned-input-grants.json")
+            val file = ledger!!
+            if (file.exists() || java.io.File(file.path + ".bak").exists()) {
+                val json = readJson(file)
+                if (json.getInt("version") != 1) throw InputFailure("unsupported_version")
+                val uris = json.getJSONArray("uris")
+                for (i in 0 until uris.length()) try {
+                    context.contentResolver.releasePersistableUriPermission(Uri.parse(uris.getString(i)), Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                } catch (_: SecurityException) { }
+            }
+            journal()
+        }
+    }
     private val taken = mutableSetOf<Uri>()
+    private var closed = false
     private fun grantIdentity(uri: Uri): Uri = if ("tree" in uri.pathSegments) {
         DocumentsContract.buildTreeDocumentUri(uri.authority, DocumentsContract.getTreeDocumentId(uri))
     } else uri
     private fun grant(uri: Uri, flags: Int): String {
-        if (resolver.persistedUriPermissions.any { it.uri == grantIdentity(uri) && it.isReadPermission }) return "persisted"
+        val key = grantIdentity(uri)
+        synchronized(ownedGrants) {
+            if (key in taken) return "persisted"
+            if (key in ownedGrants) {
+                ownedGrants[key] = ownedGrants.getValue(key) + 1; taken.add(key); return "persisted"
+            }
+            if (resolver.persistedUriPermissions.any { it.uri == key && it.isReadPermission }) return "persisted"
         if (flags and Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION == 0 || flags and Intent.FLAG_GRANT_READ_URI_PERMISSION == 0) return "session_only"
         return try {
-            resolver.takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION)
-            taken.add(uri); "persisted"
-        } catch (_: SecurityException) { "session_only_grant_failed" }
+            ownedGrants[key] = 1; journal() // Record ownership intent before taking a new grant.
+            resolver.takePersistableUriPermission(key, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            taken.add(key); ownedGrants[key] = 1; "persisted"
+        } catch (_: SecurityException) { ownedGrants.remove(key); journal(); "session_only_grant_failed" }
+        }
     }
+    @Suppress("UNUSED_PARAMETER")
     fun adoptFrom(previous: SafSelection?, result: PickerResult) {
-        if (previous == null) return
-        val needed = result.uris.map { grantIdentity(it) }.toSet()
-        val transferred = previous.taken.filter { it in needed }
-        taken.addAll(transferred)
-        previous.taken.removeAll(transferred.toSet())
+        // read() already retained registered app-owned grants before old release.
+    }
+    fun retain(): AutoCloseable = synchronized(ownedGrants) {
+        check(!closed)
+        val keys = taken.toList()
+        keys.forEach { ownedGrants[it] = ownedGrants.getValue(it) + 1 }
+        var released = false
+        AutoCloseable { synchronized(ownedGrants) { if (!released) { released = true; release(keys) } } }
+    }
+    private fun release(keys: List<Uri>) {
+        keys.forEach { key ->
+            val count = ownedGrants.getValue(key) - 1
+            if (count == 0) {
+                try { resolver.releasePersistableUriPermission(key, Intent.FLAG_GRANT_READ_URI_PERMISSION) } catch (_: SecurityException) { }
+                ownedGrants.remove(key)
+                journal()
+            } else ownedGrants[key] = count
+        }
     }
     fun identity(uri: Uri): String = documentIdentity(uri)
 
@@ -135,7 +178,6 @@ class SafSelection(private val resolver: ContentResolver) : AutoCloseable {
         return InputSelection(UUID.randomUUID().toString(), generation, ordered, incomplete)
     }
     override fun close() {
-        taken.forEach { try { resolver.releasePersistableUriPermission(it, Intent.FLAG_GRANT_READ_URI_PERMISSION) } catch (_: SecurityException) { } }
-        taken.clear()
+        synchronized(ownedGrants) { if (!closed) { closed = true; release(taken.toList()); taken.clear() } }
     }
 }

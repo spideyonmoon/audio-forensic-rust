@@ -20,7 +20,8 @@ data class WorkspaceState(val selection: InputSelection? = null,
                           val busy: Boolean = false, val notice: String = "", val sameTrack: Boolean = false)
 data class Capability(val state: String, val reason: String, val resource: String, val prefixSeconds: Long? = null)
 data class FeatureInputs(val selection: InputSelection, val probes: Map<String, ProbeCapability>,
-                         val acquire: (InputItem, String, InputCancellation) -> OwnedInput)
+                         val acquire: (InputItem, String, InputCancellation) -> OwnedInput,
+                         val retainGrants: () -> AutoCloseable)
 
 /** BigInteger.longValueExact is unavailable on Android 11. Check its range
  * explicitly without losing the exact integer tokens in stored payloads.
@@ -69,22 +70,23 @@ class WorkspaceInput(context: Context, private val changed: (WorkspaceState) -> 
     private var generation = 0L
     private var cancellation = InputCancellation()
     private var closed = false
-    private var grants: SafSelection? = null // Only accessed by the serial worker.
+    @Volatile private var grants: SafSelection? = null
     private var state = WorkspaceState()
 
     @Synchronized fun featureInputs(): FeatureInputs? {
         val selection = state.selection ?: return null
         if (state.busy || selection.incomplete) return null
         val probes = state.probes.toMap()
-        return FeatureInputs(selection, probes) { item, attempt, cancel ->
+        val owner = grants ?: return null
+        return FeatureInputs(selection, probes, { item, attempt, cancel ->
             check(Looper.myLooper() != Looper.getMainLooper()) { "Acquisition must run off main" }
-            if (!isCurrent(selection.generation) || selection.items.none { it.id == item.id }) throw InputFailure("input_changed")
+            if (selection.items.none { it.id == item.id }) throw InputFailure("input_changed")
             val hash = probes[item.id]?.hash ?: throw InputFailure(probes[item.id]?.reason ?: "input_missing")
             store.acquire(attempt, item.declaredBytes, cancel, hash) {
                 val descriptor = app.contentResolver.openFileDescriptor(item.uri, "r", cancel.signal) ?: throw InputFailure("input_missing")
                 android.os.ParcelFileDescriptor.AutoCloseInputStream(descriptor)
             }
-        }
+        }, { owner.retain() })
     }
 
     @Synchronized fun select(result: PickerResult) {
@@ -96,6 +98,8 @@ class WorkspaceInput(context: Context, private val changed: (WorkspaceState) -> 
         state = WorkspaceState(busy = true, notice = "Reading selected documents…")
         changed(state)
         worker.execute {
+            SharedJobs.get(app).awaitReady()
+            while (SharedJobs.get(app).busy()) { cancel.check(); Thread.sleep(250) }
             val previous = grants
             grants = null
             val acquired = SafSelection(app.contentResolver)

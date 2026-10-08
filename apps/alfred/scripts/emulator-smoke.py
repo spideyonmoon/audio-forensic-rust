@@ -72,6 +72,10 @@ try:
         break
     else:
         raise AssertionError("Shared input/provider smoke timed out")
+    jobs_spec = importlib.util.spec_from_file_location("jobs_smoke", Path(__file__).with_name("jobs-smoke.py"))
+    jobs_smoke = importlib.util.module_from_spec(jobs_spec)
+    jobs_spec.loader.exec_module(jobs_smoke)
+    jobs_smoke.run(output)
     spec = importlib.util.spec_from_file_location("saf_ui", Path(__file__).with_name("saf-ui-smoke.py"))
     saf_ui = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(saf_ui)

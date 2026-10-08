@@ -4,6 +4,25 @@ Updated **2026-10-08**. This is the current continuation point. Historical miles
 entries and exact older check totals are preserved in
 [the handoff archive](docs/history/HANDOFF_20261006.md); newer decisions here win.
 
+## A05 IN PROGRESS — 2026-10-08
+
+User requested complete A05. Shared feature-neutral jobs/service, durable attempts,
+bounded queues/latest progress, cancellation/retry, ViewModel rotation, owned-grant
+ledger, result reservation/history/eviction/leases, original-byte version dispatch,
+SAF export and FileProvider sharing are implemented locally. Generated lifecycle/
+storage harness is added to Android CI. Core/native Rust/DSP/private audio and
+owner cleanup edits are preserved; no commits/pushes or remote jobs yet.
+
+Offline app Kotlin/shared lint passed after two repaired compile defects. Final
+follow-up compile/lint and export-harness compile passed; logs
+`target/a05-pre-ci.log` and `target/a05-harness-compile.log`. No local job running. Python syntax
+and whitespace passed. Both-ABI build and Android 11–16 lifecycle runtime are
+**not yet run**; A05 remains incomplete. See [A05 record](task-results/A05.md).
+Final service compile also passed (`target/a05-service-final.log`). Explicit
+Owner authorized the focused A05 commit/push and CI on 2026-10-08.
+Next: commit only A05 and dispatch/inspect GitHub Android CI.
+Do not stage owner cleanup changes; no private inputs are in this packet.
+
 ## A04 COMPLETE — 2026-10-08
 
 **DONE. Next delivery task: A05. No jobs running.** Owner authorized closure
@@ -233,7 +252,7 @@ At that earlier A01 handoff A02 was next. A02 is now complete; A03 is next.
 
 ## Current task and delivery boundary
 
-- Active task: **none**. A04 completed 2026-10-08; no jobs running.
+- Active task: **A05 IN PROGRESS**, locally implemented; owner authorized push/CI. No jobs running.
 - Next default delivery task: **A05 — shared jobs, lifecycle and local retention (Sol)**.
 - **F02/DSD DEFERRED beyond the first standalone release and Alfred launch**,
   owner approved 2026-10-06 to conserve Astra budget. Its frozen DSF/DFF,

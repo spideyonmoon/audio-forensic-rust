@@ -89,6 +89,10 @@ not add x86_64 to the primary APK; build a separate emulator variant in A03/A07.
 
 ## GitHub Actions compatibility checks
 
+A05's [shared jobs](SHARED_JOBS.md) and generated lifecycle/storage harness are
+included in full runtime acceptance. Harness-only retries also recognize
+scripts/jobs-smoke.py; compiled-source equality is still required for APK reuse.
+
 Heavy builds run in `.github/workflows/alfred-android.yml`, on app/core changes
 or manual dispatch. Linux builds separate ARM64 phone and x86_64 emulator APKs,
 links Rust against API 30, runs strict dependency verification and Android lint,

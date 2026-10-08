@@ -28,6 +28,7 @@ def verify(directory, if_unchanged=False):
     # Gradle pins, Kotlin, native/core source and fixture assets must be identical.
     paths = [".", ":(exclude)**/*.md", ":(exclude).github/workflows/*",
              ":(exclude)apps/alfred/scripts/emulator-smoke.py",
+             ":(exclude)apps/alfred/scripts/jobs-smoke.py",
              ":(exclude)apps/alfred/scripts/saf-ui-smoke.py",
              ":(exclude)apps/alfred/scripts/saf-finger-tap/**",
              ":(exclude)apps/alfred/scripts/verify_reused_build.py"]

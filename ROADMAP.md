@@ -53,7 +53,7 @@ the entire roadmap. If a task spans sessions, resume the same ID and saved state
 
 ## Current dispatch
 
-- **Active task:** none. A04 completed 2026-10-08; no jobs running.
+- **Active task:** A05 implementation; local checks/Android lifecycle acceptance in progress.
 - **Next delivery task:** **A05 — shared jobs, lifecycle and local retention (Sol)**.
 - **Owner inputs received:** Redmi 13 4G, Android 16, APK/ADB available;
   FLAC/WAV/ALAC-M4A/DSD; detailed verdict, complete metadata and deep results;
@@ -67,7 +67,7 @@ the entire roadmap. If a task spans sessions, resume the same ID and saved state
 - **Independent MQA work:** existing prototype/corpus at
   `C:\Users\Bishal\Documents\antigravity-dev\mqa`; E09 now READY for a
   named review, not a beta gate. See `task-results/P01-MQA.md`.
-- **Running jobs:** none; A03 CI 37673381546 succeeded.
+- **Running jobs:** none; focused A05 commit/push/CI is owner-authorized.
 
 P01 is a completed specification packet, not a completed port. Its frozen
 [parity map](PYTHON_PARITY.md) and [release contract](RELEASE_CONTRACT.md) own
@@ -182,7 +182,7 @@ unless the card explicitly permits work against the frozen contract.
 | A02 | Alfred workspace scaffold and reproducible builds | Sol | A01 | DONE 2026-10-07 |
 | A03 | Audio Forensics native adapter and linked smoke | Astra | A02 | DONE 2026-10-08 |
 | A04 | Shared selection, SAF file/folder input and bounded staging | Sol | A02 | DONE 2026-10-08 |
-| A05 | Shared jobs, background lifecycle, progress/cancel and retention | Sol | A03, A04 | TODO |
+| A05 | Shared jobs, background lifecycle, progress/cancel and retention | Sol | A03, A04 | IN PROGRESS |
 | A06 | Audio Forensics feature results/history/export integration | Sol | A05, P07 | TODO |
 | A06a | Initial slice of the independent Spectrogram feature, reusing P06 | Sol | A05, P06 | TODO |
 | A06b | Independently reachable Audio Compare workflow using P07 | Sol | A05, P07 | TODO |

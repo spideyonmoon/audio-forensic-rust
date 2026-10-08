@@ -2,6 +2,7 @@
     <application>
         <activity android:name=".NativeSmokeActivity" android:exported="true" />
         <activity android:name=".InputSmokeActivity" android:exported="true" />
+        <activity android:name=".JobSmokeActivity" android:exported="true" android:configChanges="orientation|screenSize" />
         <provider android:name=".InputTestProvider"
             android:authorities="dev.alfred.workspace.debug.inputs" android:exported="true"
             android:grantUriPermissions="true" android:permission="android.permission.MANAGE_DOCUMENTS">
