@@ -1,5 +1,16 @@
 # Rust port decisions
 
+## A06 Forensics integration — 2026-10-08
+
+DONE. Workspace Forensics uses shared input/jobs/storage with unchanged Rust
+products, qualified uncalibrated reference summaries, complete read-only exact
+field inspection, mixed outcomes, fresh retry, history/delete and original-byte
+SAF export/FileProvider share. Both ABI builds and Android 11–16 generated
+feature/Compose controls passed across full 37806954007 and verified-APK retry
+37809483892. Compiled source is 8094a01; later repairs are harness-only.
+No Kotlin scoring, core/native Rust change or physical acceptance. Next A06a
+Spectrogram and A06b Compare; A07 owns physical resources. [A06](task-results/A06.md).
+
 ## A05 shared jobs — 2026-10-08
 
 DONE. Implemented feature-neutral serial foreground jobs, fresh persisted attempts,

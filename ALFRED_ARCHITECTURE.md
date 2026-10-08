@@ -16,7 +16,8 @@ P09 accepted scoped engine 0.32.0 on 2026-10-06. A01 completed 2026-10-07;
 P06/P07 reusable backends/contracts/tests in this independent core. Alfred owns
 their feature UI and the app/native host boundary. A02 scaffold/builds completed
 2026-10-07; Android 11–16 scaffold CI passed. A03 native adapter and generated-input runtime
-acceptance and A04 shared input completed 2026-10-08; next A05. Owner approved 2026-10-06 deferring F02/DSD
+acceptance, A04 shared input, A05 jobs and A06 Forensics completed 2026-10-08;
+next A06a/A06b feature integration. Owner approved 2026-10-06 deferring F02/DSD
 beyond that release and Alfred launch; its frozen future contract remains. Completed P/F packets and their validation remain intact.
 P09 is the standalone release acceptance decision, not an Android gate or an
 automatic public release. It covers required formats, faithful reference outputs,

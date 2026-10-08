@@ -4,37 +4,32 @@ Updated **2026-10-08**. This is the current continuation point. Historical miles
 entries and exact older check totals are preserved in
 [the handoff archive](docs/history/HANDOFF_20261006.md); newer decisions here win.
 
-## A06 implementation — 2026-10-08
+## A06 COMPLETE — 2026-10-08
 
-**A06 active; implemented, acceptance pending.** Workspace execution now uses
+**A06 DONE. Next: A06a and A06b. No CI jobs running.** Workspace execution uses
 shared acquisition/jobs and original Rust products. Full/explicit prefix, mixed
 outcomes, fresh retry, paged exact-field inspection, qualified reference summary,
 selection-independent history/delete, SAF export and FileProvider share are wired.
 Native output adoption checks released paths/sizes/hashes; no Kotlin scoring or
 core/native Rust/private-audio change. Spectrogram/Compare stay separate routes.
 
-Owner authorized focused commit/push/CI. Offline corrected Kotlin compilation
-and app lint passed (0 errors/12 warnings/3 hints) after repairing a nullable-map harness error. Initial
-sandbox daemon connection failed; permitted retry ran. Final bounded-reader/source
-Kotlin compile passed in target/a06/pre-ci.log (53s). Generated FeatureSmokeActivity prepares 18 acceptance
-controls plus Compose UI navigation checks; Python syntax/whitespace passed.
-Android runtime/UI/phone results are not yet claimed. Details and exact
-failure history: [A06 packet](task-results/A06.md). Owner cleanup edits remain
-unstaged; local target/a06 logs are not external backups.
+Compiled source **8094a01**, branch codex/a06-forensics, passed both ABI builds,
+native host controls/lint/packaging and entire API 31–34 jobs in
+[37806954007](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37806954007).
+Entire API 30/35/36 jobs passed on the same hash/source-bound APK, harness f64d670,
+in [37809483892](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37809483892).
+Acceptance spans these two runs: all 18 feature controls and five Compose
+history/restart/exact u64/null checks passed Android 11–16; all retained A04/A05
+checks passed too. API-30 picker remains A04 manual Hot 11S evidence.
 
-CI source 8094a01 is pushed on codex/a06-forensics; full run 37806954007 is
-running. Both ABI builds/native controls/lint/packaging passed. API 30 passed all
-18 A06 controls and five Compose checks, then A05's `wm user-rotation` command
-failed because API 30 lacks it. Harness-only guard retains actual settings-based
-rotation/background/screen-off and every control. Same verified APK retry next.
-Full run finished: entire API 31–34 passed. API 35/36 picker harness stopped
-before A06 because its completion label fell below the fold; bounded scroll
-repair retains the count/completion/persisted-grant checks. API-30-only runtime
-retry 37808812675 is running. APK download retry and exact source/hash reuse
-guard passed; compiled source remains 8094a01, harness source 6fb7fd2. API35/36
-same-APK retry is next. Auto reuse 37806953779 lacked a first branch artifact.
-Next: inspect A06 CI, finish its acceptance; then start A06a and A06b as
-the owner requested if A06 completes this turn. No A06a/b implementation yet.
+Local corrected Kotlin/lint (0 errors/12 warnings/3 hints), final-source Kotlin,
+Python syntax, whitespace, real-XML picker regression and APK/hash/source guard
+passed. Initial sandbox/compiler, Android-11 wm command, below-fold picker and
+missing runtime manual-marker failures are retained in [A06 record](task-results/A06.md).
+No physical/16-KiB/RSS/thermal acceptance: A07 owns those. Owner cleanup edits
+remain unstaged. Ignored target/a06 evidence is local, not an external backup.
+Next: begin A06a Spectrogram and A06b Compare as the owner requested; reuse
+unchanged Rust computation/rendering/policy and shared jobs/input/storage.
 
 ## A05 COMPLETE — 2026-10-08
 

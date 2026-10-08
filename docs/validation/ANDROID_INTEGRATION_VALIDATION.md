@@ -1,6 +1,19 @@
 # Android integration validation
 
-## A06 implementation — 2026-10-08
+## A06 accepted — 2026-10-08
+
+Compiled 8094a01 passed both ABI builds/native host controls/lint/packaging and
+entire API 31–34 in full run 37806954007. Same hash/source-bound APK passed entire
+API 30/35/36 on harness f64d670 in retry 37809483892. All 18 feature controls and
+five Compose history/restart/qualification/exact u64/null checks passed Android
+11–16, along with all retained input/lifecycle controls. API-30 picker remains
+A04 manual Hot 11S coverage. Acceptance spans these two runs. No jobs running.
+Initial sandbox/compiler, unsupported API-30 wm command, below-fold picker wait
+and missing retry manual marker are repaired and retained in
+[A06](../../task-results/A06.md). Python/whitespace, actual-XML regression and
+APK/hash/source reuse guard passed; real compiled-source changes remain rejected.
+No core/native Rust, DSP/policy or physical/16-KiB/RSS/thermal acceptance change.
+The earlier implementation progression below is historical.
 
 Forensics now consumes shared acquisition/jobs/storage and unchanged Rust products.
 Qualified summaries, paged read-only exact metadata/measurement/reference fields,
