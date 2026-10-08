@@ -42,15 +42,27 @@ def run(output: Path):
             adb("shell", "input", "swipe", "300", "300", "300", "1100", "250")
 
     def root():
-        # The picker remembers its last provider. If already inside our root,
-        # do not reopen it and accidentally clear a multiple-selection state.
-        current = nodes()
-        if any(n.attrib.get("text", "") == "same.flac" for n in current):
-            return
-        drawer = next((n for n in current if n.attrib.get("content-desc", "") in {"Show roots", "Open navigation drawer"}), None)
-        if drawer is not None:
-            tap(drawer)
-        click("Alfred generated inputs")
+        # Roots update asynchronously on a freshly booted emulator. Verify the
+        # destination, and reacquire coordinates if the drawer reordered while
+        # the automation was tapping a row.
+        for attempt in range(4):
+            current = nodes()
+            if any(n.attrib.get("text", "") == "same.flac" for n in current):
+                return
+            drawer = next((n for n in current if n.attrib.get("content-desc", "") in {"Show roots", "Open navigation drawer"}), None)
+            if drawer is not None:
+                tap(drawer)
+            match("Alfred generated inputs")
+            time.sleep(2)  # Let roots discovery finish before using row bounds.
+            provider = match("Alfred generated inputs")
+            (output / f"saf-roots-{attempt}.xml").write_bytes((output / "saf-current.xml").read_bytes())
+            tap(provider)
+            try:
+                match("same.flac", timeout=10)
+                return
+            except AssertionError:
+                pass
+        raise AssertionError("Generated provider root did not open")
 
     def checked(count):
         deadline = time.monotonic() + 45
