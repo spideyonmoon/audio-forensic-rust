@@ -72,10 +72,6 @@ try:
         break
     else:
         raise AssertionError("Shared input/provider smoke timed out")
-    jobs_spec = importlib.util.spec_from_file_location("jobs_smoke", Path(__file__).with_name("jobs-smoke.py"))
-    jobs_smoke = importlib.util.module_from_spec(jobs_spec)
-    jobs_spec.loader.exec_module(jobs_smoke)
-    jobs_smoke.run(output)
     spec = importlib.util.spec_from_file_location("saf_ui", Path(__file__).with_name("saf-ui-smoke.py"))
     saf_ui = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(saf_ui)
@@ -89,6 +85,12 @@ try:
         }))
     else:
         saf_ui.run(output)
+    # Keep every suite, but exercise DocumentsUI before lifecycle tests change
+    # rotation/screen/notification state. Neither suite depends on the other.
+    jobs_spec = importlib.util.spec_from_file_location("jobs_smoke", Path(__file__).with_name("jobs-smoke.py"))
+    jobs_smoke = importlib.util.module_from_spec(jobs_spec)
+    jobs_spec.loader.exec_module(jobs_smoke)
+    jobs_smoke.run(output)
 finally:
     # All are generated-only debug receipts; retain the actual Activity failure
     # even if a per-phase receipt was never reached.
