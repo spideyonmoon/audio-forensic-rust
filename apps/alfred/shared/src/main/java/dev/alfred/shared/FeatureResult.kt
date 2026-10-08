@@ -28,7 +28,7 @@ fun nativeFeatureRequest(app: Context, context: JobContext, inputs: FeatureInput
 data class AdoptedResult(val payload: ResultDescriptor, val artifact: ResultDescriptor?, val artifactStatus: String)
 
 /** Called after runNative confirms release. Validate every native path/hash before adoption. */
-fun JobContext.adoptNative(result: Map<String, Any?>, output: OwnedDirectory): AdoptedResult {
+fun JobContext.adoptNative(result: Map<String, Any?>, output: OwnedDirectory, keepManifest: Boolean = true): AdoptedResult {
     if (result["directory"] != record.attemptId) throw InputFailure("invalid_payload")
     val directory = File(output.file, record.attemptId)
     if (directory.canonicalFile.parentFile != output.file.canonicalFile) throw InputFailure("invalid_payload")
@@ -49,7 +49,7 @@ fun JobContext.adoptNative(result: Map<String, Any?>, output: OwnedDirectory): A
     }
     val payload = adopt(result["payload"])
     // Keep the native manifest unchanged: source/item binding and independent PNG diagnostics.
-    adopt(result["manifest"])
+    if (keepManifest) adopt(result["manifest"])
     val image = result["artifact"] as? Map<*, *>
     val status = image?.get("status") as? String ?: "not_requested"
     val artifact = if (status == "available") adopt(image?.get("payload"), true) else null

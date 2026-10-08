@@ -1,8 +1,9 @@
 # Shared job and result integration
 
 A05 supplies infrastructure; A06/a/b supply feature execution/results screens.
-Forensics execution/history/export is integrated by A06; Spectrogram/Compare
-remain their later task scaffolds. No core computation is duplicated.
+Forensics execution/history/export is accepted by A06. Spectrogram/Compare
+have local A06a/b implementations pending their generated acceptance; saved-input
+Compare selection remains outstanding. No core computation is duplicated.
 
 Call SharedJobs.get(applicationContext).submit from an explicit visible user
 action. Persist chosen scope/options and ordered item IDs. For retry, supply

@@ -100,6 +100,22 @@ try:
         break
     else:
         raise AssertionError("Feature result acceptance timed out")
+    adb("shell", "run-as", "dev.alfred.workspace.debug", "rm", "-f", "files/viewer-compare-smoke.json")
+    adb("shell", "am", "start", "-W", "-n", "dev.alfred.workspace.debug/dev.alfred.workspace.ViewerCompareSmokeActivity")
+    deadline = time.monotonic() + 240
+    while time.monotonic() < deadline:
+        try:
+            viewer_receipt = adb("shell", "run-as", "dev.alfred.workspace.debug", "cat", "files/viewer-compare-smoke.json")
+            viewer = json.loads(viewer_receipt)
+        except (subprocess.CalledProcessError, json.JSONDecodeError):
+            time.sleep(2)
+            continue
+        (output / "viewer-compare-smoke.json").write_text(viewer_receipt)
+        assert viewer["passed"], viewer
+        parsed["viewer"] = viewer
+        break
+    else:
+        raise AssertionError("Spectrogram/Compare acceptance timed out")
     feature_spec = importlib.util.spec_from_file_location("features_ui", Path(__file__).with_name("features-ui-smoke.py"))
     features_ui = importlib.util.module_from_spec(feature_spec)
     feature_spec.loader.exec_module(features_ui)
@@ -113,7 +129,7 @@ try:
 finally:
     # All are generated-only debug receipts; retain the actual Activity failure
     # even if a per-phase receipt was never reached.
-    for name in ["feature-smoke.json", "job-smoke.json", "job-controls.json", "job-marker.json", "job-recovery.json", "job-denied.json", "job-timeout.json"]:
+    for name in ["feature-smoke.json", "viewer-compare-smoke.json", "job-smoke.json", "job-controls.json", "job-marker.json", "job-recovery.json", "job-denied.json", "job-timeout.json"]:
         try:
             (output / name).write_text(adb("shell", "run-as", "dev.alfred.workspace.debug", "cat", "files/" + name))
         except subprocess.CalledProcessError:

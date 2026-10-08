@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 class ResultDestination : ActivityResultContract<String, Uri?>() {
     override fun createIntent(context: Context, input: String) = Intent(Intent.ACTION_CREATE_DOCUMENT)
-        .addCategory(Intent.CATEGORY_OPENABLE).setType("application/octet-stream")
+        .addCategory(Intent.CATEGORY_OPENABLE).setType(if (input.endsWith(".png", true)) "image/png" else if (input.endsWith(".json", true)) "application/json" else "application/octet-stream")
         .putExtra(Intent.EXTRA_TITLE, boundedName(input))
     override fun parseResult(resultCode: Int, intent: Intent?) = if (resultCode == Activity.RESULT_OK) intent?.data else null
 }
@@ -49,7 +49,7 @@ class ResultTransfer(context: Context, private val store: ResultStore) {
         transfer(attempt) { store.export(app, attempt, descriptor, destination) }
     fun share(attempt: String, descriptor: ResultDescriptor) = transfer(attempt) {
         val uri = store.share(app, attempt, descriptor)
-        Intent(Intent.ACTION_SEND).setType("application/octet-stream").putExtra(Intent.EXTRA_STREAM, uri)
+        Intent(Intent.ACTION_SEND).setType(if (descriptor.kind == "png") "image/png" else if (descriptor.kind in setOf("product", "spectrogram", "comparison", "alfred-result")) "application/json" else "application/octet-stream").putExtra(Intent.EXTRA_STREAM, uri)
             .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION).apply { clipData = ClipData.newRawUri("Alfred result", uri) }
     }
 }

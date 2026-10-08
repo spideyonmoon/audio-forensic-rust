@@ -146,8 +146,8 @@ class MainActivity : ComponentActivity() {
                                 val capability = operationCapability(operation, workspace)
                                 if (capability.state == "available") route = feature.name else transferNotice = capability.reason
                             }
-                            FeatureId.SPECTROGRAM.name -> inputs.featureInputs()?.let { SpectrogramScreen(it) }
-                            FeatureId.COMPARE.name -> inputs.featureInputs()?.let { CompareScreen(it) }
+                            FeatureId.SPECTROGRAM.name -> SpectrogramScreen(inputs.featureInputs(), model.jobs, jobs, export, share)
+                            FeatureId.COMPARE.name -> CompareScreen(inputs.featureInputs(), workspace.sameTrack, model.jobs, jobs, export, share)
                             else -> {
                                 Text("Audio workspace", style = MaterialTheme.typography.titleLarge)
                                 TextButton(onClick = { route = FeatureId.FORENSICS.name }) { Text("Forensics history") }
@@ -183,6 +183,8 @@ class MainActivity : ComponentActivity() {
                                         Text("A live comparison will use one agreed scope for all tracks; common prefix budget: ${capability.prefixSeconds ?: 0} seconds. Choose the scope when starting the Compare workflow.")
                                     }
                                 }
+                                TextButton(onClick = { route = FeatureId.SPECTROGRAM.name }) { Text("Spectrogram history") }
+                                TextButton(onClick = { route = FeatureId.COMPARE.name }) { Text("Compare history") }
                                 Text("Input workspace · $nativeStatus")
                             }
                         }

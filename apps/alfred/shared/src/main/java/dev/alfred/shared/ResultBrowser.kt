@@ -52,6 +52,7 @@ fun ExactFields(value: Any?) {
 @Composable
 fun ResultBrowser(feature: String, jobs: SharedJobs, records: List<JobRecord>, supported: Set<Pair<String, String>>,
                   onExport: ResultAction, onShare: ResultAction,
+                  artifactPreview: @Composable (String, ResultDescriptor) -> Unit = { _, _ -> },
                   summary: @Composable (ResultDescriptor, Any?) -> Unit = { _, _ -> }) {
     var entries by remember { mutableStateOf<List<org.json.JSONObject>>(emptyList()) }
     var selected by rememberSaveable(feature) { mutableStateOf<String?>(null) }
@@ -110,6 +111,7 @@ fun ResultBrowser(feature: String, jobs: SharedJobs, records: List<JobRecord>, s
         descriptors.getOrNull(descriptorIndex)?.let { descriptor ->
             Button(onClick = { onExport(attempt, descriptor) }) { Text("Export original ${descriptor.kind}") }
             Button(onClick = { onShare(attempt, descriptor) }) { Text("Share ${descriptor.kind}") }
+            if (loadState == "available" && descriptor.artifact) artifactPreview(attempt, descriptor)
             if (loadState == "available" && document != null) {
                 summary(descriptor, document)
                 key(attempt, descriptor.path) { Column { ExactFields(document) } }

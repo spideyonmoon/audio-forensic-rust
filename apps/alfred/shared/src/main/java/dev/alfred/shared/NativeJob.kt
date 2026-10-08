@@ -5,8 +5,9 @@ import java.math.BigInteger
 
 /** Blocking adapter helper for the shared worker only. Return requires actual
  * native release, including cancellation/close. Tokens never enter the journal. */
-fun JobContext.runNative(request: JSONObject, snapshot: OwnedInput, output: OwnedDirectory,
-                         client: NativeClient, onStarted: (Long) -> Unit = {}): Map<String, Any?> {
+fun JobContext.runNative(request: JSONObject, snapshot: OwnedInput?, output: OwnedDirectory,
+                         client: NativeClient, savedPins: List<AutoCloseable> = emptyList(),
+                         onStarted: (Long) -> Unit = {}): Map<String, Any?> {
     @Suppress("UNCHECKED_CAST")
     fun objectValue(value: Any?) = value as Map<String, Any?>
     fun response(bytes: ByteArray): Map<String, Any?> {
@@ -14,8 +15,8 @@ fun JobContext.runNative(request: JSONObject, snapshot: OwnedInput, output: Owne
         if (envelope["ok"] != true) throw InputFailure(objectValue(envelope["error"])["code"] as String)
         return objectValue(envelope["value"])
     }
-    require(request.getString("attempt_id") == record.attemptId && snapshot.attemptId == record.attemptId)
-    val sourcePin = snapshot.retain()
+    require(request.getString("attempt_id") == record.attemptId && (snapshot == null || snapshot.attemptId == record.attemptId))
+    val sourcePin = snapshot?.retain()
     val outputPin = output.retain()
     var handle: Long? = null
     var released = true
@@ -54,7 +55,7 @@ fun JobContext.runNative(request: JSONObject, snapshot: OwnedInput, output: Owne
             throw error
         } finally {
             // Preserve pins on transport failure rather than remove a live source.
-            if (released) { sourcePin.close(); outputPin.close() }
+            if (released) { sourcePin?.close(); outputPin.close(); savedPins.forEach { it.close() } }
         }
     }
 }

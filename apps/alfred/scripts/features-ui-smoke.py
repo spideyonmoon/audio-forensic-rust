@@ -56,3 +56,28 @@ def run(output, receipt):
     (output / "feature-ui-smoke.json").write_text(json.dumps({"passed": True, "checks": 5,
         "history_after_restart": True, "api": int(adb("shell", "getprop", "ro.build.version.sdk"))}))
     adb("shell", "input", "keyevent", "4")
+    viewer = receipt.get("viewer")
+    if viewer:
+        click("Spectrogram history")
+        find("Independent bounded P06")
+        click("Open completed · " + viewer["preview_attempt"])
+        find("Measurement: analyzed")
+        click("3: png")
+        find("Scaled viewing preview")
+        image = next((n for n in nodes() if n.attrib.get("content-desc") == "Calibrated Rust spectrogram PNG"), None)
+        assert image is not None, "Rust PNG was not displayed"
+        adb("shell", "screencap", "-p", "/sdcard/alfred-spectrogram.png")
+        adb("pull", "/sdcard/alfred-spectrogram.png", str(output / "spectrogram-display.png"))
+        click("Open completed · " + viewer["old_attempt"], up=False)
+        find("Presentation/encoded bitrate unavailable")
+        adb("shell", "input", "keyevent", "4")
+        click("Compare history")
+        find("Compare saved products")
+        click("Open completed · " + viewer["compare_attempt"])
+        click("3: comparison")
+        find("Comparison: available")
+        find("Winner reported by Rust")
+        (output / "viewer-compare-ui.json").write_text(json.dumps({"passed": True,
+            "independent_routes_after_restart": True, "Rust_PNG_display": True,
+            "saved_product_selection_visible": True, "comparison_history": True}))
+        adb("shell", "input", "keyevent", "4")
