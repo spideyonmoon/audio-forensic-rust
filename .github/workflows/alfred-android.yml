@@ -37,6 +37,9 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: alfred-api30-${{ runner.os }}-${{ hashFiles('Cargo.lock', 'apps/alfred/native/Cargo.lock', 'apps/alfred/**/gradle.lockfile', 'apps/alfred/gradle/verification-metadata.xml') }}
+          # Reuse compiled dependencies after a configuration-lock-only change;
+          # Cargo locks and strict Gradle checksums still validate every build.
+          restore-keys: alfred-api30-${{ runner.os }}-
       - name: Native adapter host acceptance
         run: cargo test --release --locked --manifest-path apps/alfred/native/Cargo.toml
       - run: bash apps/alfred/scripts/build-linux.sh arm64-v8a
