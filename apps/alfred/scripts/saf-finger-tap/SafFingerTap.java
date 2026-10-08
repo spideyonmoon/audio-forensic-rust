@@ -30,9 +30,17 @@ public class SafFingerTap extends UiAutomatorTestCase {
     }
     private void send(Method inject, Object bridge, long down, int action,
                       MotionEvent.PointerProperties pointer, MotionEvent.PointerCoords coordinates) throws Exception {
+        int deviceId = 0;
+        for (int id : InputDevice.getDeviceIds()) {
+            InputDevice device = InputDevice.getDevice(id);
+            if (device != null && device.supportsSource(InputDevice.SOURCE_TOUCHSCREEN)) {
+                deviceId = id;
+                break;
+            }
+        }
         MotionEvent event = MotionEvent.obtain(down, SystemClock.uptimeMillis(), action, 1,
             new MotionEvent.PointerProperties[] {pointer}, new MotionEvent.PointerCoords[] {coordinates},
-            0, 0, 1, 1, 0, 0, InputDevice.SOURCE_TOUCHSCREEN, 0);
+            0, 0, 1, 1, deviceId, 0, InputDevice.SOURCE_TOUCHSCREEN, 0);
         // Match API-30's shell input sender: virtual pointer events explicitly
         // target the default display instead of retaining an invalid display ID.
         MotionEvent.class.getMethod("setDisplayId", int.class).invoke(event, 0);
