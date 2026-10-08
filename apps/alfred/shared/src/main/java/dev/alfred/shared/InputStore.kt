@@ -70,13 +70,29 @@ class InputStore(private val directory: File, private val freeBytes: () -> Long 
         const val DISK_MARGIN = 256L * 1024 * 1024
         const val PROBE_OUTPUT = 64L * 1024 * 1024
         const val BUFFER_BYTES = 256 * 1024
+        private val activeDirectories = mutableSetOf<String>()
     }
     private var occupied = false
+    private var slotKey: String? = null
     @Synchronized private fun claim() {
         if (occupied) throw InputFailure("busy")
-        occupied = true
+        val key = directory.canonicalPath
+        synchronized(activeDirectories) {
+            if (key in activeDirectories) throw InputFailure("busy")
+            // A recreated controller must not stage beside an old worker or an
+            // interrupted process's orphan. A05 owns orphan recovery/deletion.
+            if (directory.isDirectory && Files.newDirectoryStream(directory.toPath()).use { it.iterator().hasNext() }) {
+                throw InputFailure("interrupted")
+            }
+            activeDirectories.add(key)
+            slotKey = key
+            occupied = true
+        }
     }
-    @Synchronized private fun releaseSlot() { occupied = false }
+    @Synchronized private fun releaseSlot() {
+        synchronized(activeDirectories) { slotKey?.let { activeDirectories.remove(it) } }
+        slotKey = null; occupied = false
+    }
     fun admitWrite(bytes: Long) {
         if (freeBytes() < DISK_MARGIN + PROBE_OUTPUT + bytes) throw InputFailure("storage_full")
     }

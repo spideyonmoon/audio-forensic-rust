@@ -80,6 +80,7 @@ class InputSmokeActivity : Activity() {
         wav.close(); wav.close()
         check(wav.file.exists() && wav.state == "in_use")
         expect("busy") { acquire("pipe") }
+        expect("busy") { InputStore(directory).acquire(UUID.randomUUID().toString(), null, InputCancellation()) { ByteArrayInputStream(byteArrayOf(1)) } }
         nativePin.close(); nativePin.close()
         check(!wav.file.exists() && wav.state == "released")
         acquire("pipe").use { check(it.sha256 == encodedHash) }
@@ -113,6 +114,9 @@ class InputSmokeActivity : Activity() {
         }
         free = Long.MAX_VALUE
         check(directory.listFiles()!!.isEmpty())
+        val orphan = File(directory, "generated-orphan.partial").apply { writeText("generated") }
+        expect("interrupted") { acquire("wav") }
+        check(orphan.delete())
         val output = OwnedDirectory.create(File(filesDir, "output-test-store"), UUID.randomUUID().toString())
         File(output.file, "payload").writeText("generated")
         val reader = output.retain()
