@@ -4,6 +4,22 @@ Updated **2026-10-08**. This is the current continuation point. Historical miles
 entries and exact older check totals are preserved in
 [the handoff archive](docs/history/HANDOFF_20261006.md); newer decisions here win.
 
+## A04 implementation — 2026-10-08, CI pending
+
+Shared SAF selection/staging/probe code and workspace controls are implemented;
+see [A04 results](task-results/A04.md). Offline Kotlin compile, pinned lock
+configuration update, Python syntax and whitespace passed. Android runtime/ABI
+build/lint acceptance is pending; A04 is not yet DONE. Debug generated provider
+harness includes exact 700 MiB/overflow/cancel/lease controls and real DocumentsUI
+single/multiple/folder grant checks. No source commit/push or CI job yet.
+
+Next concrete action: run the existing Alfred GitHub Actions workflow with this
+A04 source, inspect/repair actual provider/UI failures, then update the A04 card,
+roadmap and current handoff to A05. Heavy checks stay on CI. A05 owns background
+jobs/history/quota/orphan recovery; feature execution stays A06/a/b. Current
+changes are app input/UI/tests and packet documentation; core/private audio and
+owner cleanup edits remain preserved. Local logs: ignored target/a04/.
+
 ## A03 COMPLETE — 2026-10-08
 
 **DONE. Next delivery task: A04. No jobs running.**

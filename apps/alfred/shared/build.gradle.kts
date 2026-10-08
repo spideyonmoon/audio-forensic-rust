@@ -16,5 +16,6 @@ android {
 }
 kotlin { compilerOptions { jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17) } }
 dependencies {
+    implementation("androidx.activity:activity:1.8.2")
     implementation("androidx.compose.material3:material3:1.3.2")
 }

@@ -415,6 +415,8 @@ Android target compilation alone is insufficient.
 
 ## A04 — shared workspace selection, input and staging
 
+**Status: IN PROGRESS 2026-10-08 — implementation/local compile complete; Android CI pending.** [A04 results](task-results/A04.md).
+
 **Sol; after A02.** Implement shared SAF file/folder picker/workspace, one/many
 track selection, bounded folder enumeration, URI grants, source acquisition and
 staging for nonseekable providers under A01 limits. Features receive owned input

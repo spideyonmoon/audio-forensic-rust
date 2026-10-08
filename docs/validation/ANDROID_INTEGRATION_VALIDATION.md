@@ -1,5 +1,10 @@
 # Android integration validation
 
+## A04 shared input — 2026-10-08, CI pending
+
+Shared SAF workspace/staging/probing and generated provider/UI controls are implemented. Offline Kotlin compilation, existing pinned dependency configuration locks, Python syntax and whitespace passed. Required ABI APK/lint and API 30–36 runtime tests have not yet run; do not claim runtime acceptance. [A04 record](../../task-results/A04.md) includes exact cases, commands and initial failures. Core/private inputs are unchanged. A05 jobs/history and A07 physical acceptance remain later gates.
+
+
 ## A03 accepted — 2026-10-08
 
 Final source ce037d3 passed [CI 37673381546](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37673381546):

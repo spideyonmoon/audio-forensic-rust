@@ -4,6 +4,7 @@ import subprocess
 import time
 import json
 import xml.etree.ElementTree as ET
+import importlib.util
 
 
 def adb(*args):
@@ -55,5 +56,23 @@ try:
         break
     else:
         raise AssertionError("Generated-input JNI smoke timed out")
+    adb("shell", "am", "start", "-W", "-n", "dev.alfred.workspace.debug/dev.alfred.workspace.InputSmokeActivity")
+    deadline = time.monotonic() + 240
+    while time.monotonic() < deadline:
+        try:
+            receipt = adb("shell", "run-as", "dev.alfred.workspace.debug", "cat", "files/input-smoke.json")
+            parsed = json.loads(receipt)
+        except (subprocess.CalledProcessError, json.JSONDecodeError):
+            time.sleep(2)
+            continue
+        (output / "input-smoke.json").write_text(receipt)
+        assert parsed["passed"], parsed
+        break
+    else:
+        raise AssertionError("Shared input/provider smoke timed out")
+    spec = importlib.util.spec_from_file_location("saf_ui", Path(__file__).with_name("saf-ui-smoke.py"))
+    saf_ui = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(saf_ui)
+    saf_ui.run(output)
 finally:
     (output / "logcat.txt").write_text(adb("logcat", "-d"))

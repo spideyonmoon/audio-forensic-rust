@@ -1,5 +1,10 @@
 # Rust port decisions
 
+## A04 shared input — 2026-10-08
+
+Shared SAF identities/grants, bounded folder enumeration, serial snapshot staging and native metadata capability checks are implemented. Feature input access reuses shared counted snapshots and encoded-hash verification. Kotlin compilation passed; Android CI acceptance is pending. No core/DSP or format change. [A04 details](task-results/A04.md).
+
+
 ## A03 native adapter — 2026-10-08
 
 DONE: CI 37673381546 passed both ABI builds and all API 30–36 JNI smoke jobs.
