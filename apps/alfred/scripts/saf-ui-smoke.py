@@ -70,8 +70,10 @@ def run(output: Path):
         tap(match(label))
 
     def top():
+        current = nodes()
+        _, _, width, height = map(int, re.findall(r"\d+", current[0].attrib["bounds"]))
         for _ in range(3):
-            adb("shell", "input", "swipe", "300", "300", "300", "1100", "250")
+            adb("shell", "input", "swipe", str(width // 2), str(height // 3), str(width // 2), str(height * 4 // 5), "250")
 
     def root():
         def ready():
@@ -95,9 +97,21 @@ def run(output: Path):
             drawer = next((n for n in current if n.attrib.get("content-desc", "") in {"Show roots", "Open navigation drawer"}), None)
             if drawer is not None:
                 tap(drawer)
-            match("Alfred generated inputs")
             time.sleep(2)  # Let roots discovery finish before using row bounds.
-            provider = match("Alfred generated inputs")
+            provider = None
+            for _ in range(4):
+                current = nodes()
+                roots = next((n for n in current if n.attrib.get("resource-id", "").endswith("/roots_list")), None)
+                if roots is None:
+                    break
+                provider = next((n for n in roots.iter("node") if n.attrib.get("text") == "Alfred generated inputs"), None)
+                if provider is not None:
+                    break
+                left, top_y, right, bottom = map(int, re.findall(r"\d+", roots.attrib["bounds"]))
+                x = str((left + right) // 2)
+                adb("shell", "input", "swipe", x, str(bottom - 20), x, str(top_y + 20), "250")
+            if provider is None:
+                continue
             (output / f"saf-roots-{attempt}.xml").write_bytes((output / "saf-current.xml").read_bytes())
             tap(provider)
             try:
