@@ -110,12 +110,20 @@ def run(output: Path):
 
     def checked(count):
         deadline = time.monotonic() + 45
+        complete = False
         while time.monotonic() < deadline:
             current = nodes()
             texts = [n.attrib.get("text", "") for n in current]
             if f"{count} selected documents" in texts and any("Input checks complete" in text for text in texts):
-                assert any("persisted" in text for text in texts), texts
+                complete = True
+            if complete and any("persisted" in text for text in texts):
                 return
+            if complete:
+                # Notifications/other status text can push the document row off
+                # screen; verify its actual label after a bounded scroll.
+                bounds = current[0].attrib["bounds"]
+                _, _, width, height = map(int, re.findall(r"\d+", bounds))
+                adb("shell", "input", "swipe", str(width // 2), str(height * 4 // 5), str(width // 2), str(height // 3), "250")
             time.sleep(1)
         raise AssertionError(f"SAF acquisition did not finish for {count} inputs")
 

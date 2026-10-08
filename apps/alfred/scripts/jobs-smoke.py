@@ -23,6 +23,14 @@ def receipt(name, predicate=lambda value: value.get("passed"), seconds=60):
                 return value
         except (subprocess.CalledProcessError, json.JSONDecodeError):
             pass
+        # A target receipt may be absent because the Activity recorded its real
+        # failure in the aggregate receipt. Do not hide that behind a timeout.
+        try:
+            aggregate = json.loads(adb("shell", "run-as", PACKAGE, "cat", "files/job-smoke.json"))
+            if aggregate.get("passed") is False:
+                raise AssertionError(aggregate)
+        except (subprocess.CalledProcessError, json.JSONDecodeError):
+            pass
         time.sleep(0.25)
     raise AssertionError("Bounded receipt wait expired: " + name)
 
@@ -57,6 +65,7 @@ def run(output):
     adb("shell", "input", "keyevent", "KEYCODE_WAKEUP")
     adb("shell", "wm", "dismiss-keyguard")
     adb("shell", "settings", "put", "system", "user_rotation", "0")
+    adb("shell", "wm", "user-rotation", "lock", "0")
     evidence["checks"].append({"rotation_background_screen_off": "completed", "attempt": completed["attempt_id"]})
 
     for phase in ["copy", "native", "finalizing", "completed"]:
@@ -89,6 +98,12 @@ def run(output):
     else:
         evidence["checks"].append({"platform_media_processing_timeout": "not_applicable_before_api35"})
     (output / "jobs-smoke.json").write_text(json.dumps(evidence, indent=2))
+    # Denial was exercised above. Restore test-environment state for the existing
+    # picker suite, whose generated row should not be pushed below the fold.
+    if api >= 33:
+        adb("shell", "pm", "grant", PACKAGE, "android.permission.POST_NOTIFICATIONS")
+    adb("shell", "wm", "user-rotation", "lock", "0")
+    time.sleep(1)
 
 
 if __name__ == "__main__":

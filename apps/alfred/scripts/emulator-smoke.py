@@ -90,4 +90,11 @@ try:
     else:
         saf_ui.run(output)
 finally:
+    # All are generated-only debug receipts; retain the actual Activity failure
+    # even if a per-phase receipt was never reached.
+    for name in ["job-smoke.json", "job-controls.json", "job-marker.json", "job-recovery.json", "job-denied.json", "job-timeout.json"]:
+        try:
+            (output / name).write_text(adb("shell", "run-as", "dev.alfred.workspace.debug", "cat", "files/" + name))
+        except subprocess.CalledProcessError:
+            pass
     (output / "logcat.txt").write_text(adb("logcat", "-d"))
