@@ -1,8 +1,49 @@
 # Start here: Audio Forensic Rust
 
-Updated **2026-10-08**. This is the current continuation point. Historical milestone
+Updated **2026-10-09**. This is the current continuation point. Historical milestone
 entries and exact older check totals are preserved in
 [the handoff archive](docs/history/HANDOFF_20261006.md); newer decisions here win.
+
+## A06a then A06b COMPLETE — 2026-10-09
+
+**A06a DONE; A06b DONE. Next: A07 physical-device gate (Astra + owner).
+No jobs running.** Accepted compiled source **5c5ce00**, pushed on
+codex/a06ab-features, passed the complete [combined CI](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37820435450): both ABI links/
+APKs, native host controls, lint, fixture bytes, alignment/signatures and every
+API 30–36 emulator job. All seven receipts match the same 22 generated feature
+controls (7 Spectrogram, 15 Compare), with Compose restart/routes/PNG/old-wrapper/
+saved-selection/comparison checks and retained A03–A06/input/lifecycle checks.
+API-30 picker remains the existing manual Hot 11S evidence; no new phone claim.
+
+Spectrogram independently runs P06 with all presets/Publication default, retains
+unchanged wrapper/PNG, displays the complete scaled Rust canvas and exports its
+original bytes. Old presentation, separate PNG failure, input/native cancellation
+and cleanup passed. Android-11 screenshot was visually inspected. This is the
+initial slice, not the full interactive/competitive viewing product.
+
+Compare independently supports live and saved same-track variants, one common
+live scope, full-rate admission, stable input-order ties, Rust compatibility/
+nulls/caveats and exact transfer. Saved admission pins protect queued sources;
+original products are copied into independently retained comparison results.
+Queue cancellation/deletion, missing/future/invalid inputs, short-prefix abstention,
+eligible shorter EOF and mixed/all-unavailable cases passed. Native terminal
+failure codes now survive the shared adapter. No Kotlin scoring or Rust/DSP/
+schema/oracle/private-audio change. Broader comparison semantics remain unfrozen.
+
+Local Kotlin/lint passed (1m50s; 0 errors/12 warnings/4 hints), final Kotlin 38s,
+stale-selection Kotlin 44s and original-token/error-map Kotlin 1m27s. Python syntax,
+whitespace, preserved core/native/fixtures and both APK hash/source bindings passed.
+Initial sandbox daemon failure and three failed CI iterations are retained in
+[A06a](task-results/A06a.md) / [A06b](task-results/A06b.md): mistaken tail-frame count,
+insufficient one-second tuple control and JSONObject-rewritten binding rejection.
+Original-token host controls passed; the exact field behind the rewritten binding rejection was not
+isolated. No oracle was regenerated. All final runtime gates passed.
+
+Phone APK: target/a06ab/accepted-build/arm64-v8a/app-debug.apk (source-bound CI
+artifact). Receipts/screenshots/logs under ignored target/a06ab are local evidence,
+not Git history or external research backup. Focused source is pushed; unrelated
+owner cleanup edits remain unstaged. A07 owns physical ARM64, 16-KiB runtime,
+large/private input, RSS/thermal/background behavior; none is accepted here.
 
 ## A06 COMPLETE — 2026-10-08
 

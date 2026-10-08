@@ -101,7 +101,12 @@ and explain why it is needed rather than producing an open-ended shopping list.
 
 ## U03 — test the alpha on the phone
 
-Status: **not yet applicable; Android build not available yet**.
+Status: **ready for A07 physical acceptance; generated Android 11–16 CI passed**.
+The source-bound development ARM64 APK is locally available at
+`target/a06ab/accepted-build/arm64-v8a/app-debug.apk`, built from `5c5ce00` in
+[CI 37820435450](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37820435450).
+Phone installation/use and physical/resource acceptance of this APK are not yet
+recorded; earlier Hot 11S picker evidence used a different APK.
 
 After A06/A07 supplies a usable build:
 

@@ -1,5 +1,65 @@
 # Android integration validation
 
+## A06a then A06b accepted — 2026-10-09
+
+Compiled source 5c5ce00/full [CI 37820435450](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37820435450) passed both ABI links/APKs,
+native host tests, lint, strict generated assets, alignment/signatures and every
+API 30–36 emulator job. All seven receipts match 22 grouped controls: 7 Spectrogram
+and 15 Compare, including PNG bytes/dimensions/title/hash/calibration/display,
+old presentation, independent failure/cancel, live/saved compatibility/ties/nulls,
+short-prefix abstention, eligible shorter EOF, invalid versions/methods/domains,
+queue/source/native ownership and exact transfer. Compose independent restart
+routes, PNG display, absent presentation and saved Compare selection/history passed.
+Android-11 screenshot was visually inspected; both APK hash/source bindings passed.
+Retained A03–A06/input/jobs suites passed, including platform timeout on API 35/36.
+API-30 picker retains prior manual Hot 11S evidence. No new physical/ARM64 runtime,
+16-KiB/RSS/thermal/private/large-input acceptance; A07 owns those gates.
+
+Local checks: Kotlin/lint 1m50s (0 errors/12 warnings/4 hints), Kotlin 38s, stale
+selection Kotlin 44s, original-token/error-map Kotlin 1m27s; Python syntax,
+whitespace and core/native/schema/fixture preservation. P09 host saved controls
+passed original-token absence and invalid schema/method/domain cases. Source is
+pushed on codex/a06ab-features; ignored target/a06ab evidence is local, not a
+research backup. No Rust/DSP/scoring/oracle change. No running jobs/failures.
+
+Initial sandbox and CI failures (tail-frame assertion, insufficient short ranking
+control, JSONObject-rewritten binding) and bounded repairs are preserved in
+[A06a](../../task-results/A06a.md) / [A06b](../../task-results/A06b.md). Native terminal
+error codes now survive the host; exact cause of the rewritten binding rejection
+was not isolated, and Python rewriting did not reproduce Android's rejection.
+Current final byte-preserving controls and all runtime gates passed.
+
+## A06a/A06b completion controls — 2026-10-08
+
+Owner authorized the combined commit/push/CI. Source a937ac6 on
+codex/a06ab-features adds saved Compare selection/admission pins/independent byte
+retention and generated Spectrogram/Compare worker plus Compose controls.
+Core/native Rust, DSP, schemas and numerical fixtures are unchanged.
+Targeted offline Kotlin/lint passed outside the sandbox in 1m50s (0 errors,
+12 warnings/4 hints); final Kotlin passed in 38s. Python syntax/whitespace passed.
+The first sandbox daemon-connection attempt failed and is retained locally.
+Logs are ignored target/a06ab, not source history or research backup.
+
+Full Android build/runtime run 37815295771 is in progress. Automatic APK-reuse
+run 37815295850 failed before emulators because the new branch had no previous
+APK artifact; no runtime check was run by it. Acceptance remains pending.
+The unchanged physical/16-KiB/RSS/thermal gate belongs to A07.
+
+## A06a/A06b local start — 2026-10-08
+
+Owner requested starting both after A06 acceptance. Local Spectrogram source jobs,
+all presets, scaled Rust PNG preview/history/transfer and live same-track/common
+scope P07 comparison/history/transfer are implemented. Saved-product selection
+as new comparison input is still outstanding. Shared saved-result native pins and
+preview/MIME hooks are local changes; there is no new native/core Rust or DSP.
+
+Offline Kotlin/lint passed (2m46s; 0 errors/12 warnings/3 hints), and final Kotlin
+passed after history placement/future-method dispatch edits (51s). Whitespace and
+core/native/schema/fixture preservation passed. No follow-on APK/runtime/UI/
+old-wrapper/cancellation/comparison edge/device acceptance is claimed. Logs are
+ignored target/a06ab; no jobs running. State/next controls:
+[A06a](../../task-results/A06a.md), [A06b](../../task-results/A06b.md).
+
 ## A06 accepted — 2026-10-08
 
 Compiled 8094a01 passed both ABI builds/native host controls/lint/packaging and

@@ -1,9 +1,11 @@
 # Shared job and result integration
 
 A05 supplies infrastructure; A06/a/b supply feature execution/results screens.
-Forensics execution/history/export is accepted by A06. Spectrogram/Compare
-have local A06a/b implementations pending their generated acceptance; saved-input
-Compare selection remains outstanding. No core computation is duplicated.
+Forensics is accepted by A06; independent Spectrogram and live/saved Compare
+passed A06a/b generated worker/Compose acceptance on Android 11–16 (2026-10-09).
+Saved Compare pins selected attempts at queue admission, retains original coverage/
+order and copies original products into its own result history. Native terminal
+error codes survive the host adapter. No core computation is duplicated.
 
 Call SharedJobs.get(applicationContext).submit from an explicit visible user
 action. Persist chosen scope/options and ordered item IDs. For retry, supply

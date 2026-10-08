@@ -11,6 +11,8 @@ override it. Validation documents are indexed [under docs](../docs/validation/RE
 - [A03](A03.md)
 - [A05 — shared jobs and retention](A05.md)
 - [A06 — Forensics results/history/export](A06.md)
+- [A06a — initial Spectrogram integration](A06a.md)
+- [A06b — Audio Compare integration](A06b.md)
 - [Android 11 compatibility and CI](ANDROID-11-CI.md)
 - [F01](F01.md)
 - [P01-MQA](P01-MQA.md)

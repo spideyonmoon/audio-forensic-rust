@@ -53,8 +53,8 @@ the entire roadmap. If a task spans sessions, resume the same ID and saved state
 
 ## Current dispatch
 
-- **Active task:** none; A06 DONE 2026-10-08.
-- **Next delivery tasks:** **A06a — Spectrogram** and **A06b — Audio Compare (Sol)**.
+- **Active tasks:** none. A06a/A06b DONE 2026-10-09; A06 DONE 2026-10-08.
+- **Next delivery tasks:** **A07 — physical-device/resource gate (Astra + owner)**.
 - **Owner inputs received:** Redmi 13 4G, Android 16, APK/ADB available;
   FLAC/WAV/ALAC-M4A/DSD; detailed verdict, complete metadata and deep results;
   approximately 600–700 MB upper typical file size; Alfred via GitHub Releases.
@@ -62,12 +62,13 @@ the entire roadmap. If a task spans sessions, resume the same ID and saved state
   Heavy Android checks run in GitHub Actions; retain common memory rules. U02/U05 continue alongside implementation.
 - **Deferred:** F02/DSD beyond the first standalone release and Alfred launch,
   owner approved 2026-10-06 to conserve Astra budget. DSD is not shipped support.
-- **Next Sol tasks:** A06a/A06b. P09/A01–A06 are complete; follow ANDROID_CONTRACT.md.
+- **Next Sol task:** A08 after A07. P09/A01–A06b are complete; follow ANDROID_CONTRACT.md.
 - **Next endgame task when explicitly requested:** E01, the AAC trim work.
 - **Independent MQA work:** existing prototype/corpus at
   `C:\Users\Bishal\Documents\antigravity-dev\mqa`; E09 now READY for a
   named review, not a beta gate. See `task-results/P01-MQA.md`.
-- **Running jobs:** none. A06 build/API 31–34 passed in 37806954007;
+- **Running jobs:** none. A06a/b full CI 37820435450 on 5c5ce00 passed all APIs.
+  A06 build/API 31–34 passed in 37806954007;
   source-bound API 30/35/36 retry 37809483892 passed.
 
 P01 is a completed specification packet, not a completed port. Its frozen
@@ -185,8 +186,8 @@ unless the card explicitly permits work against the frozen contract.
 | A04 | Shared selection, SAF file/folder input and bounded staging | Sol | A02 | DONE 2026-10-08 |
 | A05 | Shared jobs, background lifecycle, progress/cancel and retention | Sol | A03, A04 | DONE 2026-10-08 |
 | A06 | Audio Forensics feature results/history/export integration | Sol | A05, P07 | DONE 2026-10-08 |
-| A06a | Initial slice of the independent Spectrogram feature, reusing P06 | Sol | A05, P06 | TODO |
-| A06b | Independently reachable Audio Compare workflow using P07 | Sol | A05, P07 | TODO |
+| A06a | Initial slice of the independent Spectrogram feature, reusing P06 | Sol | A05, P06 | DONE 2026-10-09 |
+| A06b | Independently reachable Audio Compare workflow using P07 | Sol | A05, P07 | DONE 2026-10-09 |
 | A07 | Alfred real-device workspace/feature/resource gate | Astra + owner | A06, A06a, A06b, P09, U01 | TODO |
 | A08 | Alfred beta packaging and repository-boundary handoff | Sol + owner | A07, U03 | TODO |
 
@@ -198,7 +199,7 @@ ledger; it does not imply publication or Android acceptance.
 Alfred development then begins: A01 → A02 → A03/A04 → A05 → A06/A06a/A06b →
 A07 → A08. A03 and A04 have independent responsibilities; sessions still run
 sequentially by default. The former permission to start A01–A03 before the core
-release is superseded by this boundary. A01–A06 are complete; A06a/A06b/A07/A08 remain.
+release is superseded by this boundary. A01–A06b are complete; A07/A08 remain.
 
 Shared infrastructure: A01/A02/A04/A05. Audio Forensics integration: A03/A06.
 Independent existing-functionality workflows: A06a/A06b. A07/A08 gate the Alfred

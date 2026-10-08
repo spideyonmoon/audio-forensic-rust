@@ -1,5 +1,14 @@
 # Rust port decisions
 
+A06a Spectrogram and A06b live/saved Compare completed 2026-10-09. Accepted
+compiled source 5c5ce00 passed both ABI APK builds and full Android 11–16 generated
+worker/Compose/input/lifecycle acceptance in [CI 37820435450](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37820435450). Spectrogram
+retains P06 presets/canvas/original export; saved Compare retains original coverage,
+order, admission/native pins and independently owned product bytes. Native terminal
+failure codes survive the shared adapter. Rust computation/policy/schemas/oracles
+remain unchanged. Next A07 physical resources/device gate; no jobs running.
+See [A06a](task-results/A06a.md), [A06b](task-results/A06b.md) and current handoff.
+
 ## A06 Forensics integration — 2026-10-08
 
 DONE. Workspace Forensics uses shared input/jobs/storage with unchanged Rust
