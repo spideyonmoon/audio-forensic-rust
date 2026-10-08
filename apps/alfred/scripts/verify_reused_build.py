@@ -7,7 +7,7 @@ import subprocess
 import sys
 
 
-def verify(directory):
+def verify(directory, if_unchanged=False):
     revisions = set()
     for abi in ("arm64-v8a", "x86_64"):
         root = directory / abi
@@ -30,9 +30,14 @@ def verify(directory):
              ":(exclude)apps/alfred/scripts/emulator-smoke.py",
              ":(exclude)apps/alfred/scripts/saf-ui-smoke.py",
              ":(exclude)apps/alfred/scripts/verify_reused_build.py"]
-    subprocess.run(["git", "diff", "--exit-code", revision, "HEAD", "--", *paths], check=True)
+    difference = subprocess.run(["git", "diff", "--quiet", revision, "HEAD", "--", *paths])
+    if difference.returncode == 1 and if_unchanged:
+        print("Compiled inputs changed; require the full APK build workflow.")
+        return False
+    difference.check_returncode()
     print(f"Verified APK/source reuse from {revision}")
+    return True
 
 
 if __name__ == "__main__":
-    verify(Path(sys.argv[1]))
+    sys.exit(0 if verify(Path(sys.argv[1]), "--if-unchanged" in sys.argv[2:]) else 2)

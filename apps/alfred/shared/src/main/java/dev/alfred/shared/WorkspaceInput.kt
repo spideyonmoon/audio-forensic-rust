@@ -22,6 +22,14 @@ data class Capability(val state: String, val reason: String, val resource: Strin
 data class FeatureInputs(val selection: InputSelection, val probes: Map<String, ProbeCapability>,
                          val acquire: (InputItem, String, InputCancellation) -> OwnedInput)
 
+/** BigInteger.longValueExact is unavailable on Android 11. Check its range
+ * explicitly without losing the exact integer tokens in stored payloads.
+ */
+fun BigInteger.checkedPositiveLong(): Long {
+    if (signum() <= 0 || bitLength() > 63) throw InputFailure("invalid_request")
+    return toLong()
+}
+
 fun operationCapability(operation: Operation, state: WorkspaceState): Capability {
     val items = state.selection?.items.orEmpty()
     val resource = if (operation.id == FeatureId.SPECTROGRAM) "spectrogram" else "reference_product"
@@ -193,7 +201,7 @@ class WorkspaceInput(context: Context, private val changed: (WorkspaceState) -> 
             pin = snapshot.retain()
             outputPin = output.retain()
             val started = response(native.start(request.toString().toByteArray(Charsets.UTF_8)).get())
-            handle = (started["handle"] as BigInteger).longValueExact()
+            handle = (started["handle"] as BigInteger).checkedPositiveLong()
             sourceReleased = false
             while (true) {
                 cancel.check()
@@ -210,7 +218,7 @@ class WorkspaceInput(context: Context, private val changed: (WorkspaceState) -> 
                     val supported = summary["status"] == "available" && codec?.lowercase() in setOf("pcm", "flac", "alac")
                     val reason = (summary["reason"] as? Map<*, *>)?.get("code") as? String
                     return ProbeCapability(item.id, if (supported) "available" else "unavailable", reason ?: if (supported) "codec_supported" else "unsupported_codec",
-                        snapshot.sha256, (technical?.get("sample_rate") as? BigInteger)?.longValueExact(), technical?.get("declared_frames") as? BigInteger)
+                        snapshot.sha256, (technical?.get("sample_rate") as? BigInteger)?.checkedPositiveLong(), technical?.get("declared_frames") as? BigInteger)
                 }
                 Thread.sleep(250)
             }

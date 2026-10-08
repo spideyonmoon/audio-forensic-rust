@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-24.04
     outputs:
       build_run: ${{ steps.build.outputs.run }}
+      reusable: ${{ steps.source.outputs.reusable }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -42,9 +43,23 @@ jobs:
           github-token: ${{ github.token }}
           path: verified-build
       - name: Require identical compiled source and packaging inputs
-        run: python3 apps/alfred/scripts/verify_reused_build.py verified-build
+        id: source
+        env:
+          EVENT: ${{ github.event_name }}
+        run: |
+          if python3 apps/alfred/scripts/verify_reused_build.py verified-build --if-unchanged; then
+            echo 'reusable=true' >> "$GITHUB_OUTPUT"
+          else
+            status=$?
+            if [[ "$status" == 2 && "$EVENT" == push ]]; then
+              echo 'reusable=false' >> "$GITHUB_OUTPUT"
+            else
+              exit "$status"
+            fi
+          fi
   emulator:
     needs: verify-source
+    if: needs.verify-source.outputs.reusable == 'true'
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     strategy:

@@ -88,7 +88,7 @@ def run(output: Path):
     tap(match("same.flac"), long=True)
     click("same.wav")
     # DocumentsUI exposes the confirmation affordance as text or description.
-    click("Open")
+    click("Select")
     checked(2)
     (output / "saf-multiple.xml").write_bytes((output / "saf-current.xml").read_bytes())
     top()

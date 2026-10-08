@@ -42,6 +42,8 @@ class InputSmokeActivity : Activity() {
         try { action(); error("Expected $code") } catch (error: InputFailure) { check(error.code == code) { "${error.code} != $code" } }
     }
     private fun smoke() {
+        check(java.math.BigInteger.valueOf(Long.MAX_VALUE).checkedPositiveLong() == Long.MAX_VALUE)
+        expect("invalid_request") { java.math.BigInteger("18446744073709551615").checkedPositiveLong() }
         val selection = SafSelection(contentResolver)
         try {
             val contract = SafPicker()

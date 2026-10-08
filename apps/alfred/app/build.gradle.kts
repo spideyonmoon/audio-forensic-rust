@@ -23,6 +23,7 @@ android {
         storeFile = rootProject.file("../../.tools/alfred/debug.keystore")
     }
     buildFeatures { compose = true }
+    lint { checkDependencies = true }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
