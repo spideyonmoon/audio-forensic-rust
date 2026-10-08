@@ -55,21 +55,24 @@ class ViewerCompareSmokeActivity : Activity() {
                 if (missing && item == items.last()) throw InputFailure("input_missing")
                 store.acquire(attempt, null, cancellation) {
                     when {
-                        item.name.startsWith("generated-") -> java.io.ByteArrayInputStream(wave(if (item.name.contains("short")) 22050 else 88200))
+                        item.name.startsWith("generated-") -> java.io.ByteArrayInputStream(wave(if (item.name.contains("short")) 18 else 24))
                         item.name.endsWith(".dsf") -> java.io.ByteArrayInputStream("DSD     ".toByteArray())
                         else -> assets.open(item.name)
                     }
                 }
             }, { AutoCloseable {} })
     }
-    private fun wave(frames: Int): ByteArray {
-        val buffer = java.nio.ByteBuffer.allocate(44 + frames * 4).order(java.nio.ByteOrder.LITTLE_ENDIAN)
-        buffer.put("RIFF".toByteArray()).putInt(36 + frames * 4).put("WAVEfmt ".toByteArray()).putInt(16)
-            .putShort(1).putShort(2).putInt(44100).putInt(176400).putShort(4).putShort(16)
-            .put("data".toByteArray()).putInt(frames * 4)
-        val random = kotlin.random.Random(606)
-        repeat(frames * 2) { buffer.putShort(random.nextInt(-24000, 24001).toShort()) }
-        return buffer.array()
+    private fun wave(seconds: Int): ByteArray {
+        // Same public generated control/repetition as tests/product.rs: 18 seconds
+        // supplies the unchanged nine two-second reference segment probes.
+        val source = assets.open("clip_noise.wav").use { it.readBytes() }
+        check(String(source, 36, 4, Charsets.US_ASCII) == "data")
+        val bytes = java.io.ByteArrayOutputStream().apply {
+            write(source, 0, 44); repeat(seconds / 2) { write(source, 44, source.size - 44) }
+        }.toByteArray()
+        java.nio.ByteBuffer.wrap(bytes).order(java.nio.ByteOrder.LITTLE_ENDIAN)
+            .putInt(4, bytes.size - 8).putInt(40, bytes.size - 44)
+        return bytes
     }
     private fun descriptors(manifest: JSONObject): List<ResultDescriptor> {
         val array = manifest.getJSONArray("payloads")
@@ -182,7 +185,7 @@ class ViewerCompareSmokeActivity : Activity() {
         try { CompareWork.submit(this, high, JSONObject().put("kind", "full"), true); error("full-rate admission bypass") } catch (_: IllegalArgumentException) { }
         try { CompareWork.submit(this, live, JSONObject().put("kind", "prefix").put("seconds", 1), false); error("same-track bypass") } catch (_: IllegalArgumentException) { }
         checks.put("compare:90-second-common-budget/full-admission/same-track")
-        val record = CompareWork.submit(this, live, JSONObject().put("kind", "prefix").put("seconds", 1), true).get()
+        val record = CompareWork.submit(this, live, JSONObject().put("kind", "prefix").put("seconds", 18), true).get()
         val manifest = completed(record)
         val list = descriptors(manifest)
         val comparison = list.single { it.kind == "comparison" }
@@ -191,7 +194,7 @@ class ViewerCompareSmokeActivity : Activity() {
         check(report.getJSONArray("ranking").getJSONObject(0).getInt("input_index") == 0)
         val products = list.filter { it.kind == "product" }.map { CompareWork.SavedProduct(record.attemptId, it) }
         val coverage = products.map { document(it.attempt, it.descriptor).getJSONObject("measurement_report").getJSONObject("coverage") }
-        check(coverage.all { it.getLong("analyzed_frames") == 44100L })
+        check(coverage.all { it.getLong("analyzed_frames") == 18 * 44100L && !it.getBoolean("reached_end") })
         check(coverage[0].getString("decoded_pcm_sha256") == coverage[1].getString("decoded_pcm_sha256"))
         checks.put("live-compare:common-scope/exact-PCM/stable-tie")
         fun savedCompare(inputs: List<CompareWork.SavedProduct>, expected: String = "completed"): JSONObject {
@@ -215,19 +218,24 @@ class ViewerCompareSmokeActivity : Activity() {
         check(incompatibleReport.getString("status") == "incompatible" && incompatibleReport.isNull("winner_input_index"))
         check(incompatibleReport.getJSONArray("ranking").getJSONObject(1).isNull("rank"))
         checks.put("saved-compare:absent-tool-domain/incompatible/null-ranks")
-        val shortRecord = CompareWork.submit(this, inputs(listOf("generated-a.wav", "generated-short.wav")), JSONObject().put("kind", "prefix").put("seconds", 1), true).get()
+        val shortRecord = CompareWork.submit(this, inputs(listOf("generated-a.wav", "generated-short.wav")), JSONObject().put("kind", "prefix").put("seconds", 20), true).get()
         val shortManifest = completed(shortRecord)
         val shortReport = document(shortRecord.attemptId, descriptors(shortManifest).single { it.kind == "comparison" })
         check(shortReport.getString("status") == "incompatible" && shortReport.isNull("winner_input_index")) { shortReport.toString() }
         checks.put("live-compare:shorter-actual-EOF/incompatible")
         for ((names, expected) in listOf(listOf("generated-a.wav", "unsupported.dsf") to "available", listOf("first.dsf", "second.dsf") to "unavailable")) {
-            val mixedRecord = CompareWork.submit(this, inputs(names), JSONObject().put("kind", "prefix").put("seconds", 1), true).get()
+            val mixedRecord = CompareWork.submit(this, inputs(names), JSONObject().put("kind", "prefix").put("seconds", 18), true).get()
             val mixed = completed(mixedRecord)
             val mixedReport = document(mixedRecord.attemptId, descriptors(mixed).single { it.kind == "comparison" })
             check(mixedReport.getString("status") == expected)
             if (expected == "unavailable") check(mixedReport.isNull("winner_input_index"))
             checks.put("live-compare:$expected/decoded-unavailable-products")
         }
+        val partialRecord = CompareWork.submit(this, live, JSONObject().put("kind", "prefix").put("seconds", 1), true).get()
+        val shortUnavailable = completed(partialRecord)
+        val abstention = document(partialRecord.attemptId, descriptors(shortUnavailable).single { it.kind == "comparison" })
+        check(abstention.getString("status") == "unavailable" && abstention.isNull("winner_input_index"))
+        checks.put("live-compare:short-prefix/partial-assessment/no-invented-winner")
         for (field in listOf("product_schema_version", "method_id", "input_domain")) {
             val invalid = JSONObject(base.toString())
             when (field) {

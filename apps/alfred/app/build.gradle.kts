@@ -45,7 +45,7 @@ tasks.named("preBuild") { dependsOn(requireNative) }
 // Public generated signals only. This harness/activity is absent from release.
 val smokeAssets by tasks.registering(Copy::class) {
     from(rootProject.file("../../tests/fixtures")) {
-        include("noise16.wav", "noise16.flac", "alac/8000-16-1-tail.m4a")
+        include("noise16.wav", "noise16.flac", "clip_noise.wav", "alac/8000-16-1-tail.m4a")
     }
     into(layout.buildDirectory.dir("generated/smokeAssets"))
 }

@@ -18,7 +18,7 @@ def inspect(apk, sdk, abi="arm64-v8a", smoke_assets=False):
     with zipfile.ZipFile(apk) as archive, open(apk, "rb") as raw:
         if smoke_assets:
             fixtures = Path(__file__).resolve().parents[3] / "tests/fixtures"
-            for name in ("noise16.wav", "noise16.flac", "alac/8000-16-1-tail.m4a"):
+            for name in ("noise16.wav", "noise16.flac", "clip_noise.wav", "alac/8000-16-1-tail.m4a"):
                 assert archive.read(f"assets/{name}") == (fixtures / name).read_bytes(), name
         for info in archive.infolist():
             if not info.filename.endswith(".so"):
