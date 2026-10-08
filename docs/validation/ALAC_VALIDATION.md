@@ -1,6 +1,6 @@
 # F01 ALAC/M4A validation — 2026-10-06
 
-## A04 compatibility correction — 2026-10-08, unreleased
+## A04 compatibility correction — 2026-10-08, accepted for Alfred development
 
 Manual Hot 11S / Android-11 selection exposed two real stereo ALAC containers
 rejected by the frozen 0.32.0 desktop core too. Both contain all-zero version-0
@@ -26,7 +26,11 @@ probe successfully; exact one-second native signed-s32le PCM hashes match FFmpeg
 at 44,100 and 48,000 frames. Original encoded hashes are unchanged. Private
 receipts stay ignored `target/a04/private-alac/`; no recordings or their names/
 hashes are in source history. Whole private-track decode was not run. Fresh
-Android ABI/APK acceptance and owner replacement-APK retest remain pending.
+Android ABI/APK and API 30–36 runtime acceptance passed in 37765269431; core
+Windows/Linux/Android checks passed in 37765269643. Owner approved A04 closure
+without the replacement-APK physical ALAC retest; that test was not run and may
+be collected later with A07. This correction remains unreleased as a standalone
+core distribution; no full P09 re-release acceptance is claimed.
 Historical F01/P09 acceptance below retains its original scope and binary.
 
 Engine **0.28.0**, measurement schema **0.18.0**, unchanged

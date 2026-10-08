@@ -415,7 +415,7 @@ Android target compilation alone is insufficient.
 
 ## A04 — shared workspace selection, input and staging
 
-**Status: IN PROGRESS 2026-10-08 — input/picker accepted including manual Hot 11S/Android 11; real-file ALAC compatibility fix passes local tests, fresh APK/owner ALAC retest pending.** [A04 results](task-results/A04.md).
+**Status: DONE 2026-10-08.** Both ABI builds and all API 30–36 runtime controls passed; real picker coverage includes manual Hot 11S/Android 11. ALAC compatibility passed exact local PCM and regression checks. Owner approved closure without the replacement-APK physical ALAC retest, which remains not run. [A04 results](task-results/A04.md).
 
 **Sol; after A02.** Implement shared SAF file/folder picker/workspace, one/many
 track selection, bounded folder enumeration, URI grants, source acquisition and

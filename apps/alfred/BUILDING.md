@@ -103,6 +103,13 @@ emulator checks, not ARM64 phone or 16 KiB runtime acceptance. A07 still measure
 physical memory/background behavior. Common admission limits remain unchanged;
 no Hot 11S-specific chunking or throttling is introduced.
 
+API-30 pointer automation was unreliable. Its native/provider/staging checks
+still execute; the full workflow records `saf-ui-manual.json` explicitly citing
+owner-confirmed Hot 11S/Android-11 single/multiple/folder-subset picker coverage.
+API 31–36 real picker automation still executes. This manual evidence does not
+replace A07 physical acceptance or claim that the corrected ALAC APK was retested
+on that phone; the owner approved A04 closure without waiting for that retest.
+
 Harness-only pushes use `.github/workflows/alfred-runtime.yml` and reuse verified
 APK artifacts. The source guard checks compiled/packaging inputs and binds the
 APK SHA-256 to its verification receipt; source changes require a fresh build.

@@ -2,7 +2,7 @@
 
 ## A04 shared input — 2026-10-08
 
-Shared SAF identities/grants, bounded enumeration/staging and native capability checks passed ABI/input controls API 30–36, automated picker API 31–36 and owner manual Hot 11S/Android-11 picker checks. Real-file ALAC diagnosis required a narrow unreleased core preflight correction for all-zero dependency tables and generic 16-bit sample-entry fields with 24-bit cookies. Eight ALAC tests, Clippy and exact private one-second PCM checks passed; fresh APK/owner ALAC retest pending. No DSP/scoring/schema/dependency changes. [A04 details](task-results/A04.md).
+DONE. Shared SAF identities/grants, bounded enumeration/staging and native capability checks passed both ABI builds and runtime controls API 30–36, automated picker API 31–36 and owner manual Hot 11S/Android-11 picker checks. Real-file ALAC diagnosis required a narrow unreleased core preflight correction for all-zero dependency tables and generic 16-bit sample-entry fields with 24-bit cookies. Eight ALAC tests, Clippy, exact private one-second PCM checks and replacement Android/core CI passed. Owner approved closure without waiting for the replacement-APK physical ALAC retest; that retest was not run. No DSP/scoring/schema/dependency changes. Next A05. [A04 details](task-results/A04.md).
 
 
 ## A03 native adapter — 2026-10-08
@@ -32,7 +32,7 @@ Primary phone ABI stays ARM64; x86_64 is a separate CI emulator artifact.
 Shared memory admission/frame limits stay unchanged; no device-specific chunking
 or throttling. Build/emulator evidence is separate from physical A07 acceptance.
 See [compatibility packet](task-results/ANDROID-11-CI.md).
-P09/A01/A02/A03 are complete; A04 shared input/staging is next.
+P09/A01/A02/A03/A04 are complete; A05 shared jobs/lifecycle/retention is next.
 
 ## Current delivery priority — 2026-10-06
 
@@ -69,7 +69,7 @@ checks passed; no production change or repeated full regression. See
 task-results/P09.md and the release ledger for accepted limits. A01 completed
 2026-10-07: ANDROID_CONTRACT.md freezes app-owned JNI, shared input/jobs/storage,
 conservative native-rate resource admission and extraction with P06/P07 backends
-retained here. A02 scaffold and A03 native adapter/runtime acceptance are complete; next A04. No
+retained here. A02 scaffold, A03 native adapter and A04 shared input acceptance are complete; next A05. No
 device acceptance is implied.
 
 

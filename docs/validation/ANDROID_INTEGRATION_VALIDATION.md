@@ -1,6 +1,16 @@
 # Android integration validation
 
-## A04 shared input — 2026-10-08, replacement ALAC APK pending
+## A04 accepted — 2026-10-08
+
+Replacement source `cf542ab` passed [Android CI 37765269431](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37765269431)
+(both ABI builds and all seven API 30–36 runtime jobs) and
+[core CI 37765269643](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37765269643).
+API-30 real-picker coverage is the manual Hot 11S test; its automated pointer
+interaction was not run in the successful replacement CI. Owner approved A04
+closure without waiting for the corrected APK's two-file physical ALAC retest;
+that retest was **not run**, and is not counted as a pass. Generated/local exact
+ALAC validation and CI passed. No jobs remain. Next A05; A07 retains full physical
+memory/background/16-KiB acceptance. Earlier pending records below are historical.
 
 Owner-confirmed **Infinix Hot 11S / Android 11** screenshots and manual results
 pass single/multiple/folder-subset selection and persisted access for APK source
@@ -12,7 +22,8 @@ limit. Narrow all-zero `sdtp` and cookie-precision corrections pass eight ALAC
 tests, focused Clippy and exact native/FFmpeg one-second PCM comparison on both
 unchanged originals. See [ALAC validation](ALAC_VALIDATION.md) and
 [A04 packet](../../task-results/A04.md). No private recordings or screenshots are
-in source history. Replacement APK acceptance and owner ALAC retest are pending.
+in source history. Replacement APK CI passed; owner deferred its physical ALAC
+retest from A04 closure.
 This manual input check does not replace A07 memory/background/16-KiB acceptance.
 
 Shared SAF workspace/staging/probing is implemented. Source `a1b3c42` passed

@@ -53,10 +53,8 @@ the entire roadmap. If a task spans sessions, resume the same ID and saved state
 
 ## Current dispatch
 
-- **Active task:** A04 input and Hot 11S/Android-11 manual picker passed;
-  real-file ALAC compatibility correction passes local controls; replacement
-  ABI/APK acceptance and owner ALAC retest pending.
-- **Next delivery task:** **A04 — shared selection, SAF input and bounded staging (Sol)**.
+- **Active task:** none. A04 completed 2026-10-08; no jobs running.
+- **Next delivery task:** **A05 — shared jobs, lifecycle and local retention (Sol)**.
 - **Owner inputs received:** Redmi 13 4G, Android 16, APK/ADB available;
   FLAC/WAV/ALAC-M4A/DSD; detailed verdict, complete metadata and deep results;
   approximately 600–700 MB upper typical file size; Alfred via GitHub Releases.
@@ -64,7 +62,7 @@ the entire roadmap. If a task spans sessions, resume the same ID and saved state
   Heavy Android checks run in GitHub Actions; retain common memory rules. U02/U05 continue alongside implementation.
 - **Deferred:** F02/DSD beyond the first standalone release and Alfred launch,
   owner approved 2026-10-06 to conserve Astra budget. DSD is not shipped support.
-- **Next Sol task:** A04. P09/A01/A02/A03 are complete; follow ANDROID_CONTRACT.md.
+- **Next Sol task:** A05. P09/A01/A02/A03/A04 are complete; follow ANDROID_CONTRACT.md.
 - **Next endgame task when explicitly requested:** E01, the AAC trim work.
 - **Independent MQA work:** existing prototype/corpus at
   `C:\Users\Bishal\Documents\antigravity-dev\mqa`; E09 now READY for a
@@ -183,7 +181,7 @@ unless the card explicitly permits work against the frozen contract.
 | A01 | Alfred shared architecture and feature/native integration contract | Astra | P09 | DONE 2026-10-07 |
 | A02 | Alfred workspace scaffold and reproducible builds | Sol | A01 | DONE 2026-10-07 |
 | A03 | Audio Forensics native adapter and linked smoke | Astra | A02 | DONE 2026-10-08 |
-| A04 | Shared selection, SAF file/folder input and bounded staging | Sol | A02 | IN PROGRESS — CI pending |
+| A04 | Shared selection, SAF file/folder input and bounded staging | Sol | A02 | DONE 2026-10-08 |
 | A05 | Shared jobs, background lifecycle, progress/cancel and retention | Sol | A03, A04 | TODO |
 | A06 | Audio Forensics feature results/history/export integration | Sol | A05, P07 | TODO |
 | A06a | Initial slice of the independent Spectrogram feature, reusing P06 | Sol | A05, P06 | TODO |
@@ -199,7 +197,7 @@ ledger; it does not imply publication or Android acceptance.
 Alfred development then begins: A01 → A02 → A03/A04 → A05 → A06/A06a/A06b →
 A07 → A08. A03 and A04 have independent responsibilities; sessions still run
 sequentially by default. The former permission to start A01–A03 before the core
-release is superseded by this boundary. A01/A02/A03 are complete; A04–A08 remain.
+release is superseded by this boundary. A01/A02/A03/A04 are complete; A05–A08 remain.
 
 Shared infrastructure: A01/A02/A04/A05. Audio Forensics integration: A03/A06.
 Independent existing-functionality workflows: A06a/A06b. A07/A08 gate the Alfred

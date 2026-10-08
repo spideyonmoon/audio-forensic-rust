@@ -29,4 +29,4 @@ override it. Validation documents are indexed [under docs](../docs/validation/RE
 - [Repository polish and DSD deferral](REPO-POLISH.md)
 - [Spectrogram ambition and ownership](SPECTROGRAM-OWNERSHIP.md)
 
-- [A04 — shared SAF input/staging, CI pending](A04.md)
+- [A04 — shared SAF input/staging, accepted](A04.md)

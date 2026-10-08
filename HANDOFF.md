@@ -4,7 +4,15 @@ Updated **2026-10-08**. This is the current continuation point. Historical miles
 entries and exact older check totals are preserved in
 [the handoff archive](docs/history/HANDOFF_20261006.md); newer decisions here win.
 
-## A04 — 2026-10-08, ALAC replacement APK pending
+## A04 COMPLETE — 2026-10-08
+
+**DONE. Next delivery task: A05. No jobs running.** Owner authorized closure
+without waiting for the offline tester to repeat the two ALAC files on the
+replacement APK. This retest was **not run** and is not claimed as passed.
+Confidence rests on exact checks of both supplied originals, generated
+regressions, both ABI build checks and successful Android 11–16 runtime controls.
+The existing Hot 11S/Android-11 manual picker evidence remains independently valid.
+No additional build or audit was needed for closure.
 
 Owner confirmed the manual tester is **Infinix Hot 11S / Android 11**. Screenshots
 and confirmation cover single/multiple selection, persisted read access, the
@@ -39,14 +47,18 @@ and core build/Clippy/generated-regression run
 Core CI 37765269643 passed all three jobs (Windows/Linux build, Clippy and
 generated ALAC regression; Android core compilation). Android 37765269431 build
 passed both ABI APKs, native host acceptance, lint, fixture hashes, alignment and
-signatures; all seven emulator jobs are running. The verified ARM64 APK is ready
-for owner retest while those jobs complete.
+signatures; **all seven API 30–36 emulator jobs passed and the run succeeded**.
+Native and provider/staging controls ran on every API. Actual picker automation
+ran on API 31–36; API 30 records manual Hot 11S coverage explicitly. Verified
+replacement APK: [artifact 11543588915](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37765269431/artifacts/11543588915).
 Runtime-only 37765269404 correctly refused compiled-source reuse and skipped
 emulators; its success is not acceptance of the corrected native binary.
 
-Next: owner retest just the two ALAC files on Hot 11S, and inspect emulator
-completion for 37765269431. A04 remains open until this acceptance
-is recorded; A05 remains next. Owner cleanup edits stay uncommitted.
+Next: **A05**, shared jobs, background lifecycle, progress/cancellation and
+retention. Replacement-APK Hot 11S ALAC retest can be collected later alongside
+A07 physical acceptance; it is not an A04 blocker after owner-authorized closure.
+Owner cleanup edits stay uncommitted. Core compatibility source is `cf542ab`;
+later commits only record evidence/current dispatch, not another compiled build.
 
 ## Earlier A04 CI and manual-test history
 
@@ -221,9 +233,8 @@ At that earlier A01 handoff A02 was next. A02 is now complete; A03 is next.
 
 ## Current task and delivery boundary
 
-- Active task: **A04**, manual Android-11 picker accepted; ALAC compatibility fix
-  passes local tests, replacement ABI/APK acceptance and owner ALAC retest pending.
-- Next default delivery task: **A04 — shared workspace selection, input and staging (Sol)**.
+- Active task: **none**. A04 completed 2026-10-08; no jobs running.
+- Next default delivery task: **A05 — shared jobs, lifecycle and local retention (Sol)**.
 - **F02/DSD DEFERRED beyond the first standalone release and Alfred launch**,
   owner approved 2026-10-06 to conserve Astra budget. Its frozen DSF/DFF,
   DSD64/128/256, mono/stereo and 88.2 kHz conversion contract remains for later.
@@ -327,9 +338,9 @@ these are local files, not Git history or an external backup. Prior milestone
 receipts remain where originally recorded (including target/p06-msrv and
 accepted P05/P06/F01 receipts). U05 external backup remains owner work.
 
-Next concrete action: **A04**, close the remaining Android-11 real-picker check
-using the existing verified APK. Shared input/staging implementation and all
-generated input controls passed. A03 native adapter and runtime acceptance are complete. Consume existing product APIs without changing core/DSP
+Next concrete action: **A05**, shared jobs/lifecycle/retention under
+ANDROID_CONTRACT.md. A04 input/staging, compatibility fix and CI acceptance are
+complete. Consume existing product APIs without changing core/DSP
 semantics; preserve shared memory admission and use GitHub Actions for heavy checks.
 Keep P06/P07 reuse unchanged. P09 details
 are in task-results/P09.md and docs/validation/CORE_RELEASE_VALIDATION.md;
