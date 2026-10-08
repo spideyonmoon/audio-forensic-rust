@@ -53,7 +53,8 @@ the entire roadmap. If a task spans sessions, resume the same ID and saved state
 
 ## Current dispatch
 
-- **Active task:** A04 implemented; Android CI acceptance pending.
+- **Active task:** A04 implemented; ABI/input controls pass Android 11–16;
+  Android-11 real-picker interaction remains unresolved. No jobs running.
 - **Next delivery task:** **A04 — shared selection, SAF input and bounded staging (Sol)**.
 - **Owner inputs received:** Redmi 13 4G, Android 16, APK/ADB available;
   FLAC/WAV/ALAC-M4A/DSD; detailed verdict, complete metadata and deep results;

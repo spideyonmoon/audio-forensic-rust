@@ -4,21 +4,30 @@ Updated **2026-10-08**. This is the current continuation point. Historical miles
 entries and exact older check totals are preserved in
 [the handoff archive](docs/history/HANDOFF_20261006.md); newer decisions here win.
 
-## A04 implementation — 2026-10-08, CI pending
+## A04 implementation — 2026-10-08, Android-11 picker acceptance pending
 
 Shared SAF selection/staging/probe code and workspace controls are implemented;
-see [A04 results](task-results/A04.md). Offline Kotlin compile, pinned lock
-configuration update, Python syntax and whitespace passed. Android runtime/ABI
-build/lint acceptance is pending; A04 is not yet DONE. Debug generated provider
-harness includes exact 700 MiB/overflow/cancel/lease controls and real DocumentsUI
-single/multiple/folder grant checks. No source commit/push or CI job yet.
+see [A04 results](task-results/A04.md). Source `a1b3c42` passed both ABI builds,
+lint, packaging/alignment/signatures and native/input-provider controls on API
+30–36 in CI 37740958937. Real DocumentsUI single/multiple/folder persisted-grant
+checks passed API 31–36. The run concluded failure on API-30 document activation;
+A04 is not yet DONE. Local Kotlin/shared lint passed (0 errors, 3 warnings).
+Earlier nullable-test, root-navigation, SELECT-label and Android-11 Java API
+defects are repaired. Subsequent API-30-only picker harness retries failed;
+latest helper `405a7f9` uses the touchscreen device and default display; its
+retry 37746745823 also failed at `checked(1)` with the exact hash-bound APK from
+37740958937. No jobs running. No app/native code
+changed after that verified APK build. APK-reuse guard passed and correctly
+refused changed compiled source in 37740958885. Seven emulators run in parallel;
+harness-only retries skip full builds and can select affected APIs.
 
-Next concrete action: run the existing Alfred GitHub Actions workflow with this
-A04 source, inspect/repair actual provider/UI failures, then update the A04 card,
-roadmap and current handoff to A05. Heavy checks stay on CI. A05 owns background
-jobs/history/quota/orphan recovery; feature execution stays A06/a/b. Current
-changes are app input/UI/tests and packet documentation; core/private audio and
-owner cleanup edits remain preserved. Local logs: ignored target/a04/.
+Next concrete action: replace speculative pointer injection with a deterministic
+API-30 picker test, distinguish automation failure from actual document activation,
+then close A04 and point to A05. Do not repeat ABI builds or API 31–36 checks
+unless compiled source changes. A05 owns jobs/history,
+quota/orphan recovery and lifecycle; feature execution stays A06/a/b. Existing
+owner cleanup edits stay uncommitted. Core/private audio are unchanged. Local
+evidence is ignored target/a04/, distinct from source history and remote artifacts.
 
 ## A03 COMPLETE — 2026-10-08
 
@@ -164,7 +173,8 @@ At that earlier A01 handoff A02 was next. A02 is now complete; A03 is next.
 
 ## Current task and delivery boundary
 
-- Active task: **none**. A03 completed 2026-10-08; no jobs running.
+- Active task: **A04**, implemented; Android-11 real-picker acceptance unresolved.
+  Both ABI builds and input controls on API 30–36 passed; no jobs running.
 - Next default delivery task: **A04 — shared workspace selection, input and staging (Sol)**.
 - **F02/DSD DEFERRED beyond the first standalone release and Alfred launch**,
   owner approved 2026-10-06 to conserve Astra budget. Its frozen DSF/DFF,
@@ -269,8 +279,9 @@ these are local files, not Git history or an external backup. Prior milestone
 receipts remain where originally recorded (including target/p06-msrv and
 accepted P05/P06/F01 receipts). U05 external backup remains owner work.
 
-Next concrete action: **A04**, shared selection and bounded staging under
-ANDROID_CONTRACT.md. A03 native adapter and runtime acceptance are complete. Consume existing product APIs without changing core/DSP
+Next concrete action: **A04**, close the remaining Android-11 real-picker check
+using the existing verified APK. Shared input/staging implementation and all
+generated input controls passed. A03 native adapter and runtime acceptance are complete. Consume existing product APIs without changing core/DSP
 semantics; preserve shared memory admission and use GitHub Actions for heavy checks.
 Keep P06/P07 reuse unchanged. P09 details
 are in task-results/P09.md and docs/validation/CORE_RELEASE_VALIDATION.md;

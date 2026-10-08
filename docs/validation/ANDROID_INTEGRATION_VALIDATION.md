@@ -1,8 +1,19 @@
 # Android integration validation
 
-## A04 shared input — 2026-10-08, CI pending
+## A04 shared input — 2026-10-08, Android-11 picker check pending
 
-Shared SAF workspace/staging/probing and generated provider/UI controls are implemented. Offline Kotlin compilation, existing pinned dependency configuration locks, Python syntax and whitespace passed. Required ABI APK/lint and API 30–36 runtime tests have not yet run; do not claim runtime acceptance. [A04 record](../../task-results/A04.md) includes exact cases, commands and initial failures. Core/private inputs are unchanged. A05 jobs/history and A07 physical acceptance remain later gates.
+Shared SAF workspace/staging/probing is implemented. Source `a1b3c42` passed
+both ABI links/APK/lint/packaging checks and generated native/input-provider
+controls on API 30–36 in CI 37740958937. Real DocumentsUI single/multiple/folder
+persisted-grant checks passed API 31–36. That run concluded failure because the
+API-30 automation did not activate its file; API-30 picker acceptance remains
+unverified. Local Kotlin/shared lint passed, 0 errors and 3 warnings. Exact
+700 MiB/overflow, cancellation/disk pressure, encoded hashes, shared leases,
+codec routing and selection-change cleanup passed on every supported API.
+[A04 record](../../task-results/A04.md) retains exact cases, repaired initial
+failures and the isolated API-30 retries. Runtime APK reuse validates compiled
+source and the verified APK hash, with changed compiled source correctly refused.
+No core/private input changes. A05 jobs/history and A07 physical acceptance remain.
 
 
 ## A03 accepted — 2026-10-08

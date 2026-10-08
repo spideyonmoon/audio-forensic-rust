@@ -1,11 +1,12 @@
 # Alfred scaffold builds
 
-A03 development adapter, **0.1.0-a03**, development ID
+A04 development workspace, **0.1.0-a04**, development ID
 `dev.alfred.workspace.debug`. Android 11–16: min 30, compile/target 36.
-The installable scaffold supplies selection and independent feature routes;
-it does not yet analyze audio, enumerate folders or persist grants/results.
-Documents remain session-only; rotation clears selection. A03/A04/A05 implement
-the durable/native lifecycle. No INTERNET or unrestricted storage permission.
+The workspace supplies bounded single/multiple/folder SAF selection, offered
+persisted read grants, snapshot staging, native metadata probes and independent
+feature routes. Feature execution/results and background lifecycle remain
+A05/A06/a/b. Rotation clears the current selection; A05 owns restoration.
+No INTERNET or unrestricted storage permission.
 Future tools have no buttons. Phone validation remains A07, not a build claim.
 
 ## Pinned prerequisites
@@ -95,11 +96,20 @@ then verifies ELF/ZIP alignment and signatures. Artifacts include APKs and build
 receipts, retained seven days. No private audio is used or uploaded.
 
 The emulator matrix covers API 30–36 (Android 11–16, including Android 12L),
-with two concurrent emulators. It checks install, workspace rendering and JNI
-generated-input product/metadata/PNG acceptance; SAF/jobs remain later packets. These are x86_64
+with seven concurrent emulators. It checks install, workspace rendering, JNI
+generated-input product/metadata/PNG acceptance, bounded staging/provider controls
+and real DocumentsUI single/multiple/folder read grants. These are x86_64
 emulator checks, not ARM64 phone or 16 KiB runtime acceptance. A07 still measures
 physical memory/background behavior. Common admission limits remain unchanged;
 no Hot 11S-specific chunking or throttling is introduced.
+
+Harness-only pushes use `.github/workflows/alfred-runtime.yml` and reuse verified
+APK artifacts. The source guard checks compiled/packaging inputs and binds the
+APK SHA-256 to its verification receipt; source changes require a fresh build.
+Manual dispatch accepts an existing `build_run` and affected API JSON array
+(for example `[30]`) to retry only the failed platform. Runtime reuse skips the
+already accepted A03 native smoke and retains all A04 input/provider/UI checks.
+No build is skipped when application/native/packaging inputs change.
 
 For a provisioned Linux host use `bash scripts/build-linux.sh arm64-v8a` or
 `bash scripts/build-linux.sh x86_64`. CI installs the same pinned SDK/NDK/Rust

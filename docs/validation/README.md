@@ -11,7 +11,7 @@ below. Current dispatch is [ROADMAP.md](../../ROADMAP.md).
 - [Aac Music Validation](AAC_MUSIC_VALIDATION.md)
 - [Aac Validation](AAC_VALIDATION.md)
 - [Alac Validation](ALAC_VALIDATION.md)
-- [Android integration — contract, native adapter and Android 11–16 CI](ANDROID_INTEGRATION_VALIDATION.md)
+- [Android integration — contract, native adapter, shared SAF input and Android 11–16 CI](ANDROID_INTEGRATION_VALIDATION.md)
 - [Byproduct Validation](BYPRODUCT_VALIDATION.md)
 - [Core Acceptance Validation](CORE_ACCEPTANCE_VALIDATION.md)
 - [Core Release Validation — P08/P09](CORE_RELEASE_VALIDATION.md)
