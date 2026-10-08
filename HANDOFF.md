@@ -32,7 +32,14 @@ owner-supplied Downloads folder. No private audio/names/hashes/screenshots are
 committed. Initial stale CLI/system-linker attempts failed; documented local
 LLVM wrapper ran the corrected tests. [Detailed A04 record](task-results/A04.md).
 
-Next: fresh Android ABI/APK checks, then supply the ARM64 APK for the owner to
+Running checks for source **cf542ab**: Android replacement build/emulator run
+[37765269431](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37765269431)
+and core build/Clippy/generated-regression run
+[37765269643](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37765269643).
+Runtime-only 37765269404 correctly refused compiled-source reuse and skipped
+emulators; its success is not acceptance of the corrected native binary.
+
+Next: inspect those checks, then supply the ARM64 APK for the owner to
 retest just the two ALAC files on Hot 11S. A04 remains open until this acceptance
 is recorded; A05 remains next. Owner cleanup edits stay uncommitted.
 
