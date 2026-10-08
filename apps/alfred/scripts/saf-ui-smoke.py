@@ -11,6 +11,7 @@ def adb(*args):
 
 
 def run(output: Path):
+    api = int(adb("shell", "getprop", "ro.build.version.sdk").strip())
     def nodes():
         adb("shell", "uiautomator", "dump", "/sdcard/alfred-saf.xml")
         xml = adb("shell", "cat", "/sdcard/alfred-saf.xml")
@@ -42,12 +43,23 @@ def run(output: Path):
             adb("shell", "input", "swipe", "300", "300", "300", "1100", "250")
 
     def root():
+        def ready():
+            if api == 30:
+                # Android 11's grid title area did not activate the document in
+                # saved UI evidence. Use its observed List view affordance and
+                # wait for the directory layout before reacquiring row bounds.
+                view = next((n for n in nodes() if n.attrib.get("content-desc") == "List view"), None)
+                if view is not None:
+                    tap(view)
+                time.sleep(1)
+                match("same.flac")
         # Roots update asynchronously on a freshly booted emulator. Verify the
         # destination, and reacquire coordinates if the drawer reordered while
         # the automation was tapping a row.
         for attempt in range(4):
             current = nodes()
             if any(n.attrib.get("text", "") == "same.flac" for n in current):
+                ready()
                 return
             drawer = next((n for n in current if n.attrib.get("content-desc", "") in {"Show roots", "Open navigation drawer"}), None)
             if drawer is not None:
@@ -59,6 +71,7 @@ def run(output: Path):
             tap(provider)
             try:
                 match("same.flac", timeout=10)
+                ready()
                 return
             except AssertionError:
                 pass
