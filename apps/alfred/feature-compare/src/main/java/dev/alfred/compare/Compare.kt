@@ -66,10 +66,15 @@ fun CompareScreen(inputs: FeatureInputs?, sameTrack: Boolean, jobs: SharedJobs, 
     Checkbox(savedSameTrack, onCheckedChange = { savedSameTrack = it })
     Text("These saved products are variants of the same track · ${selected.size} selected")
     Button(enabled = !submitting && savedSameTrack && selected.size in 2..32, onClick = {
+        val expectedCount = selected.size
+        val asserted = savedSameTrack
         val chosen = selected.mapNotNull { id -> saved.firstOrNull { it.id == id } }
         submitting = true
         coroutine.launch {
-            try { val record = withContext(Dispatchers.IO) { CompareWork.submitSaved(app, chosen, savedSameTrack).get() }; notice = "${record.state} · ${record.attemptId}" }
+            try { val record = withContext(Dispatchers.IO) {
+                if (chosen.size != expectedCount) throw InputFailure("input_missing")
+                CompareWork.submitSaved(app, chosen, asserted).get()
+            }; notice = "${record.state} · ${record.attemptId}" }
             catch (error: Exception) { notice = resultFailure(error) }
             finally { submitting = false }
         }

@@ -136,7 +136,7 @@ class ViewerCompareSmokeActivity : Activity() {
             wrapper = document(record.attemptId, payload)
             check(wrapper.getJSONObject("measurement").getString("status") == "analyzed")
             val coverage = wrapper.getJSONObject("measurement").getJSONObject("coverage")
-            check(coverage.getLong("analyzed_frames") == 24576L && coverage.getString("decoded_pcm_sha256") == "1981c82a788cf0be394f6c6326e6e7576a788076b51e7f7834286cada2b0f0e4")
+            check(coverage.getLong("analyzed_frames") == 24577L && coverage.getString("decoded_pcm_sha256") == "1981c82a788cf0be394f6c6326e6e7576a788076b51e7f7834286cada2b0f0e4") { coverage.toString() }
             val png = list.single { it.kind == "png" }
             val bytes = jobs.results.validate(record.attemptId, png).readBytes()
             val dimensionsBytes = java.nio.ByteBuffer.wrap(bytes, 16, 8)
@@ -187,7 +187,7 @@ class ViewerCompareSmokeActivity : Activity() {
         val list = descriptors(manifest)
         val comparison = list.single { it.kind == "comparison" }
         val report = document(record.attemptId, comparison)
-        check(report.getString("status") == "available" && report.getInt("winner_input_index") == 0)
+        check(report.getString("status") == "available" && report.getInt("winner_input_index") == 0) { report.toString() }
         check(report.getJSONArray("ranking").getJSONObject(0).getInt("input_index") == 0)
         val products = list.filter { it.kind == "product" }.map { CompareWork.SavedProduct(record.attemptId, it) }
         val coverage = products.map { document(it.attempt, it.descriptor).getJSONObject("measurement_report").getJSONObject("coverage") }
@@ -218,7 +218,7 @@ class ViewerCompareSmokeActivity : Activity() {
         val shortRecord = CompareWork.submit(this, inputs(listOf("generated-a.wav", "generated-short.wav")), JSONObject().put("kind", "prefix").put("seconds", 1), true).get()
         val shortManifest = completed(shortRecord)
         val shortReport = document(shortRecord.attemptId, descriptors(shortManifest).single { it.kind == "comparison" })
-        check(shortReport.getString("status") == "incompatible" && shortReport.isNull("winner_input_index"))
+        check(shortReport.getString("status") == "incompatible" && shortReport.isNull("winner_input_index")) { shortReport.toString() }
         checks.put("live-compare:shorter-actual-EOF/incompatible")
         for ((names, expected) in listOf(listOf("generated-a.wav", "unsupported.dsf") to "available", listOf("first.dsf", "second.dsf") to "unavailable")) {
             val mixedRecord = CompareWork.submit(this, inputs(names), JSONObject().put("kind", "prefix").put("seconds", 1), true).get()

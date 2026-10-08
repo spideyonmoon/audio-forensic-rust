@@ -59,7 +59,7 @@ def run(output, receipt):
     viewer = receipt.get("viewer")
     if viewer:
         click("Spectrogram history")
-        find("Independent bounded P06")
+        find("Independent bounded P06", up=False)
         click("Open completed · " + viewer["preview_attempt"])
         find("Measurement: analyzed")
         click("3: png")
@@ -72,7 +72,7 @@ def run(output, receipt):
         find("Presentation/encoded bitrate unavailable")
         adb("shell", "input", "keyevent", "4")
         click("Compare history")
-        find("Compare saved products")
+        find("Compare saved products", up=False)
         click("Open completed · " + viewer["compare_attempt"])
         click("3: comparison")
         find("Comparison: available")
