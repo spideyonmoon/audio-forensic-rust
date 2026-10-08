@@ -2,7 +2,7 @@ name: Alfred Android compatibility
 on:
   workflow_dispatch:
   push:
-    paths: ['apps/alfred/**', '.github/workflows/alfred-android.yml', 'src/**', 'Cargo.toml', 'Cargo.lock']
+    paths: ['apps/alfred/**', '!apps/alfred/scripts/emulator-smoke.py', '!apps/alfred/scripts/saf-ui-smoke.py', '!apps/alfred/scripts/verify_reused_build.py', '.github/workflows/alfred-android.yml', 'src/**', 'Cargo.toml', 'Cargo.lock']
   pull_request:
     paths: ['apps/alfred/**', '.github/workflows/alfred-android.yml', 'src/**', 'Cargo.toml', 'Cargo.lock']
 permissions:
@@ -68,7 +68,7 @@ jobs:
     timeout-minutes: 20
     strategy:
       fail-fast: false
-      max-parallel: 2
+      max-parallel: 7
       matrix:
         api: [30, 31, 32, 33, 34, 35, 36]
     steps:
