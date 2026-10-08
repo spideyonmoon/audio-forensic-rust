@@ -1,7 +1,7 @@
 name: Alfred runtime acceptance (reuse verified APK)
 on:
   push:
-    paths: ['apps/alfred/scripts/emulator-smoke.py', 'apps/alfred/scripts/saf-ui-smoke.py', 'apps/alfred/scripts/verify_reused_build.py', '.github/workflows/alfred-runtime.yml']
+    paths: ['apps/alfred/scripts/emulator-smoke.py', 'apps/alfred/scripts/saf-ui-smoke.py', 'apps/alfred/scripts/saf-finger-tap/**', 'apps/alfred/scripts/verify_reused_build.py', '.github/workflows/alfred-runtime.yml']
   workflow_dispatch:
     inputs:
       build_run:
@@ -85,6 +85,9 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
+      - name: API-30 shell UIAutomator compiler prerequisites
+        if: matrix.api == 30
+        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
       - uses: reactivecircus/android-emulator-runner@v2
         env:
           ALFRED_INPUT_ONLY: '1'

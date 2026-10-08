@@ -29,6 +29,7 @@ def verify(directory, if_unchanged=False):
     paths = [".", ":(exclude)**/*.md", ":(exclude).github/workflows/*",
              ":(exclude)apps/alfred/scripts/emulator-smoke.py",
              ":(exclude)apps/alfred/scripts/saf-ui-smoke.py",
+             ":(exclude)apps/alfred/scripts/saf-finger-tap/**",
              ":(exclude)apps/alfred/scripts/verify_reused_build.py"]
     difference = subprocess.run(["git", "diff", "--quiet", revision, "HEAD", "--", *paths])
     if difference.returncode == 1 and if_unchanged:

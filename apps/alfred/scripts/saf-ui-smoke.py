@@ -4,6 +4,8 @@ import time
 import xml.etree.ElementTree as ET
 from pathlib import Path
 import subprocess
+import os
+import zipfile
 
 
 def adb(*args):
@@ -12,6 +14,30 @@ def adb(*args):
 
 def run(output: Path):
     api = int(adb("shell", "getprop", "ro.build.version.sdk").strip())
+    finger_jar = None
+    if api == 30:
+        sdk = Path(os.environ["ANDROID_HOME"])
+        platform = sdk / "platforms/android-36/android.jar"
+        tools = sdk / "build-tools/36.0.0"
+        sources = Path(__file__).with_name("saf-finger-tap")
+        build = output / "finger-helper"
+        classes = build / "classes"
+        dex = build / "dex"
+        classes.mkdir(parents=True, exist_ok=True)
+        dex.mkdir(exist_ok=True)
+        subprocess.run(["javac", "--release", "8", "-cp", str(platform), "-d", str(classes),
+                        *map(str, sources.glob("*.java"))], check=True)
+        stubs = build / "compile-only.jar"
+        with zipfile.ZipFile(stubs, "w") as jar:
+            for file in (classes / "com").rglob("*.class"):
+                jar.write(file, file.relative_to(classes).as_posix())
+        subprocess.run([str(tools / "d8"), "--min-api", "30", "--lib", str(platform), "--classpath", str(stubs),
+                        "--output", str(dex), str(classes / "dev/alfred/test/SafFingerTap.class")], check=True)
+        finger_jar = "/data/local/tmp/alfred-finger.jar"
+        packaged = build / "finger.jar"
+        with zipfile.ZipFile(packaged, "w") as jar:
+            jar.write(dex / "classes.dex", "classes.dex")
+        adb("push", str(packaged), finger_jar)
     def nodes():
         adb("shell", "uiautomator", "dump", "/sdcard/alfred-saf.xml")
         xml = adb("shell", "cat", "/sdcard/alfred-saf.xml")
@@ -30,6 +56,11 @@ def run(output: Path):
     def tap(node, long=False):
         left, top, right, bottom = map(int, re.findall(r"\d+", node.attrib["bounds"]))
         x, y = str((left + right) // 2), str((top + bottom) // 2)
+        if finger_jar:
+            result = adb("shell", "uiautomator", "runtest", finger_jar, "-c", "dev.alfred.test.SafFingerTap#testTap",
+                         "-e", "x", x, "-e", "y", y, "-e", "long", str(long).lower())
+            assert "OK (1 test)" in result, result
+            return
         if long:
             adb("shell", "input", "swipe", x, y, x, y, "1000")
         else:
