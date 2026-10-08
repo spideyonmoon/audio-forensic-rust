@@ -27,7 +27,12 @@ running. Both ABI builds/native controls/lint/packaging passed. API 30 passed al
 18 A06 controls and five Compose checks, then A05's `wm user-rotation` command
 failed because API 30 lacks it. Harness-only guard retains actual settings-based
 rotation/background/screen-off and every control. Same verified APK retry next.
-Auto reuse run 37806953779 has no branch APK yet and is not acceptance.
+Full run finished: entire API 31–34 passed. API 35/36 picker harness stopped
+before A06 because its completion label fell below the fold; bounded scroll
+repair retains the count/completion/persisted-grant checks. API-30-only runtime
+retry 37808812675 is running. APK download retry and exact source/hash reuse
+guard passed; compiled source remains 8094a01, harness source 6fb7fd2. API35/36
+same-APK retry is next. Auto reuse 37806953779 lacked a first branch artifact.
 Next: inspect A06 CI, finish its acceptance; then start A06a and A06b as
 the owner requested if A06 completes this turn. No A06a/b implementation yet.
 

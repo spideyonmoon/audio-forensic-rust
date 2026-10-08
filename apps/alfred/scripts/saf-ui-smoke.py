@@ -125,14 +125,16 @@ def run(output: Path):
     def checked(count):
         deadline = time.monotonic() + 45
         complete = False
+        selected = False
         while time.monotonic() < deadline:
             current = nodes()
             texts = [n.attrib.get("text", "") for n in current]
-            if f"{count} selected documents" in texts and any("Input checks complete" in text for text in texts):
+            selected = selected or f"{count} selected documents" in texts
+            if selected and any("Input checks complete" in text for text in texts):
                 complete = True
             if complete and any("persisted" in text for text in texts):
                 return
-            if complete:
+            if selected:
                 # Notifications/other status text can push the document row off
                 # screen; verify its actual label after a bounded scroll.
                 bounds = current[0].attrib["bounds"]
