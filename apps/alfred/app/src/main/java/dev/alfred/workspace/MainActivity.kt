@@ -23,6 +23,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -50,10 +52,17 @@ import androidx.activity.result.contract.ActivityResultContracts
 import android.Manifest
 import android.os.Build
 import android.content.pm.PackageManager
+import dev.alfred.shared.ResultTransfer
+import dev.alfred.shared.ResultDescriptor
+import dev.alfred.shared.ResultDestination
+import dev.alfred.shared.ResultAction
+import dev.alfred.shared.resultFailure
+import kotlinx.coroutines.launch
 
 class WorkspaceModel(application: android.app.Application) : AndroidViewModel(application) {
     val workspace = mutableStateOf(WorkspaceState())
     val jobs = SharedJobs.get(application)
+    val transfers = ResultTransfer(application, jobs.results)
     val inputs = WorkspaceInput(application) { workspace.value = it }
     override fun onCleared() { inputs.close() }
 }
@@ -67,7 +76,28 @@ class MainActivity : ComponentActivity() {
             MaterialTheme {
                 val workspace by model.workspace
                 var checked by remember { mutableStateOf<Set<String>>(emptySet()) }
-                var route by remember { mutableStateOf<String?>(null) }
+                var route by rememberSaveable { mutableStateOf<String?>(null) }
+                var transferNotice by remember { mutableStateOf("") }
+                var exportAttempt by rememberSaveable { mutableStateOf<String?>(null) }
+                var exportDescriptor by rememberSaveable { mutableStateOf<String?>(null) }
+                val coroutine = rememberCoroutineScope()
+                val destination = rememberLauncherForActivityResult(ResultDestination()) { uri ->
+                    val attempt = exportAttempt
+                    val descriptor = exportDescriptor
+                    exportAttempt = null; exportDescriptor = null
+                    if (uri != null && attempt != null && descriptor != null) coroutine.launch {
+                        try { withContext(Dispatchers.IO) { model.transfers.export(attempt, ResultDescriptor.from(org.json.JSONObject(descriptor)), uri).get() }; transferNotice = "Export completed" }
+                        catch (error: Exception) { transferNotice = "Export failed: ${resultFailure(error)} · local result retained" }
+                    }
+                }
+                val export: ResultAction = { attempt, descriptor ->
+                    exportAttempt = attempt; exportDescriptor = descriptor.json().toString()
+                    destination.launch("alfred-${descriptor.kind}-${descriptor.path.substringBefore('.')}.${if (descriptor.kind == "png") "png" else "json"}")
+                }
+                val share: ResultAction = { attempt, descriptor -> coroutine.launch {
+                    try { val intent = withContext(Dispatchers.IO) { model.transfers.share(attempt, descriptor).get() }; startActivity(android.content.Intent.createChooser(intent, "Share Alfred result")); transferNotice = "Share copy prepared" }
+                    catch (error: Exception) { transferNotice = "Share failed: ${resultFailure(error)} · local result retained" }
+                } }
                 var nativeStatus by remember { mutableStateOf("Loading native host…") }
                 val inputs = model.inputs
                 var jobs by remember { mutableStateOf<List<JobRecord>>(emptyList()) }
@@ -97,6 +127,7 @@ class MainActivity : ComponentActivity() {
                     Column(Modifier.fillMaxSize().padding(insets).verticalScroll(rememberScrollState()).padding(20.dp),
                         verticalArrangement = Arrangement.spacedBy(12.dp)) {
                         Text("Alfred", style = MaterialTheme.typography.headlineLarge)
+                        if (transferNotice.isNotEmpty()) Text(transferNotice)
                         if (model.jobs.releaseUnconfirmed()) Text("Native release could not be confirmed. Work is blocked to protect its files; force-stop Alfred before reopening it.")
                         if (!notificationAllowed) {
                             Text("Notifications are denied. Started operations can continue; return here to cancel and inspect progress.")
@@ -110,11 +141,16 @@ class MainActivity : ComponentActivity() {
                         if (route != null) TextButton(onClick = { route = null }) { Text("Back to workspace") }
                         val count = workspace.selection?.items?.size ?: 0
                         when (route) {
-                            FeatureId.FORENSICS.name -> inputs.featureInputs()?.let { ForensicsScreen(it) }
+                            FeatureId.FORENSICS.name -> ForensicsScreen(inputs.featureInputs(), model.jobs, jobs, export, share) { feature ->
+                                val operation = when (feature) { FeatureId.FORENSICS -> forensicsOperation; FeatureId.SPECTROGRAM -> spectrogramOperation; FeatureId.COMPARE -> compareOperation }
+                                val capability = operationCapability(operation, workspace)
+                                if (capability.state == "available") route = feature.name else transferNotice = capability.reason
+                            }
                             FeatureId.SPECTROGRAM.name -> inputs.featureInputs()?.let { SpectrogramScreen(it) }
                             FeatureId.COMPARE.name -> inputs.featureInputs()?.let { CompareScreen(it) }
                             else -> {
                                 Text("Audio workspace", style = MaterialTheme.typography.titleLarge)
+                                TextButton(onClick = { route = FeatureId.FORENSICS.name }) { Text("Forensics history") }
                                 Text("Select audio documents or a folder. Everything stays on this device.")
                                 Button(onClick = { single.launch(Unit) }) { Text("Choose one document") }
                                 Button(onClick = { files.launch(Unit) }) { Text("Choose documents") }

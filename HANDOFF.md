@@ -4,6 +4,27 @@ Updated **2026-10-08**. This is the current continuation point. Historical miles
 entries and exact older check totals are preserved in
 [the handoff archive](docs/history/HANDOFF_20261006.md); newer decisions here win.
 
+## A06 implementation — 2026-10-08
+
+**A06 active; implemented, acceptance pending.** Workspace execution now uses
+shared acquisition/jobs and original Rust products. Full/explicit prefix, mixed
+outcomes, fresh retry, paged exact-field inspection, qualified reference summary,
+selection-independent history/delete, SAF export and FileProvider share are wired.
+Native output adoption checks released paths/sizes/hashes; no Kotlin scoring or
+core/native Rust/private-audio change. Spectrogram/Compare stay separate routes.
+
+Owner authorized focused commit/push/CI. Offline corrected Kotlin compilation
+and app lint passed (0 errors/12 warnings/3 hints) after repairing a nullable-map harness error. Initial
+sandbox daemon connection failed; permitted retry ran. Final bounded-reader/source
+Kotlin compile passed in target/a06/pre-ci.log (53s). Generated FeatureSmokeActivity prepares 18 acceptance
+controls plus Compose UI navigation checks; Python syntax/whitespace passed.
+Android runtime/UI/phone results are not yet claimed. Details and exact
+failure history: [A06 packet](task-results/A06.md). Owner cleanup edits remain
+unstaged; local target/a06 logs are not external backups.
+
+Next: dispatch/inspect A06 CI, finish its acceptance; then start A06a and A06b as
+the owner requested if A06 completes this turn. No A06a/b implementation yet.
+
 ## A05 COMPLETE — 2026-10-08
 
 **DONE. Next delivery task: A06. No jobs running.** Shared feature-neutral

@@ -85,6 +85,25 @@ try:
         }))
     else:
         saf_ui.run(output)
+    adb("shell", "run-as", "dev.alfred.workspace.debug", "rm", "-f", "files/feature-smoke.json")
+    adb("shell", "am", "start", "-W", "-n", "dev.alfred.workspace.debug/dev.alfred.workspace.FeatureSmokeActivity")
+    deadline = time.monotonic() + 180
+    while time.monotonic() < deadline:
+        try:
+            receipt = adb("shell", "run-as", "dev.alfred.workspace.debug", "cat", "files/feature-smoke.json")
+            parsed = json.loads(receipt)
+        except (subprocess.CalledProcessError, json.JSONDecodeError):
+            time.sleep(2)
+            continue
+        (output / "feature-smoke.json").write_text(receipt)
+        assert parsed["passed"], parsed
+        break
+    else:
+        raise AssertionError("Feature result acceptance timed out")
+    feature_spec = importlib.util.spec_from_file_location("features_ui", Path(__file__).with_name("features-ui-smoke.py"))
+    features_ui = importlib.util.module_from_spec(feature_spec)
+    feature_spec.loader.exec_module(features_ui)
+    features_ui.run(output, parsed)
     # Keep every suite, but exercise DocumentsUI before lifecycle tests change
     # rotation/screen/notification state. Neither suite depends on the other.
     jobs_spec = importlib.util.spec_from_file_location("jobs_smoke", Path(__file__).with_name("jobs-smoke.py"))
@@ -94,7 +113,7 @@ try:
 finally:
     # All are generated-only debug receipts; retain the actual Activity failure
     # even if a per-phase receipt was never reached.
-    for name in ["job-smoke.json", "job-controls.json", "job-marker.json", "job-recovery.json", "job-denied.json", "job-timeout.json"]:
+    for name in ["feature-smoke.json", "job-smoke.json", "job-controls.json", "job-marker.json", "job-recovery.json", "job-denied.json", "job-timeout.json"]:
         try:
             (output / name).write_text(adb("shell", "run-as", "dev.alfred.workspace.debug", "cat", "files/" + name))
         except subprocess.CalledProcessError:

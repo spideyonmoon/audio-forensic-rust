@@ -1,5 +1,22 @@
 # Android integration validation
 
+## A06 implementation — 2026-10-08
+
+Forensics now consumes shared acquisition/jobs/storage and unchanged Rust products.
+Qualified summaries, paged read-only exact metadata/measurement/reference fields,
+mixed outcomes, history/retry/delete and original-byte export/share are implemented.
+Future payloads remain exportable; future assessment methods are not interpreted.
+Explicit heap admission protects large saved-document inspection. The native
+manifest preserves item/output binding and separate artifact diagnostics.
+
+Corrected offline Kotlin compilation/lint passed after a debug nullable-map repair
+(0 errors/12 warnings/3 hints). Python syntax/whitespace passed; generated Android
+feature/UI acceptance is pending. Initial sandbox daemon
+connection failed; permitted offline retry ran. The debug harness adds actual
+feature-work success/mixed-failure and synthetic abstention/version/null/u64/export
+controls; no runtime pass claimed yet. [A06 record](../../task-results/A06.md).
+No core/DSP/scoring change, private-audio upload or physical/16-KiB/RSS acceptance.
+
 ## A05 acceptance — 2026-10-08
 
 Shared service/jobs, durable attempts/manifest recovery, bounded queue/progress,

@@ -127,6 +127,7 @@ class ResultStore(private val root: File, private val freeBytes: () -> Long = { 
         descriptors.forEach { validate(job.attemptId, it) }
         val manifest = JSONObject().put("version", 1).put("job_id", job.jobId).put("attempt_id", job.attemptId)
             .put("feature_id", job.feature).put("state", job.state).put("created_ms", job.createdMs)
+            .put("options", JSONObject(job.options))
             .put("payloads", JSONArray(descriptors.map { it.json() })).put("outcomes", outcomes)
         val manifestBytes = manifest.toString().toByteArray(Charsets.UTF_8).size.toLong()
         if ((reserved[job.attemptId] ?: 0) < manifestBytes) reserve(job.attemptId, manifestBytes)

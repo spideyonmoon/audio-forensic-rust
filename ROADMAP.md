@@ -53,7 +53,7 @@ the entire roadmap. If a task spans sessions, resume the same ID and saved state
 
 ## Current dispatch
 
-- **Active task:** none; A05 DONE 2026-10-08.
+- **Active task:** A06 implemented; build/runtime acceptance pending 2026-10-08.
 - **Next delivery task:** **A06 — Audio Forensics results/history/export (Sol)**.
 - **Owner inputs received:** Redmi 13 4G, Android 16, APK/ADB available;
   FLAC/WAV/ALAC-M4A/DSD; detailed verdict, complete metadata and deep results;
@@ -183,7 +183,7 @@ unless the card explicitly permits work against the frozen contract.
 | A03 | Audio Forensics native adapter and linked smoke | Astra | A02 | DONE 2026-10-08 |
 | A04 | Shared selection, SAF file/folder input and bounded staging | Sol | A02 | DONE 2026-10-08 |
 | A05 | Shared jobs, background lifecycle, progress/cancel and retention | Sol | A03, A04 | DONE 2026-10-08 |
-| A06 | Audio Forensics feature results/history/export integration | Sol | A05, P07 | TODO |
+| A06 | Audio Forensics feature results/history/export integration | Sol | A05, P07 | IN PROGRESS 2026-10-08 |
 | A06a | Initial slice of the independent Spectrogram feature, reusing P06 | Sol | A05, P06 | TODO |
 | A06b | Independently reachable Audio Compare workflow using P07 | Sol | A05, P07 | TODO |
 | A07 | Alfred real-device workspace/feature/resource gate | Astra + owner | A06, A06a, A06b, P09, U01 | TODO |
