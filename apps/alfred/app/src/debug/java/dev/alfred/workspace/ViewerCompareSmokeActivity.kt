@@ -90,13 +90,44 @@ class ViewerCompareSmokeActivity : Activity() {
         check(intent.type == if (descriptor.kind == "png") "image/png" else "application/json")
     }
     private fun savedFixture(value: JSONObject, kind: String, version: String): CompareWork.SavedProduct {
+        return savedFixtureText(value.toString(), kind, version)
+    }
+    private fun savedFixtureText(value: String, kind: String, version: String): CompareWork.SavedProduct {
         val attempt = UUID.randomUUID().toString()
-        val source = File(cacheDir, "viewer-compare-fixture.json").apply { writeText(value.toString()) }
+        val source = File(cacheDir, "viewer-compare-fixture.json").apply { writeText(value) }
         jobs.results.reserve(attempt, source.length() + 65536)
         val descriptor = jobs.results.import(attempt, source, kind, version)
         jobs.results.commit(JobRecord(UUID.randomUUID().toString(), attempt, if (kind == "spectrogram") "spectrogram" else "forensics",
             listOf(UUID.randomUUID().toString()), "{}", System.currentTimeMillis(), "completed"), listOf(descriptor), JSONArray())
         return CompareWork.SavedProduct(attempt, descriptor)
+    }
+    /** Change only a top-level value; retain every original numeric token. */
+    private fun replaceTopValue(text: String, field: String, value: String): String {
+        var depth = 0; var quoted = false; var escaped = false
+        val marker = "\"$field\":"
+        for (index in text.indices) {
+            val char = text[index]
+            if (!quoted && depth == 1 && text.startsWith(marker, index)) {
+                val start = index + marker.length
+                var nested = 0; var string = false; var escape = false
+                for (end in start until text.length) {
+                    val c = text[end]
+                    if (string) {
+                        if (escape) escape = false else if (c == '\\') escape = true else if (c == '"') string = false
+                    } else when (c) {
+                        '"' -> string = true
+                        '{', '[' -> nested++
+                        '}', ']' -> if (nested > 0) nested-- else return text.substring(0, start) + value + text.substring(end)
+                        ',' -> if (nested == 0) return text.substring(0, start) + value + text.substring(end)
+                    }
+                }
+                error("Unterminated generated field")
+            }
+            if (quoted) {
+                if (escaped) escaped = false else if (char == '\\') escaped = true else if (char == '"') quoted = false
+            } else when (char) { '"' -> quoted = true; '{', '[' -> depth++; '}', ']' -> depth-- }
+        }
+        error("Missing generated field: $field")
     }
     private fun render(input: CompareWork.SavedProduct, budget: Long, cancel: Boolean = false): JSONObject {
         val item = UUID.randomUUID().toString()
@@ -210,8 +241,8 @@ class ViewerCompareSmokeActivity : Activity() {
         jobs.results.delete(record.attemptId)
         savedList.forEach { jobs.results.validate(compareAttempt, it) }
         checks.put("saved-compare:same-Rust-result/exact-export/independent-retention")
-        val base = document(compareAttempt, savedList.first { it.kind == "product" })
-        val absent = savedFixture(JSONObject(base.toString()).apply { remove("tool_statistics") }, "product", "audio-forensic-product-v1")
+        val baseText = jobs.results.validate(compareAttempt, savedList.first { it.kind == "product" }).readText()
+        val absent = savedFixtureText(replaceTopValue(baseText, "tool_statistics", "null"), "product", "audio-forensic-product-v1")
         val copied = savedList.filter { it.kind == "product" }.map { CompareWork.SavedProduct(compareAttempt, it) }
         val incompatible = savedCompare(listOf(copied[0], absent))
         val incompatibleReport = document(incompatible.getString("attempt_id"), descriptors(incompatible).single { it.kind == "comparison" })
@@ -237,22 +268,23 @@ class ViewerCompareSmokeActivity : Activity() {
         check(abstention.getString("status") == "unavailable" && abstention.isNull("winner_input_index"))
         checks.put("live-compare:short-prefix/partial-assessment/no-invented-winner")
         for (field in listOf("product_schema_version", "method_id", "input_domain")) {
-            val invalid = JSONObject(base.toString())
-            when (field) {
-                "product_schema_version" -> invalid.put(field, "future")
-                "method_id" -> invalid.getJSONObject("reference_assessment").put(field, "future")
-                else -> invalid.getJSONObject("tool_statistics").getJSONObject("measurements").getJSONObject("dr").put(field, "foreign")
+            val invalid = when (field) {
+                "product_schema_version" -> replaceTopValue(baseText, field, "\"future\"")
+                "method_id" -> baseText.replace("\"method_id\":\"python-reference-c6ecce2-v1\"", "\"method_id\":\"future\"")
+                else -> baseText.replace("\"input_domain\":\"native lanes converted to f32, three-second RMS/peak histograms\"", "\"input_domain\":\"foreign\"")
             }
-            val fixture = savedFixture(invalid, "product", "audio-forensic-product-v1")
+            check(invalid != baseText)
+            val fixture = savedFixtureText(invalid, "product", "audio-forensic-product-v1")
             val rejected = savedCompare(listOf(copied[0], fixture), "failed")
             check(descriptors(rejected).count { it.kind == "product" } == 2)
+            check(jobs.snapshot().first { it.attemptId == rejected.getString("attempt_id") }.error == if (field == "product_schema_version") "unsupported_version" else "invalid_request")
             checks.put("saved-compare:reject-$field/original-products-retained")
         }
         val future = copied[0].copy(descriptor = copied[0].descriptor.copy(version = "future"))
         try { CompareWork.submitSaved(this, listOf(future, copied[1]), true).get(); error("future descriptor admitted") }
         catch (error: java.util.concurrent.ExecutionException) { check((error.cause as InputFailure).code == "unsupported_version") }
         checks.put("saved-compare:future-descriptor-before-admission")
-        val queueInputs = listOf(savedFixture(base, "product", "audio-forensic-product-v1"), savedFixture(base, "product", "audio-forensic-product-v1"))
+        val queueInputs = listOf(savedFixtureText(baseText, "product", "audio-forensic-product-v1"), savedFixtureText(baseText, "product", "audio-forensic-product-v1"))
         val release = java.util.concurrent.atomic.AtomicBoolean(false)
         val blocker = jobs.submit("compare", listOf(UUID.randomUUID().toString()), JSONObject(), 65536,
             FeatureWork { context ->

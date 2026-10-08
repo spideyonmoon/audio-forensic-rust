@@ -36,7 +36,9 @@ fun JobContext.runNative(request: JSONObject, snapshot: OwnedInput?, output: Own
             if (terminal != null) {
                 released = polled["leases_released"] == true
                 if (!released) throw InputFailure("io_error")
-                if (terminal["status"] != "completed") throw InputFailure(terminal["status"] as? String ?: "host_error")
+                if (terminal["status"] != "completed") throw InputFailure(
+                    (terminal["error"] as? Map<*, *>)?.get("code") as? String
+                        ?: terminal["status"] as? String ?: "host_error")
                 return objectValue(terminal["result"])
             }
             Thread.sleep(250)
