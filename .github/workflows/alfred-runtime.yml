@@ -1,7 +1,7 @@
 name: Alfred runtime acceptance (reuse verified APK)
 on:
   push:
-    paths: ['apps/alfred/scripts/emulator-smoke.py', 'apps/alfred/scripts/jobs-smoke.py', 'apps/alfred/scripts/saf-ui-smoke.py', 'apps/alfred/scripts/saf-finger-tap/**', 'apps/alfred/scripts/verify_reused_build.py', '.github/workflows/alfred-runtime.yml']
+    paths: ['apps/alfred/scripts/emulator-smoke.py', 'apps/alfred/scripts/jobs-smoke.py', 'apps/alfred/scripts/features-ui-smoke.py', 'apps/alfred/scripts/saf-ui-smoke.py', 'apps/alfred/scripts/saf-finger-tap/**', 'apps/alfred/scripts/verify_reused_build.py', '.github/workflows/alfred-runtime.yml']
   workflow_dispatch:
     inputs:
       build_run:
@@ -102,6 +102,7 @@ jobs:
           arch: x86_64
           target: google_apis
           disable-animations: true
+          ram-size: 4096M
           script: python3 apps/alfred/scripts/emulator-smoke.py
       - uses: actions/upload-artifact@v4
         if: always()

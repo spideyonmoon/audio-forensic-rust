@@ -31,6 +31,7 @@ def verify(directory, if_unchanged=False):
     paths = [".", ":(exclude,glob)*.md", ":(exclude)**/*.md", ":(exclude).github/workflows/*",
              ":(exclude)apps/alfred/scripts/emulator-smoke.py",
              ":(exclude)apps/alfred/scripts/jobs-smoke.py",
+             ":(exclude)apps/alfred/scripts/features-ui-smoke.py",
              ":(exclude)apps/alfred/scripts/saf-ui-smoke.py",
              ":(exclude)apps/alfred/scripts/saf-finger-tap/**",
              ":(exclude)apps/alfred/scripts/verify_reused_build.py"]

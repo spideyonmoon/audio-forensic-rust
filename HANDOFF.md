@@ -22,7 +22,13 @@ Android runtime/UI/phone results are not yet claimed. Details and exact
 failure history: [A06 packet](task-results/A06.md). Owner cleanup edits remain
 unstaged; local target/a06 logs are not external backups.
 
-Next: dispatch/inspect A06 CI, finish its acceptance; then start A06a and A06b as
+CI source 8094a01 is pushed on codex/a06-forensics; full run 37806954007 is
+running. Both ABI builds/native controls/lint/packaging passed. API 30 passed all
+18 A06 controls and five Compose checks, then A05's `wm user-rotation` command
+failed because API 30 lacks it. Harness-only guard retains actual settings-based
+rotation/background/screen-off and every control. Same verified APK retry next.
+Auto reuse run 37806953779 has no branch APK yet and is not acceptance.
+Next: inspect A06 CI, finish its acceptance; then start A06a and A06b as
 the owner requested if A06 completes this turn. No A06a/b implementation yet.
 
 ## A05 COMPLETE — 2026-10-08

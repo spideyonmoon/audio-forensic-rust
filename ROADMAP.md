@@ -67,7 +67,8 @@ the entire roadmap. If a task spans sessions, resume the same ID and saved state
 - **Independent MQA work:** existing prototype/corpus at
   `C:\Users\Bishal\Documents\antigravity-dev\mqa`; E09 now READY for a
   named review, not a beta gate. See `task-results/P01-MQA.md`.
-- **Running jobs:** none. Final verified-APK API-34 retry 37777694067 passed all suites.
+- **Running jobs:** A06 full build/runtime run 37806954007 on source 8094a01;
+  A05 final verified-APK API-34 retry 37777694067 remains accepted.
 
 P01 is a completed specification packet, not a completed port. Its frozen
 [parity map](PYTHON_PARITY.md) and [release contract](RELEASE_CONTRACT.md) own

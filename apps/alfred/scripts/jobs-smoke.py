@@ -65,7 +65,8 @@ def run(output):
     adb("shell", "input", "keyevent", "KEYCODE_WAKEUP")
     adb("shell", "wm", "dismiss-keyguard")
     adb("shell", "settings", "put", "system", "user_rotation", "0")
-    adb("shell", "wm", "user-rotation", "lock", "0")
+    if api >= 31:
+        adb("shell", "wm", "user-rotation", "lock", "0")
     evidence["checks"].append({"rotation_background_screen_off": "completed", "attempt": completed["attempt_id"]})
 
     for phase in ["copy", "native", "finalizing", "completed"]:
@@ -102,7 +103,8 @@ def run(output):
     # picker suite, whose generated row should not be pushed below the fold.
     if api >= 33:
         adb("shell", "pm", "grant", PACKAGE, "android.permission.POST_NOTIFICATIONS")
-    adb("shell", "wm", "user-rotation", "lock", "0")
+    if api >= 31:
+        adb("shell", "wm", "user-rotation", "lock", "0")
     time.sleep(1)
 
 
