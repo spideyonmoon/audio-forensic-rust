@@ -53,8 +53,8 @@ the entire roadmap. If a task spans sessions, resume the same ID and saved state
 
 ## Current dispatch
 
-- **Active task:** A03 implementation complete; generated-input runtime acceptance pending.
-- **Next delivery task:** **A03 — Audio Forensics native adapter and linked smoke (Astra)**.
+- **Active task:** none; A03 completed 2026-10-08.
+- **Next delivery task:** **A04 — shared selection, SAF input and bounded staging (Sol)**.
 - **Owner inputs received:** Redmi 13 4G, Android 16, APK/ADB available;
   FLAC/WAV/ALAC-M4A/DSD; detailed verdict, complete metadata and deep results;
   approximately 600–700 MB upper typical file size; Alfred via GitHub Releases.
@@ -62,12 +62,12 @@ the entire roadmap. If a task spans sessions, resume the same ID and saved state
   Heavy Android checks run in GitHub Actions; retain common memory rules. U02/U05 continue alongside implementation.
 - **Deferred:** F02/DSD beyond the first standalone release and Alfred launch,
   owner approved 2026-10-06 to conserve Astra budget. DSD is not shipped support.
-- **Next Sol task:** A04 after A03; P09/A01/A02 are complete. Follow ANDROID_CONTRACT.md.
+- **Next Sol task:** A04. P09/A01/A02/A03 are complete; follow ANDROID_CONTRACT.md.
 - **Next endgame task when explicitly requested:** E01, the AAC trim work.
 - **Independent MQA work:** existing prototype/corpus at
   `C:\Users\Bishal\Documents\antigravity-dev\mqa`; E09 now READY for a
   named review, not a beta gate. See `task-results/P01-MQA.md`.
-- **Running jobs:** Android CI 37673381546 on `codex/a03-native-adapter`.
+- **Running jobs:** none; A03 CI 37673381546 succeeded.
 
 P01 is a completed specification packet, not a completed port. Its frozen
 [parity map](PYTHON_PARITY.md) and [release contract](RELEASE_CONTRACT.md) own
@@ -180,7 +180,7 @@ unless the card explicitly permits work against the frozen contract.
 | P09 | Core release review and finite acceptance decision | Astra | P08 | DONE — ACCEPT 2026-10-06 |
 | A01 | Alfred shared architecture and feature/native integration contract | Astra | P09 | DONE 2026-10-07 |
 | A02 | Alfred workspace scaffold and reproducible builds | Sol | A01 | DONE 2026-10-07 |
-| A03 | Audio Forensics native adapter and linked smoke | Astra | A02 | IN_PROGRESS |
+| A03 | Audio Forensics native adapter and linked smoke | Astra | A02 | DONE 2026-10-08 |
 | A04 | Shared selection, SAF file/folder input and bounded staging | Sol | A02 | TODO |
 | A05 | Shared jobs, background lifecycle, progress/cancel and retention | Sol | A03, A04 | TODO |
 | A06 | Audio Forensics feature results/history/export integration | Sol | A05, P07 | TODO |
@@ -197,7 +197,7 @@ ledger; it does not imply publication or Android acceptance.
 Alfred development then begins: A01 → A02 → A03/A04 → A05 → A06/A06a/A06b →
 A07 → A08. A03 and A04 have independent responsibilities; sessions still run
 sequentially by default. The former permission to start A01–A03 before the core
-release is superseded by this boundary. A01/A02 are complete; A03–A08 remain.
+release is superseded by this boundary. A01/A02/A03 are complete; A04–A08 remain.
 
 Shared infrastructure: A01/A02/A04/A05. Audio Forensics integration: A03/A06.
 Independent existing-functionality workflows: A06a/A06b. A07/A08 gate the Alfred

@@ -2,6 +2,8 @@
 
 ## A03 native adapter — 2026-10-08
 
+DONE: CI 37673381546 passed both ABI builds and all API 30–36 JNI smoke jobs.
+
 The app-owned `apps/alfred/native/adapter` now provides JNI byte-array transport,
 one serial cancellable worker, exact payload descriptors and atomic attempt
 publication around the unchanged core probe/product/Spectrogram/Compare APIs.
@@ -25,7 +27,7 @@ Primary phone ABI stays ARM64; x86_64 is a separate CI emulator artifact.
 Shared memory admission/frame limits stay unchanged; no device-specific chunking
 or throttling. Build/emulator evidence is separate from physical A07 acceptance.
 See [compatibility packet](task-results/ANDROID-11-CI.md).
-P09/A01/A02 are complete; A03 native adapter is the next delivery packet.
+P09/A01/A02/A03 are complete; A04 shared input/staging is next.
 
 ## Current delivery priority — 2026-10-06
 
@@ -62,7 +64,7 @@ checks passed; no production change or repeated full regression. See
 task-results/P09.md and the release ledger for accepted limits. A01 completed
 2026-10-07: ANDROID_CONTRACT.md freezes app-owned JNI, shared input/jobs/storage,
 conservative native-rate resource admission and extraction with P06/P07 backends
-retained here. A02 scaffold/builds are complete; next A03 native adapter. No
+retained here. A02 scaffold and A03 native adapter/runtime acceptance are complete; next A04. No
 device acceptance is implied.
 
 

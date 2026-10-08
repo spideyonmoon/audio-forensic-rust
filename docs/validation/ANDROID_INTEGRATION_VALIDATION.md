@@ -1,5 +1,16 @@
 # Android integration validation
 
+## A03 accepted — 2026-10-08
+
+Final source ce037d3 passed [CI 37673381546](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37673381546):
+both ABI NDK/APK/lint/alignment/signature checks and all seven API 30–36 emulator
+jobs, including packaged generated WAV/FLAC/ALAC exact PCM/product/PNG, complete
+metadata, exact integer/null and cancellation checks. A03 is DONE; A04 is next.
+Eight focused host tests and Clippy passed. No core/private-audio changes or
+repeated audits were required for closure. Earlier pending statements below are
+historical. Physical ARM64/16 KiB runtime, SAF/jobs/UI and release gates remain.
+
+
 ## A03 adapter — 2026-10-08, Android acceptance pending
 
 Implemented only in `apps/alfred/`: one serial worker and nonreused handle

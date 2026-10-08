@@ -22,8 +22,8 @@
   endgame accuracy/calibration and MQA confirmation do not block the first app.
   Initial formats are FLAC, WAV and ALAC/M4A. Owner deferred F02/DSD beyond
   the first standalone release and Alfred launch on 2026-10-06. P09 is accepted;
-  A01/A02 are complete; A03 implementation is finished, with final runtime CI
-  acceptance pending in HANDOFF.md. A04 is independently eligible after A02.
+  A01/A02/A03 are complete; next is A04 (shared input and staging).
+  A03 packaged generated-input runtime passed on Android 11–16.
   Android 11–16 scaffold CI passed; use GitHub Actions for heavy Android checks.
   Keep the frozen future DSD contract; follow current task cards.
 - Conserve usage: targeted inspection/checks, concise updates, Sol for bounded

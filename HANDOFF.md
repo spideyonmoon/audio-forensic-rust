@@ -4,46 +4,36 @@ Updated **2026-10-08**. This is the current continuation point. Historical miles
 entries and exact older check totals are preserved in
 [the handoff archive](docs/history/HANDOFF_20261006.md); newer decisions here win.
 
-## A03 handoff — 2026-10-08
+## A03 COMPLETE — 2026-10-08
 
-**Implementation finished; packaged generated-input runtime acceptance PENDING.**
-Owner wants to move to a cheaper/new A04 thread and conserve usage. Do not repeat
-completed core audits/build matrices. A04 depends on A02 and can proceed while
-this last A03 CI gate completes. A03 must not be marked DONE without runtime success.
+**DONE. Next delivery task: A04. No jobs running.**
+Final source **ce037d3** on `codex/a03-native-adapter` passed CI run
+[37673381546](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37673381546):
+both ARM64/x86_64 NDK links, APK builds/lint, native alignment/signatures,
+exact packaged fixture verification, and all seven API 30–36 emulator jobs.
+Packaged JNI generated WAV/FLAC/ALAC PCM/product/PNG, complete metadata,
+exact integers/null and cancellation smoke passed. Eight focused native tests
+and all-target Clippy passed previously. Do not repeat completed A03 audits.
 
-Current branch: `codex/a03-native-adapter`. Source through **ce037d3** is committed
-and pushed with explicit owner authorization. Final CI is running:
-https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37673381546.
-Next action: inspect that run, specifically packaged JNI generated-input results.
-If green, mark A03 DONE and advance normal dispatch to A04; otherwise inspect the
-failed job/artifact and fix only the reproducer. No local build remains running.
+Implemented app-owned serial worker/handles, source-release admission, JNI byte
+transport, exact Kotlin parser/control executor, complete probe/product/
+Spectrogram payloads, saved compare/render, atomic manifests and resource checks.
+Core source, Cargo files, schemas, fixtures, pinned reference and private audio
+remain unchanged. Physical phone, 16 KiB runtime, SAF/jobs/history/results UI
+and release acceptance remain their named later tasks.
 
-Implemented: serial native worker/handles, cancellation/source-release admission,
-JNI byte arrays, exact Kotlin JSON/control executor, complete metadata/product/
-Spectrogram payloads, saved compare/render, atomic manifests and memory limits.
-**8 focused Rust tests, all-target Clippy, Kotlin compilation and Android lint
-passed.** Prior run 37671795459 passed both NDK ABI links, APK build/lint and
-ELF/ZIP/signature checks. API 30/31 loaded JNI but failed the debug harness because
-its generated fixtures were absent from the APK. That run was cancelled; the
-fix explicitly schedules asset/lint consumers and adds exact packaged-fixture
-verification. Local merge/lint-model generation passed and all three fixtures
-are present (`target/a03/assets-final.log`). Runtime after this fix is pending.
-
-Earlier failures: Windows default linker (existing gcc/lld shim fixed), PNG
-flush access (fixed, report retained on PNG failure), one Clippy finding (fixed),
-Gradle asset producer/lint dependency (fixed), API-31-only debug handle conversion
-(replaced with checked API-30 conversion). No core or oracle changes. Details:
-[task record](task-results/A03.md), [adapter guide](apps/alfred/NATIVE_ADAPTER.md),
+Read [A03 results](task-results/A03.md),
+[adapter integration guide](apps/alfred/NATIVE_ADAPTER.md) and
 [validation](docs/validation/ANDROID_INTEGRATION_VALIDATION.md).
+A04 owns snapshot acquisition/immutability and counted source/output leases;
+A05 owns storage reservations, orphan cleanup, lifecycle and history. Native close
+never permits deleting a live snapshot: wait for native active_handle release.
 
-Prior-run APKs/receipts are local `target/a03/ci-artifacts/`; they predate the final
-fixture fix and are NOT final acceptance APKs. Original logs and failed API-30
-receipt are under `target/a03/`. These ignored files are not a source backup.
-Core source/Cargo/schema/fixtures, pinned reference and private recordings remain
-unchanged. Original cleanup edits below and in task-results/README.md remain local
-and outside A03 commits. No physical/16 KiB runtime, SAF/jobs/history/UI or release
-acceptance is claimed. Native storage reservations and orphan/lease cleanup are
-explicit A04/A05 integration responsibilities.
+Final acceptance artifacts are in the successful GitHub run. Local
+`target/a03/ci-artifacts/` APKs predate the final fixture packaging fix; do not
+present them as the final build. Original failed attempts and local checks remain
+under ignored `target/a03/`, distinct from source history and external backups.
+Existing owner cleanup edits below and in task-results/README.md remain preserved.
 
 ## Main synchronization — 2026-10-07
 
@@ -158,8 +148,8 @@ At that earlier A01 handoff A02 was next. A02 is now complete; A03 is next.
 
 ## Current task and delivery boundary
 
-- Active task: **A03 runtime acceptance pending**; see current entry and CI run above.
-- Next default delivery task: **A03 — Audio Forensics native adapter (Astra)**.
+- Active task: **none**. A03 completed 2026-10-08; no jobs running.
+- Next default delivery task: **A04 — shared workspace selection, input and staging (Sol)**.
 - **F02/DSD DEFERRED beyond the first standalone release and Alfred launch**,
   owner approved 2026-10-06 to conserve Astra budget. Its frozen DSF/DFF,
   DSD64/128/256, mono/stereo and 88.2 kHz conversion contract remains for later.
@@ -180,9 +170,9 @@ At that earlier A01 handoff A02 was next. A02 is now complete; A03 is next.
 Read [ROADMAP.md](ROADMAP.md), [A01 card](ROADMAP_TASKS.md#a01--alfred-shared-architecture-and-integration-contract),
 [release scope amendment](RELEASE_CONTRACT.md),
 [Alfred boundary](ALFRED_ARCHITECTURE.md) and [OWNER_CHECKLIST.md](OWNER_CHECKLIST.md).
-P09/A01/A02 are complete. Read [ANDROID_CONTRACT.md](ANDROID_CONTRACT.md) for
-A03–A07 implementation decisions. The app/native bootstrap scaffold exists and
-passes Android 11–16 CI; analysis handles, acquisition and jobs are not implemented.
+P09/A01/A02/A03 are complete. Read [ANDROID_CONTRACT.md](ANDROID_CONTRACT.md) for
+A03–A07 implementation decisions. The app-owned native adapter passes Android 11–16 generated-input CI;
+shared acquisition, lifecycle and feature UI remain A04–A06 work.
 
 ## Implemented state and evidence
 
@@ -263,8 +253,8 @@ these are local files, not Git history or an external backup. Prior milestone
 receipts remain where originally recorded (including target/p06-msrv and
 accepted P05/P06/F01 receipts). U05 external backup remains owner work.
 
-Next concrete action: **A03**, implementing the app-owned native adapter under
-ANDROID_CONTRACT.md. Consume existing product APIs without changing core/DSP
+Next concrete action: **A04**, shared selection and bounded staging under
+ANDROID_CONTRACT.md. A03 native adapter and runtime acceptance are complete. Consume existing product APIs without changing core/DSP
 semantics; preserve shared memory admission and use GitHub Actions for heavy checks.
 Keep P06/P07 reuse unchanged. P09 details
 are in task-results/P09.md and docs/validation/CORE_RELEASE_VALIDATION.md;
