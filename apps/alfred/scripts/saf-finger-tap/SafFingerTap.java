@@ -26,7 +26,6 @@ public class SafFingerTap extends UiAutomatorTestCase {
         long down = SystemClock.uptimeMillis();
         send(inject, bridge, down, MotionEvent.ACTION_DOWN, pointer, coordinates);
         SystemClock.sleep(longer ? 1000 : 100);
-        coordinates.pressure = 0;
         send(inject, bridge, down, MotionEvent.ACTION_UP, pointer, coordinates);
     }
     private void send(Method inject, Object bridge, long down, int action,
