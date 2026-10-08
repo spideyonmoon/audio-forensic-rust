@@ -4,7 +4,39 @@ Updated **2026-10-08**. This is the current continuation point. Historical miles
 entries and exact older check totals are preserved in
 [the handoff archive](docs/history/HANDOFF_20261006.md); newer decisions here win.
 
-## A04 implementation — 2026-10-08, Android-11 picker acceptance pending
+## A04 — 2026-10-08, ALAC replacement APK pending
+
+Owner confirmed the manual tester is **Infinix Hot 11S / Android 11**. Screenshots
+and confirmation cover single/multiple selection, persisted read access, the
+32-candidate folder bound and completed six-item folder-subset checks. This
+closes the physical picker-interaction blocker for APK `a1b3c42`; do not repeat
+the failed emulator pointer-helper experiments. Full-build CI explicitly records
+API-30 automated picker not run with manual evidence, while retaining all
+native/provider/staging controls and API 31–36 picker automation.
+
+The supplied private originals are confirmed stereo ALAC at 44.1 kHz/16-bit and
+48 kHz/24-bit. Desktop 0.32.0 reproduces the sample-table rejection. Narrow core
+preflight correction accepts exact-length all-zero version-0 `sdtp` entries and
+the generic 16-bit sample-entry field with a validated 24-bit ALAC cookie. Other
+dependencies/malformed tables/precision or channel mismatches remain explicit.
+No DSP, scoring/schema/dependency or fixture-oracle changes. This is unreleased
+post-P09 compatibility work, not a replacement of P09's accepted frozen binary.
+
+Checks: all **8 ALAC tests passed**, including generated matrix and new exact
+full/prefix PCM/malformed controls. Focused Clippy (`--lib --test alac`, warnings
+denied) passed. Both original files now probe successfully and their exact
+one-second native PCM hashes match local FFmpeg (44,100/48,000 frames). Source
+encoded hashes are unchanged; whole private tracks were not decoded. Private
+receipts/copies stay ignored `target/a04/private-alac/`, originals stay in the
+owner-supplied Downloads folder. No private audio/names/hashes/screenshots are
+committed. Initial stale CLI/system-linker attempts failed; documented local
+LLVM wrapper ran the corrected tests. [Detailed A04 record](task-results/A04.md).
+
+Next: fresh Android ABI/APK checks, then supply the ARM64 APK for the owner to
+retest just the two ALAC files on Hot 11S. A04 remains open until this acceptance
+is recorded; A05 remains next. Owner cleanup edits stay uncommitted.
+
+## Earlier A04 CI and manual-test history
 
 Shared SAF selection/staging/probe code and workspace controls are implemented;
 see [A04 results](task-results/A04.md). Source `a1b3c42` passed both ABI builds,
@@ -27,11 +59,8 @@ are supported; two M4As labelled ALAC in filenames are unsupported (actual codec
 not verified). Device model/OS are not shown. Details are in the A04 record.
 No screenshots, private file names or audio were committed.
 
-Next concrete action: confirm the manual tester's phone model and Android version;
-if Android 11, use the manual picker evidence to close that interaction blocker.
-Establish actual codec/geometry for unsupported M4As before calling them an ALAC
-regression. Do not repeat speculative pointer helpers, ABI builds or API 31–36 checks
-unless compiled source changes. A05 owns jobs/history,
+The subsequent device confirmation and ALAC diagnosis above supersede this
+earlier pending state. A05 owns jobs/history,
 quota/orphan recovery and lifecycle; feature execution stays A06/a/b. Existing
 owner cleanup edits stay uncommitted. Core/private audio are unchanged. Local
 evidence is ignored target/a04/, distinct from source history and remote artifacts.
@@ -180,8 +209,8 @@ At that earlier A01 handoff A02 was next. A02 is now complete; A03 is next.
 
 ## Current task and delivery boundary
 
-- Active task: **A04**, implemented; Android-11 real-picker acceptance unresolved.
-  Both ABI builds and input controls on API 30–36 passed; no jobs running.
+- Active task: **A04**, manual Android-11 picker accepted; ALAC compatibility fix
+  passes local tests, replacement ABI/APK acceptance and owner ALAC retest pending.
 - Next default delivery task: **A04 — shared workspace selection, input and staging (Sol)**.
 - **F02/DSD DEFERRED beyond the first standalone release and Alfred launch**,
   owner approved 2026-10-06 to conserve Astra budget. Its frozen DSF/DFF,

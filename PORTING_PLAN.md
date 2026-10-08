@@ -2,7 +2,7 @@
 
 ## A04 shared input — 2026-10-08
 
-Shared SAF identities/grants, bounded folder enumeration, serial snapshot staging and native metadata capability checks are implemented. Feature input access reuses shared counted snapshots and encoded-hash verification. Both ABI builds and input controls passed API 30–36; real DocumentsUI passed API 31–36. API-30 automated document activation remains unresolved; A04 is not yet closed. No core/DSP or format change. [A04 details](task-results/A04.md).
+Shared SAF identities/grants, bounded enumeration/staging and native capability checks passed ABI/input controls API 30–36, automated picker API 31–36 and owner manual Hot 11S/Android-11 picker checks. Real-file ALAC diagnosis required a narrow unreleased core preflight correction for all-zero dependency tables and generic 16-bit sample-entry fields with 24-bit cookies. Eight ALAC tests, Clippy and exact private one-second PCM checks passed; fresh APK/owner ALAC retest pending. No DSP/scoring/schema/dependency changes. [A04 details](task-results/A04.md).
 
 
 ## A03 native adapter — 2026-10-08

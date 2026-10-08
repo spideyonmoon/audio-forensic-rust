@@ -82,16 +82,9 @@ jobs:
           echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
           sudo udevadm control --reload-rules
           sudo udevadm trigger --name-match=kvm
-      - name: API-30 shell UIAutomator compiler prerequisites
-        if: matrix.api == 30
-        uses: android-actions/setup-android@v3
-        with:
-          packages: platform-tools
-          log-accepted-android-sdk-licenses: false
-      - name: Pinned API-30 shell helper compiler
-        if: matrix.api == 30
-        run: sdkmanager 'platforms;android-36' 'build-tools;36.0.0'
       - uses: reactivecircus/android-emulator-runner@v2
+        env:
+          ALFRED_API30_PICKER_MANUAL: 'Infinix Hot 11S Android 11; owner-confirmed single/multiple/folder-subset UI on APK a1b3c42, 2026-10-08; task-results/A04.md. Replacement ALAC APK still needs owner retest.'
         with:
           api-level: ${{ matrix.api }}
           arch: x86_64

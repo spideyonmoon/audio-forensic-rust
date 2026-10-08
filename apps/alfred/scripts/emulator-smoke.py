@@ -75,6 +75,15 @@ try:
     spec = importlib.util.spec_from_file_location("saf_ui", Path(__file__).with_name("saf-ui-smoke.py"))
     saf_ui = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(saf_ui)
-    saf_ui.run(output)
+    manual = os.environ.get("ALFRED_API30_PICKER_MANUAL")
+    if manual and int(adb("shell", "getprop", "ro.build.version.sdk").strip()) == 30:
+        # Keep the manual/automated distinction explicit. Provider/staging/native
+        # assertions above still run; only the broken API-30 pointer driver is
+        # replaced by the owner's physical single/multi/folder-subset evidence.
+        (output / "saf-ui-manual.json").write_text(json.dumps({
+            "api": 30, "status": "automated_picker_not_run", "manual_evidence": manual
+        }))
+    else:
+        saf_ui.run(output)
 finally:
     (output / "logcat.txt").write_text(adb("logcat", "-d"))

@@ -17,7 +17,7 @@ Engine **0.32.0** · Rust **1.85+** · MIT
 | Reference assessment | Versioned pinned-Python scores, rule traces and qualified candidate interpretations |
 | Spectrogram | Bounded offline data and complete calibrated Rust PNG canvas |
 | DSD | **Deferred beyond the first release and Alfred launch**; no shipped DSD analysis |
-| Alfred Android app | A04 SAF input/staging implemented; ABI/input tests pass Android 11–16, real picker passes 12–16; Android-11 picker automation unresolved; jobs/results UI and physical acceptance remain later gates |
+| Alfred Android app | A04 input/picker passed, including manual Hot 11S/Android 11; real-file ALAC compatibility correction passed local tests, replacement APK/retest pending; jobs/results UI and full physical acceptance remain later gates |
 
 The measurement report keeps ancestry `INCONCLUSIVE` and evidence index `null`.
 Reference scores are uncalibrated method outputs, not probabilities or proof of

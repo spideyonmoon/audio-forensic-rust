@@ -1,6 +1,19 @@
 # Android integration validation
 
-## A04 shared input — 2026-10-08, Android-11 picker check pending
+## A04 shared input — 2026-10-08, replacement ALAC APK pending
+
+Owner-confirmed **Infinix Hot 11S / Android 11** screenshots and manual results
+pass single/multiple/folder-subset selection and persisted access for APK source
+`a1b3c42`. This closes the platform picker-interaction gap below. Full-build CI
+now explicitly records API-30 manual picker coverage instead of repeating the
+broken pointer helper; native/provider/staging assertions still run on API 30.
+Owner-supplied ALAC originals exposed a desktop-core preflight compatibility
+limit. Narrow all-zero `sdtp` and cookie-precision corrections pass eight ALAC
+tests, focused Clippy and exact native/FFmpeg one-second PCM comparison on both
+unchanged originals. See [ALAC validation](ALAC_VALIDATION.md) and
+[A04 packet](../../task-results/A04.md). No private recordings or screenshots are
+in source history. Replacement APK acceptance and owner ALAC retest are pending.
+This manual input check does not replace A07 memory/background/16-KiB acceptance.
 
 Shared SAF workspace/staging/probing is implemented. Source `a1b3c42` passed
 both ABI links/APK/lint/packaging checks and generated native/input-provider

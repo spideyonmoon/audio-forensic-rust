@@ -7,6 +7,8 @@ and ask it to update the file. Unknowns do not stop unrelated implementation.
 
 - Phone model: **Redmi 13 4G**.
 - Android version: **Android 16**.
+- Additional manual tester confirmed 2026-10-08: **Infinix Hot 11S / Android 11**;
+  single/multiple/folder-subset picker checks passed. Replacement ALAC APK retest pending.
 - Can install a test APK: **yes**.
 - USB debugging/ADB available: **yes; available if needed, but not required for
   ordinary owner testing**.
