@@ -1,5 +1,10 @@
 # Android integration validation
 
+Extraction completed2026-10-09; all7 standalone functional suites accepted across
+37892173286/37893506220. API34 post-test log-only decoding failure is explicitly
+recorded in [extraction](../../task-results/ALFRED-EXTRACTION.md); aggregate runs are
+not claimed all-green. Current Android validation and UI work live in Alfred.
+
 Current Android ownership moved to https://github.com/spideyonmoon/alfred on 2026-10-09.
 Extraction validation continues there; the dated evidence below remains historical.
 
