@@ -1,9 +1,9 @@
 name: Rust core
 on:
   push:
-    paths-ignore: ['apps/alfred/**', '**/*.md', '.github/workflows/alfred-android.yml']
+    paths-ignore: ['apps/alfred/**', '**/*.md', '.github/workflows/alfred-*.yml']
   pull_request:
-    paths-ignore: ['apps/alfred/**', '**/*.md', '.github/workflows/alfred-android.yml']
+    paths-ignore: ['apps/alfred/**', '**/*.md', '.github/workflows/alfred-*.yml']
 jobs:
   test:
     strategy:
@@ -19,6 +19,8 @@ jobs:
       # Public history excludes the local tests and generated numerical fixtures.
       - run: cargo clippy --locked --lib --bins -- -D warnings
       - run: cargo build --locked
+      - name: Generated ALAC container compatibility regression
+        run: cargo test --locked --test alac container_compatibility
   android-core:
     runs-on: ubuntu-latest
     steps:

@@ -1,5 +1,9 @@
 # Audio Forensic Rust
 
+Alfred now lives in its [separate repository](https://github.com/spideyonmoon/alfred/tree/codex/extract-android).
+Owner requested extraction on 2026-10-09; Android continuation and UI scratchpad
+coordination belong there. Core engine ownership and historical acceptance remain here.
+
 Offline audio measurements and provisional forensic observations, available as a
 Rust library and desktop CLI. No Python, FFmpeg, SoX, MediaInfo, network service
 or Android runtime is needed to use the engine.
@@ -17,7 +21,7 @@ Engine **0.32.0** · Rust **1.85+** · MIT
 | Reference assessment | Versioned pinned-Python scores, rule traces and qualified candidate interpretations |
 | Spectrogram | Bounded offline data and complete calibrated Rust PNG canvas |
 | DSD | **Deferred beyond the first release and Alfred launch**; no shipped DSD analysis |
-| Alfred Android app | A02 scaffold; Android 11–16 ARM64 planned, device acceptance pending |
+| Alfred Android app | A01–A06b complete; independent Forensics, Spectrogram and live/saved Compare accepted in Android 11–16 generated UI/runtime CI; A07 physical gate next |
 
 The measurement report keeps ancestry `INCONCLUSIVE` and evidence index `null`.
 Reference scores are uncalibrated method outputs, not probabilities or proof of
@@ -60,8 +64,8 @@ CLI options, exit codes, precision and numerical conventions.
 
 ## Delivery and Alfred
 
-**Standalone 0.32.0 accepted at P09 (2026-10-06). A01 and A02 complete
-(2026-10-07). Next: A03 (Astra)**, the Alfred native adapter and linked smoke under the
+**Standalone 0.32.0 accepted at P09 (2026-10-06). A01–A06b complete.
+Next: A07 (Astra + owner)**, physical-device/resource acceptance under the
 [Android integration contract](ANDROID_CONTRACT.md).
 The owner deferred F02/DSD on 2026-10-06 to conserve Astra budget; its frozen
 future format/conversion contract remains planned.

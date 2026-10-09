@@ -1,5 +1,38 @@
 # F01 ALAC/M4A validation — 2026-10-06
 
+## A04 compatibility correction — 2026-10-08, accepted for Alfred development
+
+Manual Hot 11S / Android-11 selection exposed two real stereo ALAC containers
+rejected by the frozen 0.32.0 desktop core too. Both contain all-zero version-0
+`sdtp` dependency entries; the 24-bit stream also has a generic 16-bit audio
+sample-entry value. Compatibility now accepts only a single exact-length
+all-zero table, bounded by the existing sample limit, with cancellation checks.
+Nonzero dependencies remain unsupported. A sample-entry precision of 16 is
+accepted for an independently validated 24-bit cookie; all other mismatches and
+channel mismatches still fail. The actual decoder/report precision remains the
+cookie value, with unchanged bytes passed to Symphonia.
+
+Primary format references: Apple's [dependency table layout](https://developer.apple.com/documentation/quicktime-file-format/sample_dependency_flags_atom/sample_dependency_flags_table)
+defines one flag byte per sample; its [ALAC cookie definition](https://github.com/macosforge/alac/blob/master/ALACMagicCookieDescription.txt)
+defines decoder source precision. The [FFmpeg development discussion](https://ffmpeg.org/pipermail/ffmpeg-devel/2023-February/307027.html)
+documents the ISO audio-entry 16-bit template. No external decoder is a product
+dependency; local FFmpeg is solely an independent validation oracle.
+
+Eight locked/offline Rust-1.85 ALAC tests passed, including the existing generated
+matrix plus unchanged exact PCM hashes after dependency-table insertion and
+generic-entry mutations, full/prefix controls, invalid versions/lengths,
+nonzero flags and arbitrary precision rejection. Both private originals now
+probe successfully; exact one-second native signed-s32le PCM hashes match FFmpeg
+at 44,100 and 48,000 frames. Original encoded hashes are unchanged. Private
+receipts stay ignored `target/a04/private-alac/`; no recordings or their names/
+hashes are in source history. Whole private-track decode was not run. Fresh
+Android ABI/APK and API 30–36 runtime acceptance passed in 37765269431; core
+Windows/Linux/Android checks passed in 37765269643. Owner approved A04 closure
+without the replacement-APK physical ALAC retest; that test was not run and may
+be collected later with A07. This correction remains unreleased as a standalone
+core distribution; no full P09 re-release acceptance is claimed.
+Historical F01/P09 acceptance below retains its original scope and binary.
+
 Engine **0.28.0**, measurement schema **0.18.0**, unchanged
 `observations-only-v18` policy. **DONE 2026-10-06**, including post-fix optimized
 tests, serialized acceptance and preservation checks after resuming the

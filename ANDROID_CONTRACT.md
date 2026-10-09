@@ -1,5 +1,9 @@
 # Alfred initial Android integration contract
 
+Alfred now lives in its [separate repository](https://github.com/spideyonmoon/alfred/tree/codex/extract-android).
+Owner requested extraction on 2026-10-09; Android continuation and UI scratchpad
+coordination belong there. Core engine ownership and historical acceptance remain here.
+
 Contract **alfred-host-v1**, frozen by A01 on **2026-10-07** for A02–A07.
 The three review corrections were incorporated on 2026-10-07 before any adapter
 implementation; this remains the initial, unshipped transport contract.

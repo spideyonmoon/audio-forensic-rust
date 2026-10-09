@@ -1,5 +1,9 @@
 # Bishal's part of the roadmap
 
+Alfred now lives in its [separate repository](https://github.com/spideyonmoon/alfred/tree/codex/extract-android).
+Owner requested extraction on 2026-10-09; Android continuation and UI scratchpad
+coordination belong there. Core engine ownership and historical acceptance remain here.
+
 Updated 2026-10-06. Fill this file in directly, or tell the agent your answers
 and ask it to update the file. Unknowns do not stop unrelated implementation.
 
@@ -7,6 +11,9 @@ and ask it to update the file. Unknowns do not stop unrelated implementation.
 
 - Phone model: **Redmi 13 4G**.
 - Android version: **Android 16**.
+- Additional manual tester confirmed 2026-10-08: **Infinix Hot 11S / Android 11**;
+  single/multiple/folder-subset picker checks passed. Owner approved A04 closure
+  without waiting for replacement-APK physical ALAC retest; not run, collect later.
 - Can install a test APK: **yes**.
 - USB debugging/ADB available: **yes; available if needed, but not required for
   ordinary owner testing**.
@@ -98,7 +105,12 @@ and explain why it is needed rather than producing an open-ended shopping list.
 
 ## U03 — test the alpha on the phone
 
-Status: **not yet applicable; Android build not available yet**.
+Status: **ready for A07 physical acceptance; generated Android 11–16 CI passed**.
+The source-bound development ARM64 APK is locally available at
+`target/a06ab/accepted-build/arm64-v8a/app-debug.apk`, built from `5c5ce00` in
+[CI 37820435450](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37820435450).
+Phone installation/use and physical/resource acceptance of this APK are not yet
+recorded; earlier Hot 11S picker evidence used a different APK.
 
 After A06/A07 supplies a usable build:
 

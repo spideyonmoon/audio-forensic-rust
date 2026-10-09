@@ -43,6 +43,75 @@ fn position(bytes: &[u8], kind: &[u8; 4], which: usize) -> usize {
 fn word(bytes: &mut [u8], at: usize, n: u32) {
     bytes[at..at + 4].copy_from_slice(&n.to_be_bytes());
 }
+fn with_dependencies(mut bytes: Vec<u8>, values: &[u8]) -> Vec<u8> {
+    let start = position(&bytes, b"stbl", 0) - 8;
+    let end = start + u32::from_be_bytes(bytes[start..start + 4].try_into().unwrap()) as usize;
+    let added = 12 + values.len();
+    for kind in [*b"moov", *b"trak", *b"mdia", *b"minf", *b"stbl"] {
+        let at = position(&bytes, &kind, 0) - 8;
+        let size = u32::from_be_bytes(bytes[at..at + 4].try_into().unwrap());
+        word(&mut bytes, at, size + added as u32);
+    }
+    let mut atom = (added as u32).to_be_bytes().to_vec();
+    atom.extend(b"sdtp");
+    atom.extend([0; 4]);
+    atom.extend(values);
+    bytes.splice(end..end, atom);
+    bytes
+}
+
+#[test]
+fn container_compatibility_unknown_dependencies_and_cookie_precision_are_pcm_exact() {
+    for bits in [16, 24] {
+        let original = fixture(&format!("48000-{bits}-2-tail.m4a"));
+        let baseline = run(original.clone(), &AnalysisOptions::default());
+        let p = position(&original, b"stsz", 0);
+        let samples = u32::from_be_bytes(original[p + 8..p + 12].try_into().unwrap()) as usize;
+        let mut supported = with_dependencies(original.clone(), &vec![0; samples]);
+        let p = position(&supported, b"alac", 0);
+        supported[p + 18..p + 20].copy_from_slice(&16u16.to_be_bytes());
+        for prefix in [None, Some(0.03)] {
+            let options = AnalysisOptions {
+                max_seconds: prefix,
+                ..Default::default()
+            };
+            let reference = run(original.clone(), &options);
+            let actual = run(supported.clone(), &options);
+            assert_eq!(
+                actual.status,
+                FileStatus::Analyzed,
+                "{:?}",
+                actual.diagnostics
+            );
+            assert_eq!(actual.stream.as_ref().unwrap().bits_per_sample, Some(bits));
+            assert_eq!(
+                actual.coverage.as_ref().unwrap().decoded_pcm_sha256,
+                reference.coverage.as_ref().unwrap().decoded_pcm_sha256
+            );
+        }
+        assert_eq!(baseline.status, FileStatus::Analyzed);
+        failure(
+            with_dependencies(original.clone(), &vec![0; samples - 1]),
+            FileStatus::Failed,
+            "dependency count/length",
+        );
+        let mut claims = vec![0; samples];
+        claims[0] = 0x10;
+        failure(
+            with_dependencies(original.clone(), &claims),
+            FileStatus::Unsupported,
+            "nonzero sample dependencies",
+        );
+        let mut version = supported.clone();
+        let p = position(&version, b"sdtp", 0);
+        version[p] = 1;
+        failure(version, FileStatus::Unsupported, "full-box version/flags");
+        let mut precision = supported;
+        let p = position(&precision, b"alac", 0);
+        precision[p + 18..p + 20].copy_from_slice(&8u16.to_be_bytes());
+        failure(precision, FileStatus::Failed, "precision/channels disagree");
+    }
+}
 fn failure(bytes: Vec<u8>, status: FileStatus, text: &str) {
     for prefix in [None, Some(0.03)] {
         let r = run(

@@ -1,5 +1,63 @@
 # Rust port decisions
 
+Alfred now lives in its [separate repository](https://github.com/spideyonmoon/alfred/tree/codex/extract-android).
+Owner requested extraction on 2026-10-09; Android continuation and UI scratchpad
+coordination belong there. Core engine ownership and historical acceptance remain here.
+
+A06a Spectrogram and A06b live/saved Compare completed 2026-10-09. Accepted
+compiled source 5c5ce00 passed both ABI APK builds and full Android 11–16 generated
+worker/Compose/input/lifecycle acceptance in [CI 37820435450](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37820435450). Spectrogram
+retains P06 presets/canvas/original export; saved Compare retains original coverage,
+order, admission/native pins and independently owned product bytes. Native terminal
+failure codes survive the shared adapter. Rust computation/policy/schemas/oracles
+remain unchanged. Next A07 physical resources/device gate; no jobs running.
+See [A06a](task-results/A06a.md), [A06b](task-results/A06b.md) and current handoff.
+
+## A06 Forensics integration — 2026-10-08
+
+DONE. Workspace Forensics uses shared input/jobs/storage with unchanged Rust
+products, qualified uncalibrated reference summaries, complete read-only exact
+field inspection, mixed outcomes, fresh retry, history/delete and original-byte
+SAF export/FileProvider share. Both ABI builds and Android 11–16 generated
+feature/Compose controls passed across full 37806954007 and verified-APK retry
+37809483892. Compiled source is 8094a01; later repairs are harness-only.
+No Kotlin scoring, core/native Rust change or physical acceptance. Next A06a
+Spectrogram and A06b Compare; A07 owns physical resources. [A06](task-results/A06.md).
+
+## A05 shared jobs — 2026-10-08
+
+DONE. Implemented feature-neutral serial foreground jobs, fresh persisted attempts,
+bounded progress/cancellation, rotation/process recovery, result quotas/leases,
+grant ownership and explicit export/share. Both ABI builds and A05 generated
+lifecycle/storage checks passed on Android 11–16 across source-bound runs. Final
+API-34 verified-APK retry 37777694067 passed picker before lifecycle, retaining
+every check. No jobs running; next A06. Feature execution/results stay A06/a/b;
+physical resource acceptance stays A07. [A05 evidence](task-results/A05.md).
+
+## A04 shared input — 2026-10-08
+
+DONE. Shared SAF identities/grants, bounded enumeration/staging and native capability checks passed both ABI builds and runtime controls API 30–36, automated picker API 31–36 and owner manual Hot 11S/Android-11 picker checks. Real-file ALAC diagnosis required a narrow unreleased core preflight correction for all-zero dependency tables and generic 16-bit sample-entry fields with 24-bit cookies. Eight ALAC tests, Clippy, exact private one-second PCM checks and replacement Android/core CI passed. Owner approved closure without waiting for the replacement-APK physical ALAC retest; that retest was not run. No DSP/scoring/schema/dependency changes. Next A05. [A04 details](task-results/A04.md).
+
+
+## A03 native adapter — 2026-10-08
+
+DONE: CI 37673381546 passed both ABI builds and all API 30–36 JNI smoke jobs.
+
+The app-owned `apps/alfred/native/adapter` now provides JNI byte-array transport,
+one serial cancellable worker, exact payload descriptors and atomic attempt
+publication around the unchanged core probe/product/Spectrogram/Compare APIs.
+Kotlin preserves integer tokens as BigInteger, decimal tokens as BigDecimal and
+original payload bytes. Shared source/storage/history ownership remains A04/A05;
+this does not make the scaffold a complete analysis UI. See
+[adapter contract details](https://github.com/spideyonmoon/audio-forensic-rust/blob/79470a3/apps/alfred/NATIVE_ADAPTER.md) and
+[A03 checks/current acceptance](task-results/A03.md).
+
+Product admission checks native rate, capture frames, padded FFT and silence
+scratch against the reservation. Full high-rate requests conservatively require
+an explicit prefix even for a header-declared short file, since that declaration
+does not bound actual decoded frames. The accepted core semantics are unchanged;
+A07 still measures physical memory/runtime and validates engineering margins.
+
 ## Android compatibility amendment — 2026-10-07
 
 Owner authorized Android 11–16 (min/native API 30, compile/target 36), including
@@ -8,7 +66,7 @@ Primary phone ABI stays ARM64; x86_64 is a separate CI emulator artifact.
 Shared memory admission/frame limits stay unchanged; no device-specific chunking
 or throttling. Build/emulator evidence is separate from physical A07 acceptance.
 See [compatibility packet](task-results/ANDROID-11-CI.md).
-P09/A01/A02 are complete; A03 native adapter is the next delivery packet.
+P09/A01–A05 are complete; A06 Forensics results/history/export is next.
 
 ## Current delivery priority — 2026-10-06
 
@@ -45,8 +103,8 @@ checks passed; no production change or repeated full regression. See
 task-results/P09.md and the release ledger for accepted limits. A01 completed
 2026-10-07: ANDROID_CONTRACT.md freezes app-owned JNI, shared input/jobs/storage,
 conservative native-rate resource admission and extraction with P06/P07 backends
-retained here. A02 scaffold/builds are complete; next A03 native adapter. No
-device acceptance is implied.
+retained here. A02 scaffold, A03 native adapter, A04 shared input and A05
+jobs/retention acceptance are complete; next A06. No device acceptance is implied.
 
 
 Follow `ROADMAP.md` and `ROADMAP_TASKS.md`: faithful rewrite and offline Alfred

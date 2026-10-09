@@ -263,6 +263,7 @@ pub(crate) fn read(
     for atom in &stbl {
         if ![
             *b"stsd", *b"stts", *b"stsc", *b"stsz", *b"stco", *b"co64", *b"stss", *b"ctts",
+            *b"sdtp",
         ]
         .contains(&atom.kind)
         {
@@ -358,8 +359,11 @@ pub(crate) fn read(
             "ALAC requires version 0, 16/24-bit mono/stereo at 8-384 kHz",
         ));
     }
+    // ISO audio entries may retain the generic 16-bit sample-size field for
+    // 24-bit ALAC. The validated decoder cookie defines actual PCM precision.
+    let entry_bits = u32::from(u16::from_be_bytes(entry.data[18..20].try_into().unwrap()));
     if u32::from(u16::from_be_bytes(entry.data[16..18].try_into().unwrap())) != channels
-        || u32::from(u16::from_be_bytes(entry.data[18..20].try_into().unwrap())) != bits
+        || (entry_bits != bits && entry_bits != 16)
     {
         return Err(Error::Invalid(
             "ALAC sample entry and cookie precision/channels disagree",
@@ -450,6 +454,25 @@ fn validate_tables(
     }
     if sizes.data.len() != 12 + (if fixed == 0 { samples as usize * 4 } else { 0 }) {
         return Err(Error::Invalid("MP4 sample sizes count/length mismatch"));
+    }
+    if stbl.iter().any(|a| a.kind == *b"sdtp") {
+        let dependencies = one(stbl, b"sdtp")?;
+        full(dependencies.data)?;
+        if dependencies.data.len() != 4 + samples as usize {
+            return Err(Error::Invalid(
+                "MP4 sample dependency count/length mismatch",
+            ));
+        }
+        // Accept only an advisory table with no dependency assertions. Other
+        // layouts remain explicit unsupported rather than altering packet order.
+        for dependency in &dependencies.data[4..] {
+            check(control)?;
+            if *dependency != 0 {
+                return Err(Error::Unsupported(
+                    "ALAC nonzero sample dependencies unsupported",
+                ));
+            }
+        }
     }
     let size = |i: u32| -> Result<u32, Error> {
         let n = if fixed == 0 {

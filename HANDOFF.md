@@ -1,8 +1,259 @@
 # Start here: Audio Forensic Rust
 
-Updated **2026-10-07**. This is the current continuation point. Historical milestone
+Updated **2026-10-09**. This is the current continuation point. Historical milestone
 entries and exact older check totals are preserved in
 [the handoff archive](docs/history/HANDOFF_20261006.md); newer decisions here win.
+
+## Alfred extraction COMPLETE — 2026-10-09
+
+Owner requested separate entity now. App/shared/features/native adapter/Android
+workflows moved to C:\Users\Bishal\code\alfred, remote spideyonmoon/alfred,
+branch codex/extract-android. Continue Android/UI/A07/A08 with that HANDOFF.md.
+This repository retains independently usable core, schemas, generated DSP fixtures
+and tests; source/Cargo files are unchanged from accepted engine pin 5c5ce00.
+Alfred consumes that full Git revision with its own lockfile; no source vendoring.
+Original history/dated Android records stay here. Old ignored app caches and
+unrelated owner cleanup edits are preserved. Focused extraction is pushed in both
+repositories; PR1 in each is open, neither merged. No release publication.
+
+Compiled Alfred84355e7 passed both ABI links/APKs and all Android11–16 functional
+suites across checkpoint 37892173286 (API 30/31) and source-bound reuse37893506220
+(API 32–36). Each receipt has22 matching viewer/Compare controls plus native/input/
+Forensics/UI and eight lifecycle/permission/recovery groups. Aggregate CI runs
+remain red: first API 32 viewport-only harness failure was fixed/passed in reuse;
+API 34 completed all tests then raw logcat UTF8 decoding failed. Collector fixed,
+host boundary/syntax verified; no heavy rerun solely for diagnostics. This is
+functional acceptance, not a claim of all-green CI or new physical behavior.
+
+App-only idle foreground-service race and intermediate busy-admission regression
+were corrected; details/earlier failures retained in Alfred task-results/EXTRACTION.md.
+No numerical/schema/payload/adapter/private-audio changes. Windows Rust host link
+failed ld204; Linux core/native controls passed. Kotlin/lint and final52s compile,
+pin/source/hash/lock/syntax/link/whitespace guards passed. All7 local receipts and
+APK bindings verified. Ignored local evidence is not Git history/external backup.
+
+No jobs running. Next owner's UI scratchpad in Alfred; current visuals rejected
+and unchanged. A07 physical resources/device and A08 signing/release remain there.
+
+## A06a then A06b COMPLETE — 2026-10-09
+
+**A06a DONE; A06b DONE. Next: A07 physical-device gate (Astra + owner).
+No jobs running.** Accepted compiled source **5c5ce00**, pushed on
+codex/a06ab-features, passed the complete [combined CI](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37820435450): both ABI links/
+APKs, native host controls, lint, fixture bytes, alignment/signatures and every
+API 30–36 emulator job. All seven receipts match the same 22 generated feature
+controls (7 Spectrogram, 15 Compare), with Compose restart/routes/PNG/old-wrapper/
+saved-selection/comparison checks and retained A03–A06/input/lifecycle checks.
+API-30 picker remains the existing manual Hot 11S evidence; no new phone claim.
+
+Spectrogram independently runs P06 with all presets/Publication default, retains
+unchanged wrapper/PNG, displays the complete scaled Rust canvas and exports its
+original bytes. Old presentation, separate PNG failure, input/native cancellation
+and cleanup passed. Android-11 screenshot was visually inspected. This is the
+initial slice, not the full interactive/competitive viewing product.
+
+Compare independently supports live and saved same-track variants, one common
+live scope, full-rate admission, stable input-order ties, Rust compatibility/
+nulls/caveats and exact transfer. Saved admission pins protect queued sources;
+original products are copied into independently retained comparison results.
+Queue cancellation/deletion, missing/future/invalid inputs, short-prefix abstention,
+eligible shorter EOF and mixed/all-unavailable cases passed. Native terminal
+failure codes now survive the shared adapter. No Kotlin scoring or Rust/DSP/
+schema/oracle/private-audio change. Broader comparison semantics remain unfrozen.
+
+Local Kotlin/lint passed (1m50s; 0 errors/12 warnings/4 hints), final Kotlin 38s,
+stale-selection Kotlin 44s and original-token/error-map Kotlin 1m27s. Python syntax,
+whitespace, preserved core/native/fixtures and both APK hash/source bindings passed.
+Initial sandbox daemon failure and three failed CI iterations are retained in
+[A06a](task-results/A06a.md) / [A06b](task-results/A06b.md): mistaken tail-frame count,
+insufficient one-second tuple control and JSONObject-rewritten binding rejection.
+Original-token host controls passed; the exact field behind the rewritten binding rejection was not
+isolated. No oracle was regenerated. All final runtime gates passed.
+
+Phone APK: target/a06ab/accepted-build/arm64-v8a/app-debug.apk (source-bound CI
+artifact). Receipts/screenshots/logs under ignored target/a06ab are local evidence,
+not Git history or external research backup. Focused source is pushed; unrelated
+owner cleanup edits remain unstaged. A07 owns physical ARM64, 16-KiB runtime,
+large/private input, RSS/thermal/background behavior; none is accepted here.
+
+## A06 COMPLETE — 2026-10-08
+
+**A06 DONE. Next: A06a and A06b. No CI jobs running.** Workspace execution uses
+shared acquisition/jobs and original Rust products. Full/explicit prefix, mixed
+outcomes, fresh retry, paged exact-field inspection, qualified reference summary,
+selection-independent history/delete, SAF export and FileProvider share are wired.
+Native output adoption checks released paths/sizes/hashes; no Kotlin scoring or
+core/native Rust/private-audio change. Spectrogram/Compare stay separate routes.
+
+Compiled source **8094a01**, branch codex/a06-forensics, passed both ABI builds,
+native host controls/lint/packaging and entire API 31–34 jobs in
+[37806954007](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37806954007).
+Entire API 30/35/36 jobs passed on the same hash/source-bound APK, harness f64d670,
+in [37809483892](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37809483892).
+Acceptance spans these two runs: all 18 feature controls and five Compose
+history/restart/exact u64/null checks passed Android 11–16; all retained A04/A05
+checks passed too. API-30 picker remains A04 manual Hot 11S evidence.
+
+Local corrected Kotlin/lint (0 errors/12 warnings/3 hints), final-source Kotlin,
+Python syntax, whitespace, real-XML picker regression and APK/hash/source guard
+passed. Initial sandbox/compiler, Android-11 wm command, below-fold picker and
+missing runtime manual-marker failures are retained in [A06 record](task-results/A06.md).
+No physical/16-KiB/RSS/thermal acceptance: A07 owns those. Owner cleanup edits
+remain unstaged. Ignored target/a06 evidence is local, not an external backup.
+Next: begin A06a Spectrogram and A06b Compare as the owner requested; reuse
+unchanged Rust computation/rendering/policy and shared jobs/input/storage.
+
+## A05 COMPLETE — 2026-10-08
+
+**DONE. Next delivery task: A06. No jobs running.** Shared feature-neutral
+jobs/service, durable attempts, bounded queues/latest progress, cancellation/retry,
+ViewModel rotation, owned-grant ledger, result reservations/history/eviction/leases,
+original-byte version dispatch, SAF export and FileProvider sharing are complete.
+Core/native Rust/DSP/private audio and owner cleanup edits are preserved.
+
+Compiled source `774eb74` on `codex/a05-shared-jobs` passed both ABI builds,
+native host controls, lint, generated fixtures, alignment and signatures in
+[37773573203](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37773573203).
+Entire emulator jobs passed API 30–32 there and API 33/35/36 in verified-APK
+retry [37775318484](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37775318484).
+Final API-34 retry
+[37777694067](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37777694067)
+succeeded on harness `851bdb1`: single/multiple/folder picker checks run before
+lifecycle rotation tests, retaining every check and the same hash/source-bound APK.
+Acceptance spans these runs, not one seven-API green run. API-30 picker evidence
+remains A04's manual Hot 11S coverage, not automated picker acceptance.
+
+Generated lifecycle/storage coverage passed Android 11–16: 23 controls,
+rotation/background/screen-off, copy/native/finalization process kill, committed
+result recovery, denied notifications/background starts, and real API-35/36
+mediaProcessing timeout. Local Kotlin/lint, Python syntax and whitespace passed;
+0 lint errors/8 warnings. Exact receipts, initial failures and bounded harness
+repairs are in [A05 record](task-results/A05.md). First API-33 missing receipt did
+not reproduce; its original cause remains unknown. Retry 37777363103 stopped
+before emulators because the reuse guard falsely included root Markdown; explicit
+Git regression checks confirmed the correction excludes docs while rejecting
+compiled-source changes. No tests were omitted or app rebuild required.
+
+Next: A06 Forensics results/history/export using the completed shared APIs and
+ANDROID_CONTRACT.md. A06/a/b feature screens and A07 physical/16-KiB/RSS/thermal
+acceptance remain unrun. Preserve unrelated owner cleanup changes unstaged.
+Ignored target receipts are local evidence, not Git history or external backups.
+
+## A04 COMPLETE — 2026-10-08
+
+**DONE. Next delivery task: A05. No jobs running.** Owner authorized closure
+without waiting for the offline tester to repeat the two ALAC files on the
+replacement APK. This retest was **not run** and is not claimed as passed.
+Confidence rests on exact checks of both supplied originals, generated
+regressions, both ABI build checks and successful Android 11–16 runtime controls.
+The existing Hot 11S/Android-11 manual picker evidence remains independently valid.
+No additional build or audit was needed for closure.
+
+Owner confirmed the manual tester is **Infinix Hot 11S / Android 11**. Screenshots
+and confirmation cover single/multiple selection, persisted read access, the
+32-candidate folder bound and completed six-item folder-subset checks. This
+closes the physical picker-interaction blocker for APK `a1b3c42`; do not repeat
+the failed emulator pointer-helper experiments. Full-build CI explicitly records
+API-30 automated picker not run with manual evidence, while retaining all
+native/provider/staging controls and API 31–36 picker automation.
+
+The supplied private originals are confirmed stereo ALAC at 44.1 kHz/16-bit and
+48 kHz/24-bit. Desktop 0.32.0 reproduces the sample-table rejection. Narrow core
+preflight correction accepts exact-length all-zero version-0 `sdtp` entries and
+the generic 16-bit sample-entry field with a validated 24-bit ALAC cookie. Other
+dependencies/malformed tables/precision or channel mismatches remain explicit.
+No DSP, scoring/schema/dependency or fixture-oracle changes. This is unreleased
+post-P09 compatibility work, not a replacement of P09's accepted frozen binary.
+
+Checks: all **8 ALAC tests passed**, including generated matrix and new exact
+full/prefix PCM/malformed controls. Focused Clippy (`--lib --test alac`, warnings
+denied) passed. Both original files now probe successfully and their exact
+one-second native PCM hashes match local FFmpeg (44,100/48,000 frames). Source
+encoded hashes are unchanged; whole private tracks were not decoded. Private
+receipts/copies stay ignored `target/a04/private-alac/`, originals stay in the
+owner-supplied Downloads folder. No private audio/names/hashes/screenshots are
+committed. Initial stale CLI/system-linker attempts failed; documented local
+LLVM wrapper ran the corrected tests. [Detailed A04 record](task-results/A04.md).
+
+Checks for source **cf542ab**: Android replacement build/emulator run
+[37765269431](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37765269431)
+and core build/Clippy/generated-regression run
+[37765269643](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37765269643).
+Core CI 37765269643 passed all three jobs (Windows/Linux build, Clippy and
+generated ALAC regression; Android core compilation). Android 37765269431 build
+passed both ABI APKs, native host acceptance, lint, fixture hashes, alignment and
+signatures; **all seven API 30–36 emulator jobs passed and the run succeeded**.
+Native and provider/staging controls ran on every API. Actual picker automation
+ran on API 31–36; API 30 records manual Hot 11S coverage explicitly. Verified
+replacement APK: [artifact 11543588915](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37765269431/artifacts/11543588915).
+Runtime-only 37765269404 correctly refused compiled-source reuse and skipped
+emulators; its success is not acceptance of the corrected native binary.
+
+Next: **A05**, shared jobs, background lifecycle, progress/cancellation and
+retention. Replacement-APK Hot 11S ALAC retest can be collected later alongside
+A07 physical acceptance; it is not an A04 blocker after owner-authorized closure.
+Owner cleanup edits stay uncommitted. Core compatibility source is `cf542ab`;
+later commits only record evidence/current dispatch, not another compiled build.
+
+## Earlier A04 CI and manual-test history
+
+Shared SAF selection/staging/probe code and workspace controls are implemented;
+see [A04 results](task-results/A04.md). Source `a1b3c42` passed both ABI builds,
+lint, packaging/alignment/signatures and native/input-provider controls on API
+30–36 in CI 37740958937. Real DocumentsUI single/multiple/folder persisted-grant
+checks passed API 31–36. The run concluded failure on API-30 document activation;
+A04 is not yet DONE. Local Kotlin/shared lint passed (0 errors, 3 warnings).
+Earlier nullable-test, root-navigation, SELECT-label and Android-11 Java API
+defects are repaired. Subsequent API-30-only picker harness retries failed;
+latest helper `405a7f9` uses the touchscreen device and default display; its
+retry 37746745823 also failed at `checked(1)` with the exact hash-bound APK from
+37740958937. No jobs running. No app/native code
+changed after that verified APK build. APK-reuse guard passed and correctly
+refused changed compiled source in 37740958885. Seven emulators run in parallel;
+harness-only retries skip full builds and can select affected APIs.
+
+Owner-supplied screenshots now show successful single/multiple selection and
+completed six-item folder-subset checks with persisted read access. Four FLACs
+are supported; two M4As labelled ALAC in filenames are unsupported (actual codec
+not verified). Device model/OS are not shown. Details are in the A04 record.
+No screenshots, private file names or audio were committed.
+
+The subsequent device confirmation and ALAC diagnosis above supersede this
+earlier pending state. A05 owns jobs/history,
+quota/orphan recovery and lifecycle; feature execution stays A06/a/b. Existing
+owner cleanup edits stay uncommitted. Core/private audio are unchanged. Local
+evidence is ignored target/a04/, distinct from source history and remote artifacts.
+
+## A03 COMPLETE — 2026-10-08
+
+**DONE. Next delivery task: A04. No jobs running.**
+Final source **ce037d3** on `codex/a03-native-adapter` passed CI run
+[37673381546](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37673381546):
+both ARM64/x86_64 NDK links, APK builds/lint, native alignment/signatures,
+exact packaged fixture verification, and all seven API 30–36 emulator jobs.
+Packaged JNI generated WAV/FLAC/ALAC PCM/product/PNG, complete metadata,
+exact integers/null and cancellation smoke passed. Eight focused native tests
+and all-target Clippy passed previously. Do not repeat completed A03 audits.
+
+Implemented app-owned serial worker/handles, source-release admission, JNI byte
+transport, exact Kotlin parser/control executor, complete probe/product/
+Spectrogram payloads, saved compare/render, atomic manifests and resource checks.
+Core source, Cargo files, schemas, fixtures, pinned reference and private audio
+remain unchanged. Physical phone, 16 KiB runtime, SAF/jobs/history/results UI
+and release acceptance remain their named later tasks.
+
+Read [A03 results](task-results/A03.md),
+[adapter integration guide](https://github.com/spideyonmoon/audio-forensic-rust/blob/79470a3/apps/alfred/NATIVE_ADAPTER.md) and
+[validation](docs/validation/ANDROID_INTEGRATION_VALIDATION.md).
+A04 owns snapshot acquisition/immutability and counted source/output leases;
+A05 owns storage reservations, orphan cleanup, lifecycle and history. Native close
+never permits deleting a live snapshot: wait for native active_handle release.
+
+Final acceptance artifacts are in the successful GitHub run. Local
+`target/a03/ci-artifacts/` APKs predate the final fixture packaging fix; do not
+present them as the final build. Original failed attempts and local checks remain
+under ignored `target/a03/`, distinct from source history and external backups.
+Existing owner cleanup edits below and in task-results/README.md remain preserved.
 
 ## Main synchronization — 2026-10-07
 
@@ -117,8 +368,8 @@ At that earlier A01 handoff A02 was next. A02 is now complete; A03 is next.
 
 ## Current task and delivery boundary
 
-- Active task: **none**. A02 completed 2026-10-07; A03 is next. No jobs running.
-- Next default delivery task: **A03 — Audio Forensics native adapter (Astra)**.
+- Active task: none; **A05 DONE 2026-10-08**. No jobs running.
+- Next default delivery task: **A06 — Audio Forensics results/history/export (Sol)**.
 - **F02/DSD DEFERRED beyond the first standalone release and Alfred launch**,
   owner approved 2026-10-06 to conserve Astra budget. Its frozen DSF/DFF,
   DSD64/128/256, mono/stereo and 88.2 kHz conversion contract remains for later.
@@ -139,9 +390,9 @@ At that earlier A01 handoff A02 was next. A02 is now complete; A03 is next.
 Read [ROADMAP.md](ROADMAP.md), [A01 card](ROADMAP_TASKS.md#a01--alfred-shared-architecture-and-integration-contract),
 [release scope amendment](RELEASE_CONTRACT.md),
 [Alfred boundary](ALFRED_ARCHITECTURE.md) and [OWNER_CHECKLIST.md](OWNER_CHECKLIST.md).
-P09/A01/A02 are complete. Read [ANDROID_CONTRACT.md](ANDROID_CONTRACT.md) for
-A03–A07 implementation decisions. The app/native bootstrap scaffold exists and
-passes Android 11–16 CI; analysis handles, acquisition and jobs are not implemented.
+P09/A01/A02/A03 are complete. Read [ANDROID_CONTRACT.md](ANDROID_CONTRACT.md) for
+A03–A07 implementation decisions. The app-owned native adapter passes Android 11–16 generated-input CI;
+shared acquisition, lifecycle and feature UI remain A04–A06 work.
 
 ## Implemented state and evidence
 
@@ -222,8 +473,9 @@ these are local files, not Git history or an external backup. Prior milestone
 receipts remain where originally recorded (including target/p06-msrv and
 accepted P05/P06/F01 receipts). U05 external backup remains owner work.
 
-Next concrete action: **A03**, implementing the app-owned native adapter under
-ANDROID_CONTRACT.md. Consume existing product APIs without changing core/DSP
+Next concrete action: **A06**, Audio Forensics results/history/export under
+ANDROID_CONTRACT.md. A05 shared jobs/lifecycle/retention and CI acceptance are
+complete. Consume existing product APIs without changing core/DSP
 semantics; preserve shared memory admission and use GitHub Actions for heavy checks.
 Keep P06/P07 reuse unchanged. P09 details
 are in task-results/P09.md and docs/validation/CORE_RELEASE_VALIDATION.md;
