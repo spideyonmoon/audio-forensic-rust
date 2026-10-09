@@ -3,3 +3,6 @@
 /corpus/local/
 /.tools/
 **/__pycache__/
+
+# Retained local Android build caches after repository extraction.
+/apps/alfred/

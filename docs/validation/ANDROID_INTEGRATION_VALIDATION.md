@@ -1,5 +1,8 @@
 # Android integration validation
 
+Current Android ownership moved to https://github.com/spideyonmoon/alfred on 2026-10-09.
+Extraction validation continues there; the dated evidence below remains historical.
+
 ## A06a then A06b accepted — 2026-10-09
 
 Compiled source 5c5ce00/full [CI 37820435450](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37820435450) passed both ABI links/APKs,
@@ -95,7 +98,7 @@ No core/DSP/scoring change, private-audio upload or physical/16-KiB/RSS acceptan
 Shared service/jobs, durable attempts/manifest recovery, bounded queue/progress,
 cancel/retry, ViewModel rotation, disk reservation/history/grant leases and explicit
 SAF export/FileProvider sharing are implemented. Integration API and lifecycle
-ownership: [shared jobs](../../apps/alfred/SHARED_JOBS.md).
+ownership: [shared jobs](https://github.com/spideyonmoon/audio-forensic-rust/blob/79470a3/apps/alfred/SHARED_JOBS.md).
 
 Offline app Kotlin/shared lint passed with 0 lint errors/8 warnings (pinned
 dependency, application-context singleton, conservative usable-space and KTX
@@ -177,7 +180,7 @@ Implemented only in `apps/alfred/`: one serial worker and nonreused handle
 registry, JNI byte-array controls, exact Kotlin parser/control executor, complete
 probe/product/Spectrogram payload persistence, saved comparison/rendering and
 checked resource admission. The core source, Cargo files, schemas and generated
-fixtures are unchanged. Source: [adapter guide](../../apps/alfred/NATIVE_ADAPTER.md).
+fixtures are unchanged. Source: [adapter guide](https://github.com/spideyonmoon/audio-forensic-rust/blob/79470a3/apps/alfred/NATIVE_ADAPTER.md).
 
 Windows Rust 1.85 final focused suite: **8 passed**, zero failed/ignored. The
 two registry tests deterministically exercise source Drop blocked after close,

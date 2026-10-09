@@ -4,6 +4,29 @@ Updated **2026-10-09**. This is the current continuation point. Historical miles
 entries and exact older check totals are preserved in
 [the handoff archive](docs/history/HANDOFF_20261006.md); newer decisions here win.
 
+## Alfred repository extraction — 2026-10-09
+
+Owner requested separation now. Alfred development moved to
+`C:\Users\Bishal\code\alfred`, remote https://github.com/spideyonmoon/alfred,
+branch `codex/extract-android`. App/shared/feature/native-adapter source and Android
+workflows belong there. This repository retains the independently consumable
+Rust engine, schemas, generated DSP fixtures and core tests. Alfred pins engine
+5c5ce00d44f6759dd6a7319804b5f7a21079d1b4 through a Git dependency and its own lockfile.
+No core refactor or private-audio transfer. Historical Android records stay here;
+subsequent Android work starts with the Alfred HANDOFF.md.
+
+The owner rejected the scaffold's visual quality and is drafting the replacement
+UI on a scratchpad. No redesign is included in extraction; A06 functional checks
+are not visual approval. A07 physical acceptance/A08 release remain pending in
+Alfred. Extraction CI 37888964074 is running at Alfred commit 0388042; no extraction
+acceptance claim yet. Static lock/source/syntax/link controls passed. Windows Rust
+checks failed in host dependency linking (ld exit 204 including documented GCC
+retry); Linux CI carries those checks. Local Kotlin/lint is running.
+
+Tracked old app source/workflows are removed only as a repository move. Ignored
+old build/cache directories are retained under apps/alfred; no recursive cleanup
+or private recording deletion. Existing owner cleanup edits remain unstaged.
+
 ## A06a then A06b COMPLETE — 2026-10-09
 
 **A06a DONE; A06b DONE. Next: A07 physical-device gate (Astra + owner).
@@ -212,7 +235,7 @@ remain unchanged. Physical phone, 16 KiB runtime, SAF/jobs/history/results UI
 and release acceptance remain their named later tasks.
 
 Read [A03 results](task-results/A03.md),
-[adapter integration guide](apps/alfred/NATIVE_ADAPTER.md) and
+[adapter integration guide](https://github.com/spideyonmoon/audio-forensic-rust/blob/79470a3/apps/alfred/NATIVE_ADAPTER.md) and
 [validation](docs/validation/ANDROID_INTEGRATION_VALIDATION.md).
 A04 owns snapshot acquisition/immutability and counted source/output leases;
 A05 owns storage reservations, orphan cleanup, lifecycle and history. Native close

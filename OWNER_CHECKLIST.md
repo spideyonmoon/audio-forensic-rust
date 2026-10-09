@@ -1,5 +1,9 @@
 # Bishal's part of the roadmap
 
+Alfred now lives in its [separate repository](https://github.com/spideyonmoon/alfred/tree/codex/extract-android).
+Owner requested extraction on 2026-10-09; Android continuation and UI scratchpad
+coordination belong there. Core engine ownership and historical acceptance remain here.
+
 Updated 2026-10-06. Fill this file in directly, or tell the agent your answers
 and ask it to update the file. Unknowns do not stop unrelated implementation.
 

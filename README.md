@@ -1,5 +1,9 @@
 # Audio Forensic Rust
 
+Alfred now lives in its [separate repository](https://github.com/spideyonmoon/alfred/tree/codex/extract-android).
+Owner requested extraction on 2026-10-09; Android continuation and UI scratchpad
+coordination belong there. Core engine ownership and historical acceptance remain here.
+
 Offline audio measurements and provisional forensic observations, available as a
 Rust library and desktop CLI. No Python, FFmpeg, SoX, MediaInfo, network service
 or Android runtime is needed to use the engine.

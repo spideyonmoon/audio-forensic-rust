@@ -34,3 +34,5 @@ override it. Validation documents are indexed [under docs](../docs/validation/RE
 - [Spectrogram ambition and ownership](SPECTROGRAM-OWNERSHIP.md)
 
 - [A04 — shared SAF input/staging, accepted](A04.md)
+
+- [Alfred repository extraction](ALFRED-EXTRACTION.md)

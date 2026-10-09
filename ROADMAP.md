@@ -53,8 +53,8 @@ the entire roadmap. If a task spans sessions, resume the same ID and saved state
 
 ## Current dispatch
 
-- **Active tasks:** none. A06a/A06b DONE 2026-10-09; A06 DONE 2026-10-08.
-- **Next delivery tasks:** **A07 — physical-device/resource gate (Astra + owner)**.
+- **Active tasks:** owner-requested Alfred extraction; CI in the separate repository. A06a/A06b DONE 2026-10-09; A06 DONE 2026-10-08.
+- **Next delivery tasks:** **A07 — physical-device/resource gate (Astra + owner)** in [Alfred](https://github.com/spideyonmoon/alfred/tree/codex/extract-android), after owner UI work.
 - **Owner inputs received:** Redmi 13 4G, Android 16, APK/ADB available;
   FLAC/WAV/ALAC-M4A/DSD; detailed verdict, complete metadata and deep results;
   approximately 600–700 MB upper typical file size; Alfred via GitHub Releases.
@@ -67,7 +67,7 @@ the entire roadmap. If a task spans sessions, resume the same ID and saved state
 - **Independent MQA work:** existing prototype/corpus at
   `C:\Users\Bishal\Documents\antigravity-dev\mqa`; E09 now READY for a
   named review, not a beta gate. See `task-results/P01-MQA.md`.
-- **Running jobs:** none. A06a/b full CI 37820435450 on 5c5ce00 passed all APIs.
+- **Running jobs:** Alfred extraction CI 37888964074; historical core Android acceptance below. A06a/b full CI 37820435450 on 5c5ce00 passed all APIs.
   A06 build/API 31–34 passed in 37806954007;
   source-bound API 30/35/36 retry 37809483892 passed.
 

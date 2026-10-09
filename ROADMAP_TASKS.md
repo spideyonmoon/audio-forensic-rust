@@ -506,6 +506,10 @@ endgame research are not acceptance dependencies.
 
 ## A08 — Alfred beta and repository-boundary handoff
 
+Owner requested actual repository extraction on 2026-10-09, before A07.
+Android app continuation is now in https://github.com/spideyonmoon/alfred;
+this does not close A07/U03 or release/signing/publication gates.
+
 **Sol + owner; after A07/U03.** Prepare reproducible release candidate, hashes,
 notices, supported formats/OS, install/update instructions and GitHub Release
 text describing Alfred's implemented features and future placeholders honestly.

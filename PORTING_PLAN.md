@@ -1,5 +1,9 @@
 # Rust port decisions
 
+Alfred now lives in its [separate repository](https://github.com/spideyonmoon/alfred/tree/codex/extract-android).
+Owner requested extraction on 2026-10-09; Android continuation and UI scratchpad
+coordination belong there. Core engine ownership and historical acceptance remain here.
+
 A06a Spectrogram and A06b live/saved Compare completed 2026-10-09. Accepted
 compiled source 5c5ce00 passed both ABI APK builds and full Android 11–16 generated
 worker/Compose/input/lifecycle acceptance in [CI 37820435450](https://github.com/spideyonmoon/audio-forensic-rust/actions/runs/37820435450). Spectrogram
@@ -45,7 +49,7 @@ publication around the unchanged core probe/product/Spectrogram/Compare APIs.
 Kotlin preserves integer tokens as BigInteger, decimal tokens as BigDecimal and
 original payload bytes. Shared source/storage/history ownership remains A04/A05;
 this does not make the scaffold a complete analysis UI. See
-[adapter contract details](apps/alfred/NATIVE_ADAPTER.md) and
+[adapter contract details](https://github.com/spideyonmoon/audio-forensic-rust/blob/79470a3/apps/alfred/NATIVE_ADAPTER.md) and
 [A03 checks/current acceptance](task-results/A03.md).
 
 Product admission checks native rate, capture frames, padded FFT and silence

@@ -25,6 +25,8 @@
   A01/A02/A03/A04/A05/A06/A06a/A06b are complete. Spectrogram and live/saved
   Compare passed Android 11–16 CI; next A07 physical-device/resource gate.
   A03 packaged generated-input runtime passed on Android 11–16.
+  Alfred extracted 2026-10-09 to C:\Users\Bishal\code\alfred / spideyonmoon/alfred.
+  Continue Android/UI/A07 there; this repository owns the independent engine.
   Android 11–16 scaffold CI passed; use GitHub Actions for heavy Android checks.
   Keep the frozen future DSD contract; follow current task cards.
 - Conserve usage: targeted inspection/checks, concise updates, Sol for bounded

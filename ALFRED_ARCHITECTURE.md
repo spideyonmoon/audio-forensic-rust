@@ -1,5 +1,9 @@
 # Alfred product and repository boundary
 
+Alfred now lives in its [separate repository](https://github.com/spideyonmoon/alfred/tree/codex/extract-android).
+Owner requested extraction on 2026-10-09; Android continuation and UI scratchpad
+coordination belong there. Core engine ownership and historical acceptance remain here.
+
 Planning correction agreed 2026-10-06. This defines ownership and integration
 seams, not implemented app behavior or detailed APIs for future features.
 
